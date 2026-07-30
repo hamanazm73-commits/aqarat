@@ -1,0 +1,99 @@
+rules_version = '2';
+
+// Deploy: Firebase console > Firestore > Rules > paste > Publish.
+// Set ownerEmail() to the SAME email as NEXT_PUBLIC_OWNER_EMAIL (lowercase).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function ownerEmail() {
+      return "hamakali2005@gmail.com"; // owner / super-admin (lowercase)
+    }
+    function isSignedIn() { return request.auth != null; }
+    function emailLower() { return request.auth.token.email.lower(); }
+    function isOwner() { return isSignedIn() && emailLower() == ownerEmail(); }
+    function hasRole() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/roles/$(emailLower()));
+    }
+    function myRole() {
+      return get(/databases/$(database)/documents/roles/$(emailLower())).data;
+    }
+    function isAdmin() {
+      return isOwner() ||
+        (hasRole() && myRole().enabled == true
+          && (myRole().role == 'admin' || myRole().role == 'owner'));
+    }
+
+    // Properties: anyone reads; only owner/admins write.
+    match /properties/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Inquiries: anyone may CREATE a valid inquiry (contact form); only
+    // owner/admins may read them. No client update/delete. Fields and sizes are
+    // locked down so the public write can't be abused with junk or huge data.
+    match /inquiries/{id} {
+      allow read: if isAdmin();
+      allow create: if
+        request.resource.data.keys().hasOnly(
+          ['propertyId', 'name', 'phone', 'message', 'createdAt']) &&
+        request.resource.data.propertyId is string &&
+        request.resource.data.propertyId.size() > 0 &&
+        request.resource.data.propertyId.size() <= 120 &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() >= 2 &&
+        request.resource.data.name.size() <= 80 &&
+        request.resource.data.phone is string &&
+        request.resource.data.phone.size() >= 6 &&
+        request.resource.data.phone.size() <= 20 &&
+        request.resource.data.createdAt is string &&
+        request.resource.data.createdAt.size() <= 40 &&
+        (!('message' in request.resource.data) ||
+          (request.resource.data.message is string &&
+           request.resource.data.message.size() <= 1000));
+      allow update, delete: if false;
+    }
+
+    // Roles / admins: a user reads their own role; only the owner manages roles.
+    match /roles/{email} {
+      allow get: if isOwner() || (isSignedIn() && emailLower() == email);
+      allow list, create, update, delete: if isOwner();
+    }
+
+    // Site settings (e.g. which cities appear in filters): public read, admin write.
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Submissions: anyone may submit a property; only admins read/manage it.
+    match /submissions/{id} {
+      allow read: if isAdmin();
+      allow create: if
+        request.resource.data.keys().hasOnly(['title', 'description',
+          'purpose', 'type', 'city', 'district', 'priceIQD', 'area',
+          'bedrooms', 'bathrooms', 'images', 'name', 'phone', 'whatsapp',
+          'createdAt']) &&
+        request.resource.data.title is string &&
+        request.resource.data.title.size() >= 2 &&
+        request.resource.data.title.size() <= 120 &&
+        request.resource.data.purpose is string &&
+        request.resource.data.type is string &&
+        request.resource.data.city is string &&
+        request.resource.data.priceIQD is number &&
+        request.resource.data.area is number &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() >= 2 &&
+        request.resource.data.name.size() <= 80 &&
+        request.resource.data.phone is string &&
+        request.resource.data.phone.size() >= 6 &&
+        request.resource.data.phone.size() <= 20 &&
+        request.resource.data.images is list &&
+        request.resource.data.images.size() <= 20 &&
+        request.resource.data.createdAt is string;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

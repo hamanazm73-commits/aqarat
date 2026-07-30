@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#131519"/>
+      <stop offset="1" stop-color="#2c2f36"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#g)"/>
+  <circle cx="1000" cy="160" r="220" fill="#ffffff" opacity="0.08"/>
+  <circle cx="180" cy="760" r="260" fill="#000000" opacity="0.08"/>
+  <g fill="none" stroke="#ffffff" stroke-width="14" stroke-linejoin="round" stroke-linecap="round" opacity="0.92">
+    <rect x="470" y="300" width="260" height="360"/>
+    <line x1="520" y1="360" x2="560" y2="360"/><line x1="600" y1="360" x2="640" y2="360"/><line x1="680" y1="360" x2="680" y2="360"/>
+    <line x1="520" y1="430" x2="560" y2="430"/><line x1="600" y1="430" x2="640" y2="430"/>
+    <line x1="520" y1="500" x2="560" y2="500"/><line x1="600" y1="500" x2="640" y2="500"/>
+    <rect x="560" y="580" width="80" height="80"/>
+  </g>
+  <text x="600" y="740" font-family="Segoe UI, Arial, sans-serif" font-size="60" font-weight="700" fill="#ffffff" text-anchor="middle" opacity="0.95">Apartment</text>
+  <text x="600" y="800" font-family="Segoe UI, Arial, sans-serif" font-size="30" fill="#ffffff" text-anchor="middle" opacity="0.7">AQARAT IRAQ</text>
+</svg>

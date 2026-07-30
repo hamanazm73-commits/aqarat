@@ -1,0 +1,33 @@
+rules_version = '2';
+
+// Deploy: Firebase console > Storage > Rules > paste > Publish.
+// Set ownerEmail() to your login email (lowercase).
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function ownerEmail() { return "hamakali2005@gmail.com"; }
+    function isSignedIn() { return request.auth != null; }
+    function emailLower() { return request.auth.token.email.lower(); }
+    function isOwner() { return isSignedIn() && emailLower() == ownerEmail(); }
+    function hasRole() {
+      return isSignedIn()
+        && firestore.exists(/databases/(default)/documents/roles/$(emailLower()));
+    }
+    function myRole() {
+      return firestore.get(/databases/(default)/documents/roles/$(emailLower())).data;
+    }
+    function isAdmin() {
+      return isOwner() ||
+        (hasRole() && myRole().enabled == true
+          && (myRole().role == 'admin' || myRole().role == 'owner'));
+    }
+
+    // Property photos: public read; only owner/admins upload. Cap size + type.
+    match /properties/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

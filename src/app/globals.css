@@ -1,0 +1,338 @@
+@import "tailwindcss";
+
+/* Class-based dark mode so next-themes (attribute="class") drives it. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------- Design tokens ----------
+   Navy + gold, matching the sister site (Kurdistan Hotels) so the two read as
+   one family. Navy carries the structure, gold carries every highlight. */
+:root {
+  color-scheme: light;
+  --radius: 0.85rem;
+
+  --background: oklch(0.988 0.008 78);
+  --foreground: oklch(0.2 0.03 258);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.03 258);
+
+  --muted: oklch(0.96 0.008 262);
+  --muted-foreground: oklch(0.52 0.02 262);
+
+  /* Deep navy — the structural colour */
+  --primary: oklch(0.32 0.08 252);
+  --primary-foreground: oklch(0.98 0.01 85);
+
+  /* Gold — every accent, badge and highlight */
+  --gold: oklch(0.75 0.16 68);
+  --gold-foreground: oklch(0.24 0.04 258);
+  --accent: oklch(0.94 0.07 78);
+  --accent-foreground: oklch(0.28 0.05 258);
+
+  --secondary: oklch(0.95 0.01 262);
+  --secondary-foreground: oklch(0.3 0.05 262);
+
+  --border: oklch(0.9 0.012 262);
+  --input: oklch(0.9 0.012 262);
+  --ring: oklch(0.72 0.14 78);
+
+  --success: oklch(0.62 0.15 150);
+  --danger: oklch(0.58 0.21 25);
+}
+
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.17 0.022 265);
+  --foreground: oklch(0.96 0.01 85);
+
+  --card: oklch(0.215 0.026 265);
+  --card-foreground: oklch(0.96 0.01 85);
+
+  --muted: oklch(0.27 0.03 265);
+  --muted-foreground: oklch(0.72 0.02 262);
+
+  --primary: oklch(0.6 0.11 255);
+  --primary-foreground: oklch(0.98 0.01 85);
+
+  --gold: oklch(0.81 0.13 85);
+  --gold-foreground: oklch(0.2 0.03 265);
+  --accent: oklch(0.32 0.05 265);
+  --accent-foreground: oklch(0.92 0.06 85);
+
+  --secondary: oklch(0.27 0.03 265);
+  --secondary-foreground: oklch(0.96 0.01 85);
+
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.78 0.13 85);
+
+  --success: oklch(0.68 0.15 150);
+  --danger: oklch(0.7 0.19 22);
+}
+
+/* ---------- Expose tokens as Tailwind utilities ---------- */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-latin), var(--font-arabic), system-ui, sans-serif;
+  --font-arabic: var(--font-arabic);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+/* ---------- Base ---------- */
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  scroll-behavior: smooth;
+  /* stop mobile browsers auto-inflating text on rotate/reflow */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* RTL languages (Kurdish / Arabic) lean on the Arabic font first. */
+:where([dir="rtl"]) body {
+  font-family: var(--font-arabic), var(--font-latin), system-ui, sans-serif;
+}
+
+/* On phones, keep every text field at 16px so focusing it never triggers
+   iOS Safari's auto-zoom (and gives bigger, easier tap targets). */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+::selection {
+  background: color-mix(in oklch, var(--gold) 30%, transparent);
+}
+
+/* Nice thin scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
+  border-radius: 9999px;
+}
+
+/* Shared form control */
+.input {
+  height: 2.75rem;
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--input);
+  background: var(--background);
+  padding-inline: 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+.input:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 35%, transparent);
+}
+
+/* Native <select> dropdown lists — force solid, high-contrast colours so the
+   options are readable in both light and dark mode (Chrome/Windows ignores
+   color-scheme for transparent selects). */
+select option,
+select optgroup {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+/* ---------- Motion ---------- */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+.animate-float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+/* Ambient hero glow — the drifting blur behind the headline. */
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) scale(1.08);
+  }
+}
+.aurora-blob {
+  animation: aurora 14s ease-in-out infinite;
+  filter: blur(60px);
+}
+
+/* Gold text that slowly pans — used for the one headline word that should
+   catch the eye. */
+@keyframes pan-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.text-gradient-gold {
+  background: linear-gradient(
+    100deg,
+    var(--gold) 0%,
+    oklch(0.9 0.08 95) 50%,
+    var(--gold) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: pan-gradient 6s linear infinite;
+}
+
+/* A soft, breathing gold glow — for the badge that marks a featured listing. */
+@keyframes gold-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 1px color-mix(in oklch, var(--gold) 55%, transparent))
+      drop-shadow(0 0 2.5px color-mix(in oklch, var(--gold) 28%, transparent));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 4px color-mix(in oklch, var(--gold) 95%, transparent))
+      drop-shadow(0 0 9px color-mix(in oklch, var(--gold) 55%, transparent));
+    transform: scale(1.06);
+  }
+}
+.gold-glow {
+  animation: gold-glow 2.8s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform, filter;
+}
+
+/* A hairline gold divider for the seam between sections. */
+.section-seam {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in oklch, var(--gold) 45%, transparent),
+    transparent
+  );
+}
+
+/* Cards that earn a little more craft than a plain border: a gold hairline
+   that lights up on hover, over a soft lift. */
+.lux-card {
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+.lux-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    140deg,
+    color-mix(in oklch, var(--gold) 55%, transparent),
+    transparent 45%,
+    color-mix(in oklch, var(--gold) 30%, transparent)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.lux-card:hover::after {
+  opacity: 1;
+}
+
+/* The eyebrow rule beside a section label. */
+.eyebrow-rule::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 2.5rem;
+  margin-top: 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--gold),
+    color-mix(in oklch, var(--gold) 20%, transparent)
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-float-slow,
+  .aurora-blob,
+  .text-gradient-gold,
+  .gold-glow {
+    animation: none;
+  }
+}
