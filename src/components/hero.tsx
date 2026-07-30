@@ -12,6 +12,9 @@ import { formatNumber } from "@/lib/format";
 const CHOOSE = "__choose__";
 const ALL = "__all__";
 
+/** Hero photograph — apartment balconies lit at blue hour. */
+const HERO = "https://images.unsplash.com/photo-1567684014761-b65e2e59b9eb";
+
 export function Hero({
   counts,
   cities,
@@ -44,14 +47,23 @@ export function Hero({
 
   return (
     <section className="relative overflow-hidden">
-      {/* Photo, then deep navy over it — the sister site's hero reads as navy
-          first and photograph second, which is what makes it feel composed
-          rather than like a stock image with text dropped on top. */}
-      <div
-        className="absolute inset-0 -z-20 bg-cover bg-center"
-        style={{ backgroundImage: "url(/img/hero.svg)" }}
+      {/* Apartment balconies at blue hour: the sky is already this site's navy
+          and the lit balconies its gold, so the photograph carries the palette
+          instead of fighting it. An <img> with a srcSet rather than a CSS
+          background, so phones fetch a small file and it can be the LCP. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`${HERO}?w=1600&q=80`}
+        srcSet={`${HERO}?w=768&q=72 768w, ${HERO}?w=1280&q=78 1280w, ${HERO}?w=1920&q=80 1920w`}
+        sizes="100vw"
+        alt=""
+        aria-hidden="true"
+        fetchPriority="high"
+        className="absolute inset-0 -z-20 size-full object-cover"
       />
-      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#0d2237]/92 via-[#12293f]/85 to-background" />
+      {/* deep navy over it — the hero reads as navy first and photograph
+          second, which is what keeps the headline the loudest thing here */}
+      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#0d2237]/90 via-[#12293f]/80 to-background" />
 
       {/* drifting gold light */}
       <div
