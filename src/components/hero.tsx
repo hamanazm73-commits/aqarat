@@ -8,10 +8,12 @@ import { cityNames, purposeNames } from "@/lib/i18n/dictionaries";
 import { districts, searchLabels } from "@/lib/districts";
 import type { CityKey } from "@/lib/types";
 import { formatNumber } from "@/lib/format";
-import { KurdistanSummit } from "./kurdistan-summit";
 
 const CHOOSE = "__choose__";
 const ALL = "__all__";
+
+/** Hero photograph — a modern home lit from within at dusk. */
+const HERO = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c";
 
 export function Hero({
   counts,
@@ -45,9 +47,23 @@ export function Hero({
 
   return (
     <section className="relative overflow-hidden">
-      {/* Night sky for the headline to sit on. It ends at the same navy the
-          summit illustration below opens with, so the two read as one sky. */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#08182b] via-[#0f2a44] to-[#173c5c]" />
+      {/* A lit house at dusk, behind everything — the headline promises a home
+          to find, so the hero should show one. Twilight rather than daylight:
+          the sky darkens under the navy veil and the windows read as gold, so
+          the photograph lands in the site's own two colours.
+          An <img> with a srcSet rather than a CSS background, so phones fetch
+          a small file and this can be the LCP element. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`${HERO}?w=1600&q=80`}
+        srcSet={`${HERO}?w=768&q=72 768w, ${HERO}?w=1280&q=78 1280w, ${HERO}?w=1920&q=80 1920w`}
+        sizes="100vw"
+        alt=""
+        aria-hidden="true"
+        fetchPriority="high"
+        className="absolute inset-0 -z-20 size-full object-cover"
+      />
+      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#08182b]/92 via-[#0f2a44]/82 to-background" />
 
       {/* drifting gold light */}
       <div
@@ -59,7 +75,7 @@ export function Hero({
         className="aurora-blob pointer-events-none absolute -bottom-32 start-0 -z-10 size-72 max-w-full rounded-full bg-gold/15 [animation-delay:-6s]"
       />
 
-      <div className="mx-auto flex max-w-3xl flex-col items-center px-4 pt-20 pb-12 text-center sm:px-6 sm:pt-28 sm:pb-16">
+      <div className="mx-auto flex max-w-3xl flex-col items-center px-4 pt-20 pb-28 text-center sm:px-6 sm:pt-28">
         <span className="animate-fade-up inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white ring-1 ring-gold/30 backdrop-blur">
           <Sparkles className="size-4 text-gold" />
           {t.hero.badge}
@@ -152,10 +168,6 @@ export function Hero({
           />
         </div>
       </div>
-
-      {/* The summit closes the hero. In normal flow rather than absolutely
-          positioned, so it can never ride over the headline at any width. */}
-      <KurdistanSummit className="block h-[200px] w-full sm:h-auto" />
     </section>
   );
 }
