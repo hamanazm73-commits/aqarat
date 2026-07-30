@@ -8,12 +8,10 @@ import { cityNames, purposeNames } from "@/lib/i18n/dictionaries";
 import { districts, searchLabels } from "@/lib/districts";
 import type { CityKey } from "@/lib/types";
 import { formatNumber } from "@/lib/format";
+import { KurdistanMapMark } from "./kurdistan-map-mark";
 
 const CHOOSE = "__choose__";
 const ALL = "__all__";
-
-/** Hero photograph — a modern home lit from within at dusk. */
-const HERO = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c";
 
 export function Hero({
   counts,
@@ -47,23 +45,7 @@ export function Hero({
 
   return (
     <section className="relative overflow-hidden">
-      {/* A lit house at dusk, behind everything — the headline promises a home
-          to find, so the hero should show one. Twilight rather than daylight:
-          the sky darkens under the navy veil and the windows read as gold, so
-          the photograph lands in the site's own two colours.
-          An <img> with a srcSet rather than a CSS background, so phones fetch
-          a small file and this can be the LCP element. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={`${HERO}?w=1600&q=80`}
-        srcSet={`${HERO}?w=768&q=72 768w, ${HERO}?w=1280&q=78 1280w, ${HERO}?w=1920&q=80 1920w`}
-        sizes="100vw"
-        alt=""
-        aria-hidden="true"
-        fetchPriority="high"
-        className="absolute inset-0 -z-20 size-full object-cover"
-      />
-      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#08182b]/92 via-[#0f2a44]/82 to-background" />
+      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#08182b] via-[#0f2a44] to-background" />
 
       {/* drifting gold light */}
       <div
@@ -95,8 +77,14 @@ export function Hero({
           {t.hero.subtitle}
         </p>
 
+        {/* Kurdistan, with the flag pin planted on Erbil. In flow rather than
+            behind the copy: as a watermark it landed on the search bar at
+            phone widths, and at full strength it's the thing worth looking at
+            anyway. The site's own artwork, not a stock photo. */}
+        <KurdistanMapMark className="animate-fade-up mt-7 h-[230px] w-full sm:h-[290px]" />
+
         {/* City / district filter — no button; picking a district searches */}
-        <div className="mt-9 grid w-full gap-3 rounded-2xl bg-background/95 p-4 shadow-2xl ring-1 ring-gold/25 backdrop-blur sm:grid-cols-3">
+        <div className="mt-7 grid w-full gap-3 rounded-2xl bg-background/95 p-4 shadow-2xl ring-1 ring-gold/25 backdrop-blur sm:grid-cols-3">
           {/* Purpose */}
           <label className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 transition-colors focus-within:border-gold">
             <Home className="size-5 shrink-0 text-muted-foreground" />
