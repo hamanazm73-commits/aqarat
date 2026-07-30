@@ -16,6 +16,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { AuthProvider, useAuth } from "@/lib/firebase/auth";
+import { BrandMark } from "@/components/brand-mark";
 import { cn } from "@/lib/utils";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -99,9 +100,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[230px_1fr]">
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <div className="rounded-2xl border border-border bg-card p-3">
-          <div className="px-3 py-2">
-            <p className="text-xs text-muted-foreground">چوونەژوورەوە وەک</p>
-            <p className="truncate text-sm font-medium">{user.email}</p>
+          <div className="flex items-center gap-2.5 border-b border-border px-3 pb-3 pt-1">
+            <BrandMark className="size-9" />
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">چوونەژوورەوە وەک</p>
+              <p className="truncate text-sm font-medium">{user.email}</p>
+            </div>
           </div>
           <nav className="mt-2 space-y-1">
             {nav.map((n) => {

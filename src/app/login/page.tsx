@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Building2, Loader2, LogIn, AlertTriangle } from "lucide-react";
+import { Loader2, LogIn, AlertTriangle } from "lucide-react";
 import { AuthProvider, useAuth } from "@/lib/firebase/auth";
 import { Button } from "@/components/ui/button";
+import { BrandMark } from "@/components/brand-mark";
 
 export default function LoginPage() {
   return (
@@ -37,12 +38,17 @@ function LoginInner() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-16">
-      <div className="rounded-2xl border border-border bg-card p-7 shadow-sm">
+    <div className="relative grid min-h-[80vh] place-items-center overflow-hidden px-4 py-16">
+      {/* the navy stage with drifting gold light, same as the sister site's
+          sign-in — the one screen where the brand should feel like a vault */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-primary">
+        <div className="aurora-blob absolute -top-32 start-0 size-[26rem] max-w-full rounded-full bg-primary-foreground/10" />
+        <div className="aurora-blob absolute bottom-0 end-0 size-96 max-w-full rounded-full bg-gold/30 [animation-delay:-5s]" />
+      </div>
+
+      <div className="w-full max-w-md rounded-2xl border border-white/20 bg-card/95 p-7 shadow-2xl backdrop-blur-xl">
         <div className="mb-6 flex flex-col items-center text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-            <Building2 className="h-6 w-6" />
-          </span>
+          <BrandMark className="size-14" />
           <h1 className="mt-4 text-xl font-bold">بەڕێوەبردن · Admin</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             چوونەژوورەوە بۆ داشبۆرد

@@ -46,10 +46,10 @@ export function HomeContent({
               <Link
                 key={type}
                 href={`/properties?type=${type}`}
-                className="group flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
+                className="group flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-1 hover:border-gold/40 hover:shadow-lg"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  <Icon className="h-6 w-6" />
+                <span className="flex size-12 items-center justify-center rounded-xl bg-gold/12 text-gold ring-1 ring-gold/20 transition-colors group-hover:bg-gold group-hover:text-gold-foreground">
+                  <Icon className="size-6" />
                 </span>
                 <span className="text-sm font-medium">{tr(typeNames[type])}</span>
               </Link>
@@ -85,10 +85,19 @@ export function HomeContent({
 
       {/* Why us / trust */}
       <section className="mx-auto mt-6 max-w-7xl px-4 sm:px-6">
-        <div className="rounded-3xl border border-border bg-muted/40 p-8 sm:p-12">
+        <div className="relative overflow-hidden rounded-3xl border border-border bg-muted/40 p-8 sm:p-12">
+          {/* the soft gold wash the sister site opens its sections with */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-0 -z-10 h-40 w-96 max-w-full -translate-x-1/2 rounded-full bg-gold/15 blur-3xl"
+          />
           <div className="text-center">
             <h2 className="text-2xl font-bold sm:text-3xl">{t.about.title}</h2>
-            <p className="mx-auto mt-2 max-w-xl text-muted-foreground">
+            <span
+              aria-hidden
+              className="mx-auto mt-4 block h-px w-20 bg-gradient-to-r from-transparent via-gold to-transparent"
+            />
+            <p className="mx-auto mt-4 max-w-xl leading-relaxed text-muted-foreground">
               {t.about.subtitle}
             </p>
           </div>
@@ -114,11 +123,13 @@ function Feature({
 }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-        <Icon className="h-7 w-7" />
+      <span className="flex size-14 items-center justify-center rounded-2xl bg-gold/15 text-gold ring-1 ring-gold/25">
+        <Icon className="size-7" />
       </span>
       <h3 className="mt-4 font-semibold">{title}</h3>
-      <p className="mt-1.5 text-sm text-muted-foreground">{text}</p>
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+        {text}
+      </p>
     </div>
   );
 }
