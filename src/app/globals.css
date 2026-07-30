@@ -265,6 +265,22 @@ select optgroup {
   will-change: transform, filter;
 }
 
+/* The flagpole leans a touch with the wind. The cloth's own ripple is an SVG
+   filter inside the illustration; this is the sway that carries it. */
+@keyframes pole-sway {
+  0%,
+  100% {
+    transform: rotate(-0.45deg);
+  }
+  50% {
+    transform: rotate(0.55deg);
+  }
+}
+.ks-pole {
+  transform-origin: 802px 154px;
+  animation: pole-sway 7s ease-in-out infinite;
+}
+
 /* A hairline gold divider for the seam between sections. */
 .section-seam {
   height: 1px;
@@ -332,7 +348,8 @@ select optgroup {
   .animate-float-slow,
   .aurora-blob,
   .text-gradient-gold,
-  .gold-glow {
+  .gold-glow,
+  .ks-pole {
     animation: none;
   }
 }
