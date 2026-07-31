@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   motion,
@@ -15,14 +16,17 @@ import { cityNames, purposeNames } from "@/lib/i18n/dictionaries";
 import { districts, searchLabels } from "@/lib/districts";
 import type { CityKey } from "@/lib/types";
 import { formatNumber } from "@/lib/format";
-import { KurdistanMapMark } from "./kurdistan-map-mark";
 import { HeroStat } from "./hero-stat";
+
+/** A lit house at dusk — warm windows against a blue hour, which is what a
+    property site is selling. Unsplash, already used here before the map. */
+const HERO = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c";
 
 const CHOOSE = "__choose__";
 const ALL = "__all__";
 
 /**
- * Entrance order: badge, headline, rule, subtitle, map, search, figures.
+ * Entrance order: badge, headline, rule, subtitle, search, cities, figures.
  *
  * Everything used to arrive at once on a single CSS animation, which reads as
  * a page finishing loading. Staggering it reads as a page introducing itself —
@@ -76,11 +80,23 @@ export function Hero({
 
   return (
     <section className="relative overflow-hidden">
-      {/* The backdrop drifts slower than the page. Nothing here is a
-          photograph, so depth has to come from the layers moving against each
-          other rather than from the picture. */}
+      {/* A lit house at dusk, drifting slower than the page. An <img> with a
+          srcSet rather than a CSS background, so a phone fetches a phone-sized
+          file. Scaled past the frame so the parallax never exposes an edge. */}
       <motion.div style={{ y: bgY }} className="absolute inset-0 -z-20">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#08182b] via-[#0f2a44] to-background" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`${HERO}?w=1600&q=80`}
+          srcSet={`${HERO}?w=768&q=72 768w, ${HERO}?w=1280&q=78 1280w, ${HERO}?w=1920&q=80 1920w`}
+          sizes="100vw"
+          alt=""
+          aria-hidden="true"
+          fetchPriority="high"
+          className="size-full scale-110 object-cover"
+        />
+        {/* Navy over the photograph rather than beside it — the brand colour
+            has to survive whatever the picture is doing. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#08182b]/90 via-[#0f2a44]/78 to-background" />
         {/* a vignette, so the middle of the screen is the brightest thing */}
         <div className="absolute inset-0 [background:radial-gradient(ellipse_110%_70%_at_50%_15%,transparent_40%,rgba(0,0,0,0.45)_100%)]" />
       </motion.div>
@@ -139,27 +155,15 @@ export function Hero({
           {t.hero.subtitle}
         </motion.p>
 
-        {/* Kurdistan, with the flag pin planted on Erbil. In flow rather than
-            behind the copy: as a watermark it landed on the search bar at
-            phone widths, and at full strength it's the thing worth looking at
-            anyway. The site's own artwork, not a stock photo. */}
+        {/* City / district filter — no button; picking a district searches.
+            This is the hero now. On a property site the search is the product,
+            so it gets the room an illustration used to take. */}
         <motion.div
           variants={fadeUp}
           initial="hidden"
           animate="show"
           custom={4}
-          className="w-full"
-        >
-          <KurdistanMapMark className="mt-7 h-[230px] w-full sm:h-[290px]" />
-        </motion.div>
-
-        {/* City / district filter — no button; picking a district searches */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          custom={5}
-          className="mt-7 grid w-full gap-3 rounded-2xl bg-background/95 p-4 shadow-2xl ring-1 ring-gold/25 backdrop-blur sm:grid-cols-3"
+          className="mt-10 grid w-full gap-3 rounded-2xl bg-background/95 p-4 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.6)] ring-1 ring-gold/30 backdrop-blur sm:mt-12 sm:gap-4 sm:p-5 sm:grid-cols-3"
         >
           {/* Purpose */}
           <label className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 transition-colors focus-within:border-gold">
@@ -220,13 +224,35 @@ export function Hero({
           </label>
         </motion.div>
 
+        {/* One tap straight into a city. The selects are precise but they cost
+            three interactions; most people want the nearest big city, and this
+            is that in one. Real destinations, not filler under the search. */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          custom={5}
+          className="mt-5 flex flex-wrap items-center justify-center gap-2"
+        >
+          <span className="text-sm text-white/55">{L.chooseCity}</span>
+          {cities.slice(0, 5).map((c) => (
+            <Link
+              key={c}
+              href={`/properties?city=${c}`}
+              className="rounded-full bg-white/10 px-3.5 py-1.5 text-sm font-medium text-white/90 ring-1 ring-white/15 backdrop-blur transition hover:bg-gold hover:text-gold-foreground hover:ring-gold"
+            >
+              {tr(cityNames[c])}
+            </Link>
+          ))}
+        </motion.div>
+
         {/* Stats — counted up on arrival rather than printed */}
         <motion.div
           variants={fadeUp}
           initial="hidden"
           animate="show"
           custom={6}
-          className="mt-10 flex flex-wrap justify-center gap-10 text-white"
+          className="mt-12 flex flex-wrap justify-center gap-10 text-white"
         >
           <HeroStat
             value={counts.listings}
