@@ -7,6 +7,8 @@ import {
   motion,
   useScroll,
   useTransform,
+  useMotionValue,
+  useSpring,
   useReducedMotion,
   type Variants,
 } from "motion/react";
@@ -63,6 +65,31 @@ export function Hero({
   const bgY = useTransform(scrollY, [0, 600], [0, reduceMotion ? 0 : -70]);
   const glowY = useTransform(scrollY, [0, 600], [0, reduceMotion ? 0 : -120]);
 
+  // 3D tilt, as on the hotel site: the photograph leans toward the pointer and
+  // shifts a little with it, so the scene has depth rather than being a flat
+  // picture behind text. Springs rather than raw values, or it snaps.
+  // Mouse only — on a touch screen there is no pointer to lean toward, and the
+  // scroll parallax already carries it.
+  const px = useMotionValue(0); // -0.5 … 0.5 from the centre
+  const py = useMotionValue(0);
+  const sx = useSpring(px, { stiffness: 120, damping: 18 });
+  const sy = useSpring(py, { stiffness: 120, damping: 18 });
+  const rotateY = useTransform(sx, [-0.5, 0.5], [-6, 6]);
+  const rotateX = useTransform(sy, [-0.5, 0.5], [6, -6]);
+  const tiltX = useTransform(sx, [-0.5, 0.5], [28, -28]);
+  const tiltY = useTransform(sy, [-0.5, 0.5], [28, -28]);
+
+  function onPointer(e: React.MouseEvent<HTMLElement>) {
+    if (reduceMotion) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    px.set((e.clientX - r.left) / r.width - 0.5);
+    py.set((e.clientY - r.top) / r.height - 0.5);
+  }
+  function resetPointer() {
+    px.set(0);
+    py.set(0);
+  }
+
   function onCity(value: string) {
     setCity(value);
     setDistrict(CHOOSE);
@@ -79,21 +106,34 @@ export function Hero({
   }
 
   return (
-    <section className="relative overflow-hidden">
+    <section
+      onMouseMove={onPointer}
+      onMouseLeave={resetPointer}
+      className="relative overflow-hidden"
+    >
       {/* A lit house at dusk, drifting slower than the page. An <img> with a
           srcSet rather than a CSS background, so a phone fetches a phone-sized
-          file. Scaled past the frame so the parallax never exposes an edge. */}
-      <motion.div style={{ y: bgY }} className="absolute inset-0 -z-20">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`${HERO}?w=1600&q=80`}
-          srcSet={`${HERO}?w=768&q=72 768w, ${HERO}?w=1280&q=78 1280w, ${HERO}?w=1920&q=80 1920w`}
-          sizes="100vw"
-          alt=""
-          aria-hidden="true"
-          fetchPriority="high"
-          className="size-full scale-110 object-cover"
-        />
+          file. Perspective sits on the parent so the inner rotation reads as
+          real depth; the scale keeps the tilt from ever exposing an edge. */}
+      <motion.div
+        style={{ y: bgY }}
+        className="absolute inset-0 -z-20 [perspective:1200px]"
+      >
+        <motion.div
+          style={{ rotateX, rotateY, x: tiltX, y: tiltY, scale: 1.18 }}
+          className="size-full origin-center will-change-transform"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${HERO}?w=1600&q=80`}
+            srcSet={`${HERO}?w=768&q=72 768w, ${HERO}?w=1280&q=78 1280w, ${HERO}?w=1920&q=80 1920w`}
+            sizes="100vw"
+            alt=""
+            aria-hidden="true"
+            fetchPriority="high"
+            className="size-full object-cover"
+          />
+        </motion.div>
         {/* Navy over the photograph rather than beside it — the brand colour
             has to survive whatever the picture is doing. */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#08182b]/90 via-[#0f2a44]/78 to-background" />
