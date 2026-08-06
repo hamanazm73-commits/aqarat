@@ -21,9 +21,11 @@ import type { CityKey } from "@/lib/types";
 import { formatNumber } from "@/lib/format";
 import { HeroStat } from "./hero-stat";
 
-/** A lit house at dusk — warm windows against a blue hour, which is what a
-    property site is selling. Unsplash, already used here before the map. */
-const HERO = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c";
+/** A mountain valley — the country the listings sit in, rather than one
+    particular house. It reads as Kurdistan, it holds the navy wash the brand
+    puts over it, and the open sky leaves the search legible on top. The
+    sister hotels site opens on landscape for the same reason. */
+const HERO = "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b";
 
 const CHOOSE = "__choose__";
 const ALL = "__all__";
