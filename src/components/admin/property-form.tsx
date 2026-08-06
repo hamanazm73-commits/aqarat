@@ -17,6 +17,7 @@ import {
   typeNames,
 } from "@/lib/i18n/dictionaries";
 import { AMENITY_KEYS, CITY_KEYS, PROPERTY_TYPE_KEYS } from "@/lib/constants";
+import { compressImage } from "@/lib/compress-image";
 import { Button } from "@/components/ui/button";
 import { coordsFromMapsUrl } from "@/lib/maps";
 
@@ -70,7 +71,14 @@ export function PropertyForm({ initial }: { initial?: Property }) {
     setError(null);
     try {
       const urls: string[] = [];
-      for (const f of Array.from(files)) urls.push(await fsUploadImage(f));
+      for (const f of Array.from(files)) {
+        // Shrink before it leaves the phone. A 4MB camera photo becomes about
+        // 150KB, which the seller waits far less to send and every buyer
+        // afterwards pays far less to receive. If it can't be compressed —
+        // an odd format, no canvas — the original goes up rather than nothing.
+        const ready = await compressImage(f).catch(() => f);
+        urls.push(await fsUploadImage(ready));
+      }
       setD((p) => ({ ...p, images: [...p.images, ...urls] }));
     } catch {
       setError("ئەپلۆدی وێنە سەرکەوتوو نەبوو / Image upload failed.");
