@@ -99,3 +99,13 @@ Planned approaches, cheapest first:
   (`/` = real estate, `/hotels` = hotels) via Next.js multi-zones.
 
 Decide the domain strategy first; the shared-Firebase path reuses the most.
+
+## Deploying
+
+Vercel builds from GitHub — `hamanazm73-commits/aqarat`, branch `main`.
+Pushing to `main` is what puts a change online; there is nothing to run by
+hand.
+
+The `NEXT_PUBLIC_FIREBASE_*` values and `NEXT_PUBLIC_OWNER_EMAIL` are set in
+the Vercel project's environment variables, not in the repository — `.env*` is
+ignored, and a build without them falls back to the seed listings.
