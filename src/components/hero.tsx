@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  AnimatePresence,
   motion,
   useScroll,
   useTransform,
@@ -203,7 +204,9 @@ export function Hero({
           initial="hidden"
           animate="show"
           custom={4}
-          className="mt-10 grid w-full gap-3 rounded-2xl bg-background/95 p-4 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.6)] ring-1 ring-gold/30 backdrop-blur sm:mt-12 sm:gap-4 sm:p-5 sm:grid-cols-3"
+          className={`mt-10 grid w-full gap-3 rounded-2xl bg-background/95 p-4 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.6)] ring-1 ring-gold/30 backdrop-blur sm:mt-12 sm:gap-4 sm:p-5 ${
+            city === "all" ? "sm:grid-cols-2" : "sm:grid-cols-3"
+          }`}
         >
           {/* Purpose */}
           <label className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 transition-colors focus-within:border-gold">
@@ -236,19 +239,25 @@ export function Hero({
             </select>
           </label>
 
-          {/* District (fills when a city is chosen) */}
-          <label className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 transition-colors focus-within:border-gold">
-            <MapPin className="size-5 shrink-0 text-muted-foreground" />
-            <select
-              value={district}
-              onChange={(e) => onDistrict(e.target.value)}
-              disabled={city === "all"}
-              className="h-11 w-full cursor-pointer bg-transparent text-sm outline-none disabled:opacity-60"
-            >
-              {city === "all" ? (
-                <option value={CHOOSE}>{L.chooseCity}</option>
-              ) : (
-                <>
+          {/* District — only once a city is chosen. Showing it beforehand was
+              a dead control asking to be tapped: it can only offer the
+              districts of a city nobody has picked yet. */}
+          <AnimatePresence initial={false}>
+            {city !== "all" && (
+              <motion.label
+                key="district"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.28, ease: "easeOut" }}
+                className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 transition-colors focus-within:border-gold"
+              >
+                <MapPin className="size-5 shrink-0 text-muted-foreground" />
+                <select
+                  value={district}
+                  onChange={(e) => onDistrict(e.target.value)}
+                  className="h-11 w-full cursor-pointer bg-transparent text-sm outline-none"
+                >
                   <option value={CHOOSE} disabled>
                     {L.chooseDistrict}
                   </option>
@@ -258,10 +267,10 @@ export function Hero({
                       {d}
                     </option>
                   ))}
-                </>
-              )}
-            </select>
-          </label>
+                </select>
+              </motion.label>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* One tap straight into a city. The selects are precise but they cost
