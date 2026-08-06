@@ -130,10 +130,17 @@ export function PropertyCard({ p }: { p: Property }) {
             {t.card.area}
           </span>
           {/* Only once it has been looked at: "0 views" on a listing published
-              an hour ago tells a buyer nothing and the seller something worse. */}
+              an hour ago tells a buyer nothing and the seller something worse.
+              Carried in a gold pill with the word spelled out, the way the
+              sister site shows it — a bare number beside the bed and bath
+              counts just reads as another measurement. */}
           {!!p.views && (
-            <span className="flex items-center gap-1" title={t.card.views}>
-              <Eye className="size-4" /> {formatNumber(p.views, locale)}
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-2.5 py-1 text-sm font-bold text-amber-700 sm:text-xs dark:text-amber-300"
+              title={t.card.views}
+            >
+              <Eye className="size-4 sm:size-3.5" />
+              {formatNumber(p.views, locale)} {t.card.views}
             </span>
           )}
         </div>
