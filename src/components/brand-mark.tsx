@@ -1,5 +1,5 @@
 /**
- * The Kurdistan Estates emblem: a peaked-roof house under a star, inside a
+ * The Online Office emblem: a peaked-roof house under a star, inside a
  * fine gold double ring, on a deep-navy rounded badge.
  *
  * Deliberately the same badge, ring and star as the sister site's citadel

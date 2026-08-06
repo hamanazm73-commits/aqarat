@@ -7,6 +7,7 @@ import {
   fsListSubmissions,
   fsApproveSubmission,
   fsDeleteSubmission,
+  canPublishSubmission,
 } from "@/lib/firebase/db";
 import { cityNames, typeNames, purposeNames } from "@/lib/i18n/dictionaries";
 import { formatIQDCompact, formatDate } from "@/lib/format";
@@ -36,7 +37,7 @@ export default function SubmissionsPage() {
   }
 
   async function reject(s: Submission) {
-    if (!s.id || !confirm(`ڕەتکردنەوەی «${s.title}»؟`)) return;
+    if (!s.id || !confirm(`ڕەتکردنەوەی «${s.title || s.name}»؟`)) return;
     setWorking(s.id);
     try {
       await fsDeleteSubmission(s.id);
@@ -67,12 +68,22 @@ export default function SubmissionsPage() {
             <div key={s.id} className="rounded-xl border border-border bg-card p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="font-medium">{s.title}</p>
+                  {/* The form asks for three things now, so the name of the
+                      person is the heading — a submission has no title of its
+                      own until someone has been called. Older submissions kept
+                      all of this, so every line below is drawn only if it is
+                      actually there. */}
+                  <p className="font-medium">{s.title || s.name}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {purposeNames[s.purpose].ku} · {typeNames[s.type].ku} ·{" "}
-                    {cityNames[s.city].ku}
-                    {s.district ? ` · ${s.district}` : ""} ·{" "}
-                    {formatIQDCompact(s.priceIQD, "ku")}
+                    {[
+                      s.purpose && purposeNames[s.purpose].ku,
+                      s.type && typeNames[s.type].ku,
+                      cityNames[s.city].ku,
+                      s.district,
+                      s.priceIQD ? formatIQDCompact(s.priceIQD, "ku") : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </p>
                   <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                     <span>{s.name}</span>
@@ -84,21 +95,36 @@ export default function SubmissionsPage() {
                   {s.description && (
                     <p className="mt-2 text-sm">{s.description}</p>
                   )}
-                  {s.images.length > 0 && (
+                  {!!s.images?.length && (
                     <p className="mt-1 text-xs text-muted-foreground">
                       {s.images.length} وێنە
                     </p>
                   )}
                 </div>
                 <div className="flex shrink-0 gap-2">
-                  <Button size="sm" onClick={() => approve(s)} disabled={working === s.id}>
-                    {working === s.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Check className="h-4 w-4" />
-                    )}
-                    پەسەندکردن
-                  </Button>
+                  {/* A three-field submission is a lead, not a listing: there
+                      is no price, no title and no picture to publish. Ring
+                      them, then write it in "موڵکی نوێ" — so that is the
+                      button, rather than one that would fail. */}
+                  {canPublishSubmission(s) ? (
+                    <Button size="sm" onClick={() => approve(s)} disabled={working === s.id}>
+                      {working === s.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Check className="h-4 w-4" />
+                      )}
+                      پەسەندکردن
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        window.location.href = `tel:${s.phone}`;
+                      }}
+                    >
+                      <Phone className="h-4 w-4" /> پەیوەندی بکە
+                    </Button>
+                  )}
                   <Button
                     size="sm"
                     variant="outline"

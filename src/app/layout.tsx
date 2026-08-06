@@ -28,8 +28,8 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "نووسینگای کوردستان | Kurdistan Estates — Real Estate",
-    template: "%s | Kurdistan Estates",
+    default: "نووسینگەی ئۆنڵاین | Online Office — Real Estate",
+    template: "%s | Online Office",
   },
   description: DESCRIPTION,
   keywords: [
@@ -37,16 +37,16 @@ export const metadata: Metadata = {
     "real estate", "Kurdistan", "Erbil", "Sulaymaniyah", "property", "for sale", "for rent",
   ],
   openGraph: {
-    title: "نووسینگای کوردستان | Kurdistan Estates — Real Estate",
+    title: "نووسینگەی ئۆنڵاین | Online Office — Real Estate",
     description: DESCRIPTION,
     url: SITE_URL,
-    siteName: "Kurdistan Estates",
+    siteName: "Online Office",
     type: "website",
     locale: "ckb_IQ",
   },
   twitter: {
     card: "summary_large_image",
-    title: "نووسینگای کوردستان | Kurdistan Estates",
+    title: "نووسینگەی ئۆنڵاین | Online Office",
     description: DESCRIPTION,
   },
 };

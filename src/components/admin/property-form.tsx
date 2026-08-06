@@ -43,6 +43,7 @@ export function PropertyForm({ initial }: { initial?: Property }) {
   );
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [urlInput, setUrlInput] = useState("");
   const [videoInput, setVideoInput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +73,28 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       setError("ئەپلۆدی وێنە سەرکەوتوو نەبوو / Image upload failed.");
     } finally {
       setUploading(false);
+    }
+  }
+
+  /**
+   * The same picker as the photographs, pointed at video.
+   *
+   * `fsUploadImage` is only named for images — it takes a File and hands back
+   * a URL, which is as true of a clip from the camera roll. On a phone this
+   * opens the gallery, which is where the video already is.
+   */
+  async function onVideoFiles(files: FileList | null) {
+    if (!files?.length) return;
+    setUploadingVideo(true);
+    setError(null);
+    try {
+      const urls: string[] = [];
+      for (const f of Array.from(files)) urls.push(await fsUploadImage(f));
+      setD((p) => ({ ...p, videos: [...(p.videos ?? []), ...urls] }));
+    } catch {
+      setError("ئەپلۆدی ڤیدیۆ سەرکەوتوو نەبوو / Video upload failed.");
+    } finally {
+      setUploadingVideo(false);
     }
   }
 
@@ -177,6 +200,8 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           <Field label="ڕووبەر (م²)"><input type="number" className="input" value={d.area || ""} onChange={(e) => up("area", Number(e.target.value))} required /></Field>
           <Field label="ژووری نوستن"><input type="number" className="input" value={d.bedrooms ?? ""} onChange={(e) => up("bedrooms", e.target.value ? Number(e.target.value) : undefined)} /></Field>
           <Field label="حەمام"><input type="number" className="input" value={d.bathrooms ?? ""} onChange={(e) => up("bathrooms", e.target.value ? Number(e.target.value) : undefined)} /></Field>
+          <Field label="نهۆم"><input type="number" className="input" value={d.floors ?? ""} onChange={(e) => up("floors", e.target.value ? Number(e.target.value) : undefined)} /></Field>
+          <Field label="چێشتخانە"><input type="number" className="input" value={d.kitchens ?? ""} onChange={(e) => up("kitchens", e.target.value ? Number(e.target.value) : undefined)} /></Field>
           <Field label="ناوچە (کوردی)"><input className="input" value={d.district?.ku ?? ""} onChange={(e) => up("district", { ku: e.target.value, en: d.district?.en ?? "", ar: d.district?.ar ?? "" })} /></Field>
           <Field label="ناوچە (English)"><input className="input" value={d.district?.en ?? ""} onChange={(e) => up("district", { ku: d.district?.ku ?? "", en: e.target.value, ar: d.district?.ar ?? "" })} /></Field>
         </div>
@@ -220,9 +245,27 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       {/* Videos */}
       <Card title="ڤیدیۆکان">
         <p className="mb-3 text-xs text-muted-foreground">
-          بەستەری ڤیدیۆ زیادبکە — YouTube یان بەستەری ڕاستەوخۆی MP4. بۆ ڤیدیۆی
-          گەورە YouTube باشترین و ئاسانترینە (بێ تێچوون).
+          ڤیدیۆ لە گەلەری مۆبایلەکەتەوە باربکە، یان بەستەرێک دابنێ — YouTube
+          یان MP4. بۆ ڤیدیۆی زۆر گەورە، YouTube هێشتا خێراترە و تێچوونی نییە.
         </p>
+
+        {/* The same control the photographs use, pointed at video: on a phone
+            this opens the gallery, which is where the clip already is. */}
+        <label className="mb-3 flex h-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-xs text-muted-foreground hover:bg-muted">
+          {uploadingVideo ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Upload className="h-5 w-5" />
+          )}
+          ڤیدیۆ باربکە
+          <input
+            type="file"
+            accept="video/*"
+            multiple
+            className="hidden"
+            onChange={(e) => onVideoFiles(e.target.files)}
+          />
+        </label>
         {(d.videos ?? []).length > 0 && (
           <div className="mb-3 space-y-2">
             {(d.videos ?? []).map((v, i) => (
@@ -270,7 +313,7 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       {error && <p className="text-sm text-danger">{error}</p>}
 
       <div className="flex gap-3">
-        <Button type="submit" disabled={busy || uploading}>
+        <Button type="submit" disabled={busy || uploading || uploadingVideo}>
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {editing ? "پاشەکەوتکردن" : "زیادکردن"}
         </Button>

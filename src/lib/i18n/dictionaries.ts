@@ -11,7 +11,7 @@ export const dict = {
   ku: {
     dir: "rtl",
     label: "کوردی",
-    brand: "نووسینگای کوردستان",
+    brand: "نووسینگەی ئۆنڵاین",
     nav: {
       home: "سەرەتا",
       properties: "خانووبەرەکان",
@@ -66,6 +66,8 @@ export const dict = {
       off: "داشکاندن",
       beds: "ژوور",
       baths: "حەمام",
+      floors: "نهۆم",
+      kitchens: "چێشتخانە",
       area: "م²",
       viewDetails: "بینینی وردەکاری",
       whatsappMsg: "سڵاو، زانیاریم دەربارەی ئەم موڵکە دەوێت:",
@@ -125,7 +127,7 @@ export const dict = {
       error: "هەڵە ڕوویدا. دووبارە هەوڵ بدەرەوە.",
     },
     about: {
-      title: "بۆچی نووسینگای کوردستان؟",
+      title: "بۆچی نووسینگەی ئۆنڵاین؟",
       subtitle: "هاوکارە باوەڕپێکراوەکەت لە دۆزینەوەی ماڵی گونجاو.",
       trustTitle: "متمانە و ڕاستگۆیی",
       trustText: "هەموو موڵکەکان بە وردی پشکنراون و زانیاری ڕاستەقینەیان هەیە.",
@@ -139,7 +141,7 @@ export const dict = {
   en: {
     dir: "ltr",
     label: "English",
-    brand: "Kurdistan Estates",
+    brand: "Online Office",
     nav: {
       home: "Home",
       properties: "Properties",
@@ -194,6 +196,8 @@ export const dict = {
       off: "off",
       beds: "beds",
       baths: "baths",
+      floors: "floors",
+      kitchens: "kitchens",
       area: "m²",
       viewDetails: "View details",
       whatsappMsg: "Hi, I'd like info about this property:",
@@ -253,7 +257,7 @@ export const dict = {
       error: "Something went wrong. Please try again.",
     },
     about: {
-      title: "Why Kurdistan Estates?",
+      title: "Why Online Office?",
       subtitle: "Your trusted partner in finding the right home.",
       trustTitle: "Trust & transparency",
       trustText: "Every listing is verified with accurate, honest details.",
@@ -267,7 +271,7 @@ export const dict = {
   ar: {
     dir: "rtl",
     label: "العربية",
-    brand: "مكتب كردستان العقاري",
+    brand: "المكتب الإلكتروني",
     nav: {
       home: "الرئيسية",
       properties: "العقارات",
@@ -322,6 +326,8 @@ export const dict = {
       off: "خصم",
       beds: "غرف",
       baths: "حمام",
+      floors: "طوابق",
+      kitchens: "مطابخ",
       area: "م²",
       viewDetails: "عرض التفاصيل",
       whatsappMsg: "مرحباً، أريد معلومات عن هذا العقار:",
@@ -381,7 +387,7 @@ export const dict = {
       error: "حدث خطأ. حاول مرة أخرى.",
     },
     about: {
-      title: "لماذا مكتب كردستان العقاري؟",
+      title: "لماذا المكتب الإلكتروني؟",
       subtitle: "شريكك الموثوق في إيجاد المنزل المناسب.",
       trustTitle: "الثقة والشفافية",
       trustText: "جميع العقارات موثّقة بمعلومات دقيقة وصادقة.",

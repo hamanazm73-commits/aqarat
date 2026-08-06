@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Kurdistan Estates — Real Estate in Kurdistan";
+export const alt = "Online Office — Real Estate in Kurdistan";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -53,7 +53,7 @@ export default function OgImage() {
             </svg>
           </div>
           <div style={{ display: "flex", fontSize: "42px", fontWeight: 700 }}>
-            Kurdistan Estates
+            Online Office
           </div>
         </div>
 

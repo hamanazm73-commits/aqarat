@@ -115,18 +115,35 @@ export async function fsDeleteSubmission(id: string): Promise<void> {
   await deleteDoc(doc(db(), "submissions", id));
 }
 
+/**
+ * Whether a submission carries enough to become a listing.
+ *
+ * The public form asks for a name, a phone number and a city now — none of
+ * which is a property anyone could browse. Those are leads: somebody rings
+ * them and writes the listing properly in the dashboard. Only the older,
+ * fuller submissions can go straight through.
+ */
+export function canPublishSubmission(s: Submission): boolean {
+  return Boolean(s.title && s.purpose && s.type);
+}
+
 /** Publish a submission as a live property, then remove the submission. */
 export async function fsApproveSubmission(s: Submission): Promise<void> {
+  // Guarded rather than defaulted: inventing a purpose and a price to fill the
+  // gaps would put a listing on the public site that nobody wrote.
+  if (!canPublishSubmission(s)) throw new Error("submission has nothing to publish");
+
   const three = (v: string) => ({ ku: v, en: v, ar: v });
+  const type = s.type!;
   const property: Omit<Property, "id"> = {
-    title: three(s.title),
+    title: three(s.title!),
     description: three(s.description ?? ""),
-    purpose: s.purpose,
-    type: s.type,
+    purpose: s.purpose!,
+    type,
     city: s.city,
     priceIQD: Number(s.priceIQD) || 0,
     area: Number(s.area) || 0,
-    images: s.images.length ? s.images : [`/img/${s.type}.svg`],
+    images: s.images?.length ? s.images : [`/img/${type}.svg`],
     amenities: [],
     agent: {
       name: s.name,

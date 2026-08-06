@@ -15,6 +15,8 @@ import {
   Tag,
   ChevronLeft,
   ChevronRight,
+  Layers,
+  CookingPot,
 } from "lucide-react";
 import type { Property } from "@/lib/types";
 import { useI18n } from "@/lib/i18n/context";
@@ -59,6 +61,16 @@ export function PropertyDetail({
       icon: Bath,
       label: t.card.baths,
       value: formatNumber(p.bathrooms, locale),
+    },
+    typeof p.floors === "number" && {
+      icon: Layers,
+      label: t.card.floors,
+      value: formatNumber(p.floors, locale),
+    },
+    typeof p.kitchens === "number" && {
+      icon: CookingPot,
+      label: t.card.kitchens,
+      value: formatNumber(p.kitchens, locale),
     },
     {
       icon: Maximize,

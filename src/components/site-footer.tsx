@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, Mail, MapPin, ShieldCheck } from "lucide-react";
+import { Phone, Mail, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { BrandMark } from "./brand-mark";
 
@@ -79,12 +79,6 @@ export function SiteFooter() {
                 </span>
                 {EMAIL}
               </a>
-            </li>
-            <li className="inline-flex items-center gap-2.5">
-              <span className="grid size-8 place-items-center rounded-lg bg-primary-foreground/10">
-                <MapPin className="size-4" />
-              </span>
-              {t.brand}
             </li>
           </ul>
         </div>
