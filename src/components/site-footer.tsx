@@ -37,7 +37,6 @@ export function SiteFooter() {
               { href: "/properties", label: t.nav.properties },
               { href: "/properties?purpose=sale", label: t.nav.sale },
               { href: "/properties?purpose=rent", label: t.nav.rent },
-              { href: "/submit", label: t.nav.submit },
             ].map((l) => (
               <li key={l.href}>
                 <Link

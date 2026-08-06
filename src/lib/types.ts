@@ -109,6 +109,8 @@ export interface Property {
   lng?: number;
   /** Hidden listings never show on the public site. */
   hidden?: boolean;
+  /** How many times the detail page has been opened. */
+  views?: number;
 }
 
 /** Inbound inquiry from the contact / booking form. */

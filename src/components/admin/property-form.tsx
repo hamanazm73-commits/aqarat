@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Loader2, Upload, X, Plus, Video } from "lucide-react";
+import { Loader2, Upload, X, Plus, Video, MapPin } from "lucide-react";
 import type { AmenityKey, Property, PropertyType, Purpose } from "@/lib/types";
 import {
   fsCreateProperty,
@@ -18,6 +18,7 @@ import {
 } from "@/lib/i18n/dictionaries";
 import { AMENITY_KEYS, CITY_KEYS, PROPERTY_TYPE_KEYS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { coordsFromMapsUrl } from "@/lib/maps";
 
 type Draft = Omit<Property, "id" | "createdAt"> & { createdAt?: string };
 
@@ -44,6 +45,8 @@ export function PropertyForm({ initial }: { initial?: Property }) {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [mapInput, setMapInput] = useState("");
+  const [mapError, setMapError] = useState<string | null>(null);
   const [urlInput, setUrlInput] = useState("");
   const [videoInput, setVideoInput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -108,6 +111,19 @@ export function PropertyForm({ initial }: { initial?: Property }) {
 
   function removeImage(i: number) {
     setD((p) => ({ ...p, images: p.images.filter((_, idx) => idx !== i) }));
+  }
+
+  function applyMapUrl() {
+    const c = coordsFromMapsUrl(mapInput);
+    if (!c) {
+      setMapError(
+        "نەتوانرا شوێنەکە دەربهێنرێت. بەستەری تەواوی Google Maps دابنێ (نەک بەستەری کورت).",
+      );
+      return;
+    }
+    setMapError(null);
+    setMapInput("");
+    setD((p) => ({ ...p, lat: c.lat, lng: c.lng }));
   }
 
   function addVideo() {
@@ -205,6 +221,55 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           <Field label="ناوچە (کوردی)"><input className="input" value={d.district?.ku ?? ""} onChange={(e) => up("district", { ku: e.target.value, en: d.district?.en ?? "", ar: d.district?.ar ?? "" })} /></Field>
           <Field label="ناوچە (English)"><input className="input" value={d.district?.en ?? ""} onChange={(e) => up("district", { ku: d.district?.ku ?? "", en: e.target.value, ar: d.district?.ar ?? "" })} /></Field>
         </div>
+      </Card>
+
+      {/* Location */}
+      <Card title="شوێن لەسەر نەخشە">
+        <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+          لە Google Maps شوێنەکە دیاری بکە، «Share» لێبدە و بەستەرەکە لێرە
+          دابنێ — خۆی شوێنەکە دەردەهێنێت. بەستەری کورتی <span dir="ltr">goo.gl</span>{" "}
+          کار ناکات، بەستەری تەواو بەکاربهێنە.
+        </p>
+        <div className="flex gap-2">
+          <input
+            className="input"
+            dir="ltr"
+            placeholder="https://www.google.com/maps/place/..."
+            value={mapInput}
+            onChange={(e) => setMapInput(e.target.value)}
+          />
+          <Button type="button" variant="outline" onClick={applyMapUrl}>
+            <MapPin className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {mapError && <p className="mt-2 text-xs text-danger">{mapError}</p>}
+
+        {typeof d.lat === "number" && typeof d.lng === "number" && (
+          <div className="mt-3 space-y-2">
+            <div className="flex items-center gap-2 text-sm">
+              <MapPin className="h-4 w-4 shrink-0 text-primary" />
+              <span dir="ltr" className="min-w-0 flex-1 truncate">
+                {d.lat}, {d.lng}
+              </span>
+              <button
+                type="button"
+                onClick={() => setD((p) => ({ ...p, lat: undefined, lng: undefined }))}
+                className="shrink-0 text-danger cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            {/* Shown back rather than trusted: a pin in the wrong street is
+                easy to paste and impossible to notice from two numbers. */}
+            <iframe
+              title="map"
+              src={`https://maps.google.com/maps?q=${d.lat},${d.lng}&z=15&output=embed`}
+              className="h-56 w-full rounded-lg border border-border"
+              loading="lazy"
+            />
+          </div>
+        )}
       </Card>
 
       {/* Amenities */}

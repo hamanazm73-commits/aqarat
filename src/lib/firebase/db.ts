@@ -10,6 +10,7 @@ import {
   query,
   orderBy,
   writeBatch,
+  increment,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getStorage } from "firebase/storage";
@@ -67,6 +68,27 @@ export async function fsUpdateProperty(
 
 export async function fsDeleteProperty(id: string): Promise<void> {
   await deleteDoc(doc(db(), "properties", id));
+}
+
+/**
+ * Count one look at a listing.
+ *
+ * `increment` rather than read-then-write: two people opening the same listing
+ * at once would otherwise each read the same number and write the same number
+ * back, and one of the views would vanish. The server does the addition.
+ *
+ * Failure is swallowed on purpose. This runs on every visit to a listing, and
+ * a counter is never worth an error in front of someone trying to look at a
+ * house — nor worth anything at all when Firebase is not configured and the
+ * site is running on its seed data.
+ */
+export async function fsCountView(id: string): Promise<void> {
+  try {
+    if (!getFirebase()) return;
+    await updateDoc(doc(db(), "properties", id), { views: increment(1) });
+  } catch {
+    /* a lost view is not worth telling anyone about */
+  }
 }
 
 /** One-time helper: copy the local seed listings into Firestore. */

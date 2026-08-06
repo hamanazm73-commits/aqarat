@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, X, ShieldCheck, Plus } from "lucide-react";
+import { Menu, X, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { BrandMark } from "./brand-mark";
 import { ThemeToggle } from "./theme-toggle";
@@ -68,13 +68,6 @@ export function SiteHeader() {
           <LanguageSwitcher />
           <ThemeToggle />
           <Link
-            href="/submit"
-            className="hidden items-center gap-1.5 rounded-full bg-gold px-4 py-2 text-sm font-bold text-gold-foreground shadow-sm transition hover:bg-gold/90 active:scale-95 sm:inline-flex"
-          >
-            <Plus className="size-4" />
-            {t.nav.submit}
-          </Link>
-          <Link
             href="/login"
             aria-label={t.nav.admin}
             title={t.nav.admin}
@@ -111,14 +104,6 @@ export function SiteHeader() {
               {l.label}
             </Link>
           ))}
-          <Link
-            href="/submit"
-            onClick={() => setOpen(false)}
-            className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-gold px-3 py-2.5 text-sm font-bold text-gold-foreground"
-          >
-            <Plus className="size-4" />
-            {t.nav.submit}
-          </Link>
         </nav>
       </div>
     </header>

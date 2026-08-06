@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BedDouble, Bath, Maximize, MapPin, Star } from "lucide-react";
+import { BedDouble, Bath, Maximize, MapPin, Star, Eye } from "lucide-react";
 import type { Property } from "@/lib/types";
 import { useI18n } from "@/lib/i18n/context";
 import { cityNames, typeNames } from "@/lib/i18n/dictionaries";
@@ -129,6 +129,13 @@ export function PropertyCard({ p }: { p: Property }) {
             <Maximize className="size-4" /> {formatNumber(p.area, locale)}{" "}
             {t.card.area}
           </span>
+          {/* Only once it has been looked at: "0 views" on a listing published
+              an hour ago tells a buyer nothing and the seller something worse. */}
+          {!!p.views && (
+            <span className="flex items-center gap-1" title={t.card.views}>
+              <Eye className="size-4" /> {formatNumber(p.views, locale)}
+            </span>
+          )}
         </div>
 
         {/* price last — gold, the way the sister site prices a room */}

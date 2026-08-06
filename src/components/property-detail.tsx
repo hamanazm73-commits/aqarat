@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -36,6 +36,7 @@ import { InquiryForm } from "./inquiry-form";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
 import { youtubeEmbed } from "@/lib/video";
+import { fsCountView } from "@/lib/firebase/db";
 
 export function PropertyDetail({
   p,
@@ -46,6 +47,20 @@ export function PropertyDetail({
 }) {
   const { t, locale, tr } = useI18n();
   const [active, setActive] = useState(0);
+
+  /**
+   * One view per listing per mount.
+   *
+   * Guarded by a ref because React runs effects twice in development, and a
+   * counter that doubles every time someone opens a house is worse than no
+   * counter. Fire-and-forget: nothing on this page waits for it.
+   */
+  const counted = useRef<string | null>(null);
+  useEffect(() => {
+    if (counted.current === p.id) return;
+    counted.current = p.id;
+    void fsCountView(p.id);
+  }, [p.id]);
 
   const pct = p.discount?.active
     ? discountPercent(p.discount.oldPriceIQD, p.priceIQD)
