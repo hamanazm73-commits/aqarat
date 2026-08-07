@@ -324,7 +324,7 @@ export function PropertyDetail({
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-5">
-            <InquiryForm propertyId={p.id} />
+            <InquiryForm propertyId={p.id} propertyTitle={tr(p.title)} />
           </div>
         </aside>
       </div>

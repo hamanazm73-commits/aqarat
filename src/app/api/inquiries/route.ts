@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
+import { notifyInquiry, notifyInquiryTelegram } from "@/lib/notify";
 
 /** Validated shape of an inbound inquiry. */
 const InquirySchema = z.object({
@@ -12,6 +13,12 @@ const InquirySchema = z.object({
     .max(20)
     .regex(/^[+]?[0-9\s-]+$/, "invalid phone"),
   message: z.string().trim().max(1000).optional().or(z.literal("")),
+  /** Carried for the notification only — never stored. The listing page knows
+      the title; the id on its own tells the reader nothing. */
+  propertyTitle: z.string().trim().max(200).optional(),
+  /** Set when the form has already written the inquiry to Firestore, so this
+      request is asking for the notification and nothing else. */
+  notifyOnly: z.boolean().optional(),
 });
 
 /** Tiny in-memory rate limiter (per IP). Good enough for a single instance;
@@ -59,15 +66,31 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const inquiry = {
-    ...parsed.data,
-    createdAt: new Date().toISOString(),
-  };
+  const { propertyId, name, phone, message, propertyTitle, notifyOnly } =
+    parsed.data;
 
-  // When Firebase Admin is configured, persist here. For now we log so the
-  // form works end-to-end without a backend.
-  //   await saveInquiry(inquiry);
-  console.log("[inquiry]", inquiry);
+  // In production the form writes the inquiry to Firestore itself and then
+  // calls here with notifyOnly, so this endpoint only stores in local dev —
+  // where Firebase is unconfigured and the log is the whole record.
+  if (!notifyOnly) {
+    console.log("[inquiry]", {
+      propertyId,
+      name,
+      phone,
+      message,
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  // Tell the office. Both are best-effort and never throw, but we await so a
+  // frozen serverless instance doesn't kill the send after we've responded.
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://homeskurdistan.com";
+  const notice = { propertyId, name, phone, message, propertyTitle, siteUrl };
+  await Promise.allSettled([
+    notifyInquiry(notice),
+    notifyInquiryTelegram(notice),
+  ]);
 
   return NextResponse.json({ ok: true }, { status: 201 });
 }

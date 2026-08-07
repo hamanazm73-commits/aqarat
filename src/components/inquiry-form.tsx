@@ -9,7 +9,13 @@ import { Button } from "./ui/button";
 
 type Status = "idle" | "sending" | "success" | "error";
 
-export function InquiryForm({ propertyId }: { propertyId: string }) {
+export function InquiryForm({
+  propertyId,
+  propertyTitle,
+}: {
+  propertyId: string;
+  propertyTitle?: string;
+}) {
   const { t } = useI18n();
   const [status, setStatus] = useState<Status>("idle");
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
@@ -17,22 +23,39 @@ export function InquiryForm({ propertyId }: { propertyId: string }) {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
+    const name = form.name.trim();
+    const phone = form.phone.trim();
+    const message = form.message.trim();
     try {
       if (isFirebaseConfigured()) {
         // Write straight to Firestore (rules validate the payload).
         await fsCreateInquiry({
           propertyId,
-          name: form.name.trim(),
-          phone: form.phone.trim(),
+          name,
+          phone,
           createdAt: new Date().toISOString(),
           // Omit message when empty — Firestore rejects undefined values.
-          ...(form.message.trim() ? { message: form.message.trim() } : {}),
+          ...(message ? { message } : {}),
         });
+        // The write is what matters; the notification is a nudge on top of it.
+        // Fire it separately so a mail hiccup never fails a saved inquiry.
+        void fetch("/api/inquiries", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            propertyId,
+            name,
+            phone,
+            message,
+            propertyTitle,
+            notifyOnly: true,
+          }),
+        }).catch(() => {});
       } else {
         const res = await fetch("/api/inquiries", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ propertyId, ...form }),
+          body: JSON.stringify({ propertyId, name, phone, message, propertyTitle }),
         });
         if (!res.ok) throw new Error("failed");
       }
