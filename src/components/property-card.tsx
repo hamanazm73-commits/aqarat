@@ -10,7 +10,7 @@ import { formatIQDCompact, formatNumber, discountPercent } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const WA_NUMBER = "9647502202191";
-const SITE_URL = "https://aqarat-iraq.vercel.app";
+const SITE_URL = "https://homeskurdistan.com";
 
 export function PropertyCard({ p }: { p: Property }) {
   const { locale, t, tr } = useI18n();

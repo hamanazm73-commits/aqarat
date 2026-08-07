@@ -3,7 +3,7 @@ import { SEED_PROPERTIES } from "@/lib/data";
 
 const BASE =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://aqarat-iraq.vercel.app";
+  "https://homeskurdistan.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [

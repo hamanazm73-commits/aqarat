@@ -6,7 +6,9 @@ import { useI18n } from "@/lib/i18n/context";
 import { BrandMark } from "./brand-mark";
 
 const PHONE = "+964 750 220 2191";
-const EMAIL = "info@aqarat-iraq.com";
+// On the real domain, not the old Vercel subdomain — mail sent to a domain
+// nobody owns is silently lost, and this address is printed on every page.
+const EMAIL = "info@homeskurdistan.com";
 
 export function SiteFooter() {
   const { t } = useI18n();

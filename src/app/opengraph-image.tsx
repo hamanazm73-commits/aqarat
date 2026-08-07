@@ -89,7 +89,7 @@ export default function OgImage() {
             opacity: 0.85,
           }}
         >
-          aqarat-iraq.vercel.app
+          homeskurdistan.com
         </div>
       </div>
     ),
