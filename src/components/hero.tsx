@@ -138,10 +138,17 @@ export function Hero({
           />
         </motion.div>
         {/* Navy over the photograph rather than beside it — the brand colour
-            has to survive whatever the picture is doing. */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#08182b]/90 via-[#0f2a44]/78 to-background" />
+            has to survive whatever the picture is doing.
+
+            Reaching past the frame on purpose. The photograph sits in a
+            wrapper scaled to 1.18, so it spills about 9% beyond this box on
+            every side, and the parallax then slides the whole layer up to 70px
+            — which left the spilled part uncovered and showed a bright,
+            unveiled band of the photograph along the bottom edge. The veil has
+            to be larger than the thing it is veiling. */}
+        <div className="absolute -inset-[14%] bg-gradient-to-b from-[#08182b]/90 via-[#0f2a44]/78 to-background" />
         {/* a vignette, so the middle of the screen is the brightest thing */}
-        <div className="absolute inset-0 [background:radial-gradient(ellipse_110%_70%_at_50%_15%,transparent_40%,rgba(0,0,0,0.45)_100%)]" />
+        <div className="absolute -inset-[14%] [background:radial-gradient(ellipse_110%_70%_at_50%_15%,transparent_40%,rgba(0,0,0,0.45)_100%)]" />
       </motion.div>
 
       {/* drifting gold light */}
