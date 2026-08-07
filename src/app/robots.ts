@@ -6,7 +6,9 @@ const BASE =
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/admin"] },
+    // /hq is the dashboard. /admin only redirects to the homepage, but keep
+    // it listed so the old path is never crawled either.
+    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/hq", "/admin"] },
     sitemap: `${BASE}/sitemap.xml`,
   };
 }
