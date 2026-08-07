@@ -1,13 +1,12 @@
 import { getAllProperties, getEnabledCities } from "@/lib/repo";
 import { HomeContent } from "@/components/home-content";
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://homeskurdistan.com";
+import { SITE_URL, alternatesFor } from "@/lib/seo";
 
 // Refresh Firestore data at most every 30s so newly-added listings appear
 // without a rebuild (ISR).
 export const revalidate = 30;
+
+export const metadata = { alternates: alternatesFor("ku", "/") };
 
 /**
  * Who runs this site, in the vocabulary a crawler reads. Without it the

@@ -2,40 +2,42 @@ import { getAllProperties, getEnabledCities } from "@/lib/repo";
 import { PropertyExplorer } from "@/components/property-explorer";
 import { parseFilters, facetTitle, type SP } from "@/lib/property-search";
 import { alternatesFor } from "@/lib/seo";
+import type { Locale } from "@/lib/types";
 
 /**
- * A filtered listing page describing itself.
- *
- * "خانوو بۆ فرۆشتن لە هەولێر" is what someone types into Google, and the
- * filtered URL is already the page that answers it — it just used to call
- * itself "Properties", in English, and say nothing else.
+ * The listing page in English and Arabic. "houses for sale in Erbil" and
+ * "منازل للبيع في أربيل" are queries with nothing on this site answering them
+ * until these exist.
  */
 export async function generateMetadata({
+  params,
   searchParams,
 }: {
+  params: Promise<{ lang: string }>;
   searchParams: Promise<SP>;
 }) {
-  const sp = await searchParams;
+  const [{ lang }, sp] = await Promise.all([params, searchParams]);
+  const locale = lang as Locale;
   const { title, description, query, hasSearch } = facetTitle(
     parseFilters(sp),
-    "ku",
+    locale,
   );
   const path = `/properties${query ? `?${query}` : ""}`;
 
   return {
     title,
     description,
-    alternates: alternatesFor("ku", path),
+    alternates: alternatesFor(locale, path),
     ...(hasSearch ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title,
       description,
-      url: alternatesFor("ku", path).canonical,
+      url: alternatesFor(locale, path).canonical,
     },
   };
 }
 
-export default async function PropertiesPage({
+export default async function LocalisedPropertiesPage({
   searchParams,
 }: {
   searchParams: Promise<SP>;
@@ -46,8 +48,6 @@ export default async function PropertiesPage({
     getEnabledCities(),
   ]);
 
-  // Remount the explorer when the query changes (e.g. header "For Rent" link)
-  // so its internal filter state re-seeds from the new URL.
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <PropertyExplorer

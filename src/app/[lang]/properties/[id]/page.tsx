@@ -1,44 +1,34 @@
 import { notFound } from "next/navigation";
 import { getProperty, getSimilar } from "@/lib/repo";
-import { SEED_PROPERTIES } from "@/lib/data";
-import { isFirebaseConfigured } from "@/lib/firebase/client";
 import { PropertyDetail } from "@/components/property-detail";
 import { listingJsonLd, pickLocalized } from "@/lib/listing-seo";
 import { alternatesFor } from "@/lib/seo";
+import type { Locale } from "@/lib/types";
 
-// Keep listing pages fresh (ISR) so edits show up without a rebuild.
 export const revalidate = 30;
-
-// Prerender the seed listings only in seed mode. With Firebase, listings are
-// dynamic and rendered on demand.
-export function generateStaticParams() {
-  if (isFirebaseConfigured()) return [];
-  return SEED_PROPERTIES.map((p) => ({ id: p.id }));
-}
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ lang: string; id: string }>;
 }) {
-  const { id } = await params;
+  const { lang, id } = await params;
   const p = await getProperty(id);
   if (!p) return { title: "Not found" };
 
-  const title = pickLocalized(p.title, "ku");
-  const description = pickLocalized(p.description, "ku").slice(0, 200);
+  const locale = lang as Locale;
+  const title = pickLocalized(p.title, locale);
+  const description = pickLocalized(p.description, locale).slice(0, 200);
   const path = `/properties/${encodeURIComponent(p.id)}`;
 
   return {
     title,
     description,
-    alternates: alternatesFor("ku", path),
-    // Without this, a shared listing is a bare blue link. The first photo is
-    // the reason anyone clicks a house.
+    alternates: alternatesFor(locale, path),
     openGraph: {
       title,
       description,
-      url: alternatesFor("ku", path).canonical,
+      url: alternatesFor(locale, path).canonical,
       type: "article",
       images: p.images?.length ? [p.images[0]] : undefined,
     },
@@ -51,12 +41,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function PropertyPage({
+export default async function LocalisedPropertyPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ lang: string; id: string }>;
 }) {
-  const { id } = await params;
+  const { lang, id } = await params;
   const p = await getProperty(id);
   if (!p) notFound();
 
@@ -66,7 +56,7 @@ export default async function PropertyPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(listingJsonLd(p, "ku")),
+          __html: JSON.stringify(listingJsonLd(p, lang as Locale)),
         }}
       />
       <PropertyDetail p={p} similar={similar} />
