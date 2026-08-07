@@ -1,9 +1,32 @@
 import { getAllProperties, getEnabledCities } from "@/lib/repo";
 import { HomeContent } from "@/components/home-content";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://homeskurdistan.com";
+
 // Refresh Firestore data at most every 30s so newly-added listings appear
 // without a rebuild (ISR).
 export const revalidate = 30;
+
+/**
+ * Who runs this site, in the vocabulary a crawler reads. Without it the
+ * homepage is an anonymous page of houses; with it, the name, the phone
+ * number and the area served belong to one identifiable business — which is
+ * what Google wants before it will show any of them beside a result.
+ */
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "@id": `${SITE_URL}/#organization`,
+  name: "Homes Kurdistan — نووسینگەی ئۆنڵاین",
+  url: SITE_URL,
+  image: `${SITE_URL}/opengraph-image`,
+  telephone: "+9647502202191",
+  email: "info@homeskurdistan.com",
+  areaServed: { "@type": "AdministrativeArea", name: "Kurdistan Region, Iraq" },
+  address: { "@type": "PostalAddress", addressCountry: "IQ" },
+};
 
 export default async function HomePage() {
   const [all, cities] = await Promise.all([
@@ -12,10 +35,16 @@ export default async function HomePage() {
   ]);
 
   return (
-    <HomeContent
-      properties={all}
-      counts={{ listings: all.length, cities: cities.length }}
-      cities={cities}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+      />
+      <HomeContent
+        properties={all}
+        counts={{ listings: all.length, cities: cities.length }}
+        cities={cities}
+      />
+    </>
   );
 }
