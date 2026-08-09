@@ -11,7 +11,7 @@ export const dict = {
   ku: {
     dir: "rtl",
     label: "کوردی",
-    brand: "نووسینگەی ئۆنڵاین",
+    brand: "لای حەمە هۆمز",
     nav: {
       home: "سەرەتا",
       properties: "خانووبەرەکان",
@@ -128,7 +128,7 @@ export const dict = {
       error: "هەڵە ڕوویدا. دووبارە هەوڵ بدەرەوە.",
     },
     about: {
-      title: "بۆچی نووسینگەی ئۆنڵاین؟",
+      title: "بۆچی لای حەمە هۆمز؟",
       subtitle: "هاوکارە باوەڕپێکراوەکەت لە دۆزینەوەی ماڵی گونجاو.",
       trustTitle: "متمانە و ڕاستگۆیی",
       trustText: "هەموو موڵکەکان بە وردی پشکنراون و زانیاری ڕاستەقینەیان هەیە.",
@@ -142,7 +142,7 @@ export const dict = {
   en: {
     dir: "ltr",
     label: "English",
-    brand: "Online Office",
+    brand: "Lay Hama Homes",
     nav: {
       home: "Home",
       properties: "Properties",
@@ -259,7 +259,7 @@ export const dict = {
       error: "Something went wrong. Please try again.",
     },
     about: {
-      title: "Why Online Office?",
+      title: "Why Lay Hama Homes?",
       subtitle: "Your trusted partner in finding the right home.",
       trustTitle: "Trust & transparency",
       trustText: "Every listing is verified with accurate, honest details.",
@@ -273,7 +273,7 @@ export const dict = {
   ar: {
     dir: "rtl",
     label: "العربية",
-    brand: "المكتب الإلكتروني",
+    brand: "عند حمة للعقارات",
     nav: {
       home: "الرئيسية",
       properties: "العقارات",
@@ -390,7 +390,7 @@ export const dict = {
       error: "حدث خطأ. حاول مرة أخرى.",
     },
     about: {
-      title: "لماذا المكتب الإلكتروني؟",
+      title: "لماذا عند حمة للعقارات؟",
       subtitle: "شريكك الموثوق في إيجاد المنزل المناسب.",
       trustTitle: "الثقة والشفافية",
       trustText: "جميع العقارات موثّقة بمعلومات دقيقة وصادقة.",

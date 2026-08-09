@@ -221,10 +221,10 @@ export function LanguageWelcome() {
                   <BrandMark className="size-14 sm:size-16" />
                 </motion.div>
                 <h1 className="mt-4 text-[1.6rem] font-extrabold leading-tight text-white sm:text-3xl">
-                  نووسینگەی ئۆنڵاین
+                  لای حەمە هۆمز
                 </h1>
                 <p className="mt-1 text-sm font-medium text-gold">
-                  المكتب الإلكتروني · Online Office
+                  عند حمة للعقارات · Lay Hama Homes
                 </p>
 
                 {/* Two dots, so the screen says how much is left. */}

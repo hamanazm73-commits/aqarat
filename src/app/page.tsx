@@ -18,7 +18,17 @@ const orgJsonLd = {
   "@context": "https://schema.org",
   "@type": "RealEstateAgent",
   "@id": `${SITE_URL}/#organization`,
-  name: "Homes Kurdistan — نووسینگەی ئۆنڵاین",
+  name: "Lay Hama Homes — لای حەمە هۆمز",
+  // The old names stay listed: this is a rename, not a new company, and it is
+  // how Google learns the two refer to the same thing.
+  alternateName: [
+    "عند حمة للعقارات",
+    "Lay Hama",
+    "Homes Kurdistan",
+    "نووسینگەی ئۆنڵاین",
+    "المكتب الإلكتروني",
+    "Online Office",
+  ],
   url: SITE_URL,
   image: `${SITE_URL}/opengraph-image`,
   telephone: "+9647502202191",

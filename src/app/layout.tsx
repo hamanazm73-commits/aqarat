@@ -28,8 +28,8 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "نووسینگەی ئۆنڵاین | Online Office — Real Estate",
-    template: "%s | Online Office",
+    default: "لای حەمە هۆمز | Lay Hama Homes — Real Estate",
+    template: "%s | لای حەمە هۆمز",
   },
   description: DESCRIPTION,
   keywords: [
@@ -37,16 +37,16 @@ export const metadata: Metadata = {
     "real estate", "Kurdistan", "Erbil", "Sulaymaniyah", "property", "for sale", "for rent",
   ],
   openGraph: {
-    title: "نووسینگەی ئۆنڵاین | Online Office — Real Estate",
+    title: "لای حەمە هۆمز | Lay Hama Homes — Real Estate",
     description: DESCRIPTION,
     url: SITE_URL,
-    siteName: "Online Office",
+    siteName: "Lay Hama Homes",
     type: "website",
     locale: "ckb_IQ",
   },
   twitter: {
     card: "summary_large_image",
-    title: "نووسینگەی ئۆنڵاین | Online Office",
+    title: "لای حەمە هۆمز | Lay Hama Homes",
     description: DESCRIPTION,
   },
 };
