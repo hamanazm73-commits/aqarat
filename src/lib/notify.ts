@@ -105,7 +105,7 @@ export async function notifyInquiry(q: InquiryNotice) {
     <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;">
       <div style="background:${NAVY};padding:24px;text-align:center;">
         <div style="font-size:20px;font-weight:800;color:#ffffff;">${BRAND}</div>
-        <div style="font-size:13px;color:${GOLD};letter-spacing:.5px;">لای حەمە هۆمز</div>
+        <div style="font-size:13px;color:${GOLD};letter-spacing:.5px;">نووسینگەی لای حەمە</div>
         <div style="font-size:18px;font-weight:700;color:${GOLD};margin-top:16px;">داواکاریی نوێ — New inquiry</div>
         <div style="color:#cbd5e1;font-size:15px;margin-top:4px;">${esc(heading)}</div>
       </div>
