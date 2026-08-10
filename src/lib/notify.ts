@@ -138,7 +138,7 @@ export async function notifyInquiry(q: InquiryNotice) {
         </div>
       </div>
       <div style="background:#f1f5f9;padding:14px;text-align:center;color:#94a3b8;font-size:12px;">
-        ${BRAND} — homeskurdistan.com
+        ${BRAND} — homes.layhama.com
       </div>
     </div>
   </div>`;

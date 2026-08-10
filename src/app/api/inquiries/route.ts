@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { notifyInquiry, notifyInquiryTelegram } from "@/lib/notify";
+import { SITE_URL } from "@/lib/seo";
 
 /** Validated shape of an inbound inquiry. */
 const InquirySchema = z.object({
@@ -84,9 +85,14 @@ export async function POST(request: NextRequest) {
 
   // Tell the office. Both are best-effort and never throw, but we await so a
   // frozen serverless instance doesn't kill the send after we've responded.
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://homeskurdistan.com";
-  const notice = { propertyId, name, phone, message, propertyTitle, siteUrl };
+  const notice = {
+    propertyId,
+    name,
+    phone,
+    message,
+    propertyTitle,
+    siteUrl: SITE_URL,
+  };
   await Promise.allSettled([
     notifyInquiry(notice),
     notifyInquiryTelegram(notice),

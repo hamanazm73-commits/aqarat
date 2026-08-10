@@ -89,7 +89,7 @@ export default function OgImage() {
             opacity: 0.85,
           }}
         >
-          homeskurdistan.com
+          homes.layhama.com
         </div>
       </div>
     ),
