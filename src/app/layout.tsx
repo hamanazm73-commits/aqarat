@@ -20,7 +20,7 @@ const arabic = Noto_Naskh_Arabic({
 });
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://homeskurdistan.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://homes.layhama.com";
 
 const DESCRIPTION =
   "خانوو، شوقە، ڤێلا و زەوی بۆ فرۆشتن و کرێ لە هەموو شارەکانی هەرێمی کوردستان.";

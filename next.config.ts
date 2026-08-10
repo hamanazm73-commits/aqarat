@@ -62,6 +62,15 @@ const nextConfig: NextConfig = {
   // guess back to the home page so it isn't a discoverable entry point.
   async redirects() {
     return [
+      // The site answers on two names. Without this both would serve the same
+      // pages at 200 and compete as duplicates of each other, so the old name
+      // hands every path — not just the homepage — to the new one.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "(www\\.)?homeskurdistan\\.com" }],
+        destination: "https://homes.layhama.com/:path*",
+        permanent: true,
+      },
       { source: "/admin", destination: "/", permanent: false },
       { source: "/admin/:path*", destination: "/", permanent: false },
     ];

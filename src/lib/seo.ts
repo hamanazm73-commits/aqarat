@@ -2,7 +2,7 @@ import type { Locale } from "./types";
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://homeskurdistan.com";
+  "https://homes.layhama.com";
 
 /** Kurdish sits at the root, the other two behind a prefix. */
 export function urlFor(locale: Locale, path = "/"): string {
