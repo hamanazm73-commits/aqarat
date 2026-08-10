@@ -105,6 +105,7 @@ export const dict = {
       quickLinks: "بەستەرە خێراکان",
       contact: "پەیوەندی",
       rights: "هەموو مافەکان پارێزراون",
+      sister: "هۆتێل دەگەڕێیت؟ هۆتێلەکانی لای حەمە",
     },
     theme: { light: "ڕووناک", dark: "تاریک" },
     submit: {
@@ -236,6 +237,7 @@ export const dict = {
       quickLinks: "Quick links",
       contact: "Contact",
       rights: "All rights reserved",
+      sister: "Looking for a hotel? Lay Hama Hotels",
     },
     theme: { light: "Light", dark: "Dark" },
     submit: {
@@ -367,6 +369,7 @@ export const dict = {
       quickLinks: "روابط سريعة",
       contact: "اتصل بنا",
       rights: "جميع الحقوق محفوظة",
+      sister: "تبحث عن فندق؟ فنادق لاي حمة",
     },
     theme: { light: "فاتح", dark: "داكن" },
     submit: {

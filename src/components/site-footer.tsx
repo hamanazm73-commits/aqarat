@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, Mail, ShieldCheck } from "lucide-react";
+import { Phone, Mail, ShieldCheck, BedDouble } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { BrandMark } from "./brand-mark";
 
@@ -89,6 +89,15 @@ export function SiteFooter() {
         <span>
           © {new Date().getFullYear()} {t.brand}. {t.footer.rights}.
         </span>
+        <span className="hidden sm:inline">·</span>
+        {/* The hotels half of the same business. Each site was invisible to the
+            other, and to Google, which reported no referring page for either. */}
+        <a
+          href="https://hotels.layhama.com"
+          className="inline-flex items-center gap-1 transition-colors hover:text-gold"
+        >
+          <BedDouble className="size-3.5" /> {t.footer.sister}
+        </a>
         <span className="hidden sm:inline">·</span>
         <Link
           href="/login"
