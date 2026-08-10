@@ -1,4 +1,5 @@
 import type { Property, PropertyFilters, PropertyType } from "./types";
+import { looseMatch } from "./search-normalise";
 
 /** Local placeholder gallery for a property. Swap these for real photo URLs
  *  (Firebase Storage / Cloudinary) when listings get real images. Using local
@@ -354,17 +355,18 @@ export function filterProperties(
   if (typeof f.maxPrice === "number") out = out.filter((p) => p.priceIQD <= f.maxPrice!);
   if (typeof f.bedrooms === "number") out = out.filter((p) => (p.bedrooms ?? 0) >= f.bedrooms!);
   if (f.q) {
-    const q = f.q.trim().toLowerCase();
+    const q = f.q.trim();
+    // Field by field rather than one joined string: joining lets a query match
+    // across a seam that isn't there — the end of a title and the start of a
+    // description are not adjacent in any sense a searcher means. `looseMatch`
+    // is what lets an Arabic keyboard find a Kurdish spelling.
     out = out.filter((p) =>
       [
         p.title.ku, p.title.en, p.title.ar,
         p.description.ku, p.description.en, p.description.ar,
         p.district?.ku ?? "", p.district?.en ?? "", p.district?.ar ?? "",
         p.city, p.type,
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(q),
+      ].some((v) => !!v && looseMatch(v, q)),
     );
   }
 
