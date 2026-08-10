@@ -8,16 +8,15 @@ import { useI18n } from "@/lib/i18n/context";
 import { BrandMark } from "@/components/brand-mark";
 import type { Locale } from "@/lib/types";
 
-/** Each language in its own script, with a greeting so it reads as a welcome. */
+/** Each language, written the way it writes itself. */
 const OPTIONS: {
   locale: Locale;
   native: string;
-  greeting: string;
   dir: "rtl" | "ltr";
 }[] = [
-  { locale: "ku", native: "کوردی", greeting: "سڵاو", dir: "rtl" },
-  { locale: "ar", native: "العربية", greeting: "مرحبا", dir: "rtl" },
-  { locale: "en", native: "English", greeting: "Hello", dir: "ltr" },
+  { locale: "ku", native: "کوردی", dir: "rtl" },
+  { locale: "ar", native: "العربية", dir: "rtl" },
+  { locale: "en", native: "English", dir: "ltr" },
 ];
 
 /**
@@ -275,13 +274,12 @@ export function LanguageWelcome() {
                                   : "border-white/12 bg-white/[0.06] hover:border-gold/70 hover:bg-white/[0.1]"
                               }`}
                             >
-                              <span className="text-lg font-extrabold text-white sm:text-xl">
+                              {/* the name alone, larger now that it carries the
+                                  row by itself */}
+                              <span className="text-xl font-extrabold text-white sm:text-2xl">
                                 {o.native}
                               </span>
                               <span className="flex items-center gap-2.5">
-                                <span className="text-sm font-medium text-gold">
-                                  {o.greeting}
-                                </span>
                                 <AnimatePresence>
                                   {isPicked && (
                                     <motion.span
