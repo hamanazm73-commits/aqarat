@@ -36,6 +36,8 @@ const orgJsonLd = {
   alternateName: [
     // The office, written properly.
     "نووسینگەی لای حەمە",
+    "يم حمة للعقارات",
+    "يم حمة",
     "عند حمة للعقارات",
     "Lay Hama Homes",
     "Lay Hama Real Estate",

@@ -223,7 +223,7 @@ export function LanguageWelcome() {
                   نووسینگەی لای حەمە
                 </h1>
                 <p className="mt-1 text-sm font-medium text-gold">
-                  عند حمة للعقارات · Lay Hama Homes
+                  يم حمة للعقارات · Lay Hama Homes
                 </p>
 
                 {/* Two dots, so the screen says how much is left. */}
