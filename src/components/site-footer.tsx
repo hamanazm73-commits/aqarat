@@ -33,7 +33,8 @@ export function SiteFooter() {
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gold">
             {t.footer.quickLinks}
           </h3>
-          <ul className="space-y-2.5 text-sm text-primary-foreground/80">
+          {/* 4px between stacked links is a mis-tap on a phone */}
+          <ul className="space-y-3.5 sm:space-y-2.5 text-sm text-primary-foreground/80">
             {[
               { href: "/", label: t.nav.home },
               { href: "/properties", label: t.nav.properties },
@@ -85,7 +86,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-1.5 border-t border-primary-foreground/10 py-5 text-center text-xs text-primary-foreground/60 sm:flex-row sm:gap-3">
+      <div className="flex flex-col items-center justify-center gap-3 sm:gap-3 border-t border-primary-foreground/10 py-5 text-center text-xs text-primary-foreground/60 sm:flex-row sm:gap-3">
         <span>
           © {new Date().getFullYear()} {t.brand}. {t.footer.rights}.
         </span>

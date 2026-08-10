@@ -64,7 +64,9 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-1.5">
+        {/* a thumb is wider than any of these icons — open the row up
+            on a phone, leave the desktop density alone */}
+        <div className="flex items-center gap-2.5 sm:gap-1.5">
           <LanguageSwitcher />
           <ThemeToggle />
           <Link
@@ -93,7 +95,8 @@ export function SiteHeader() {
           open ? "max-h-80 border-t" : "max-h-0",
         )}
       >
-        <nav className="flex flex-col gap-1 px-4 py-3">
+        {/* the phone menu — 4px between rows is a mis-tap */}
+        <nav className="flex flex-col gap-2 px-4 py-3">
           {links.map((l) => (
             <Link
               key={l.href}
