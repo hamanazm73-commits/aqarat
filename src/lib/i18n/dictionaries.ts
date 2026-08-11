@@ -24,7 +24,7 @@ export const dict = {
     },
     hero: {
       badge: "گەورەترین بازاڕی خانووبەرەی کوردستان",
-      title: "ماڵی خەونەکانت لە کوردستان بدۆزەرەوە",
+      title: "ماڵی خەونەکانت لە لای حەمە بدۆزەرەوە",
       subtitle:
         "خانوو، شوقە، ڤێلا، زەوی و پرۆژەی بازرگانی — بۆ فرۆشتن و کرێ لە هەموو شارەکانی هەرێمی کوردستان.",
       searchPlaceholder: "گەڕان بەپێی ناونیشان، شار یان جۆر...",
@@ -156,7 +156,7 @@ export const dict = {
     },
     hero: {
       badge: "Kurdistan's largest real-estate marketplace",
-      title: "Find your dream home in Kurdistan",
+      title: "Find your dream home at Lay Hama",
       subtitle:
         "Houses, apartments, villas, land and commercial projects — for sale and rent across the Kurdistan Region.",
       searchPlaceholder: "Search by title, city or type...",
@@ -288,7 +288,7 @@ export const dict = {
     },
     hero: {
       badge: "أكبر سوق عقاري بكردستان",
-      title: "لگه بيت أحلامك بكردستان",
+      title: "لگه بيت أحلامك يم حمة",
       subtitle:
         "بيوت، شقق، فلل، أراضي ومشاريع تجارية — للبيع والإيجار بكل مدن إقليم كردستان.",
       searchPlaceholder: "دوّر بالعنوان أو المدينة أو النوع...",
