@@ -36,3 +36,24 @@ changes nothing.
 
 Every property sits in the same grid whoever added it. The office name
 travels on the card instead, under the price.
+
+# Two people work on this, and neither of them runs git
+
+The owner and his partner both drive this repository through an assistant,
+from different machines, and neither types a git command by hand. Nobody is
+watching for conflicts, so the agent has to be.
+
+Every session, without being asked:
+
+- **Before the first edit**, `git pull --rebase`. The other machine may have
+  pushed since you last looked, and a rebase onto their work beats resolving
+  a merge later.
+- **After finishing a change**, commit it and `git push`. Work left sitting
+  uncommitted is invisible to the other side and will be overwritten.
+- **Never end a session with uncommitted changes.** If the work is not ready
+  to land, say so — do not leave it on the disk of a machine the other
+  person cannot see.
+
+Pushing is deploying. The Vercel project builds from this repository, so a
+push to the default branch replaces the live site within a minute. Run the
+build first — `npm run build` — and do not push what does not compile.
