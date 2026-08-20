@@ -2,7 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BedDouble, Bath, Maximize, MapPin, Star, Eye } from "lucide-react";
+import {
+  BedDouble,
+  Bath,
+  Building2,
+  Maximize,
+  MapPin,
+  Star,
+  Eye,
+} from "lucide-react";
 import type { Property } from "@/lib/types";
 import { useI18n } from "@/lib/i18n/context";
 import { cityNames, typeNames } from "@/lib/i18n/dictionaries";
@@ -161,6 +169,24 @@ export function PropertyCard({ p }: { p: Property }) {
             </span>
           )}
         </div>
+
+        {/*
+          Who is offering it.
+
+          Every listing sits in the same grid whoever entered it — an office's
+          houses are not penned into a section of their own — so the name has
+          to travel on the card itself. Under a hairline and after the price,
+          the way a signature sits under a page: read when the card has already
+          been read, and never in front of the number someone came for.
+        */}
+        {p.agent?.name && (
+          <div className="mt-3 flex items-center gap-1.5 border-t border-foreground/10 pt-3">
+            <Building2 className="size-3.5 shrink-0 text-gold" />
+            <span className="truncate text-xs font-semibold tracking-wide text-muted-foreground">
+              {p.agent.name}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Whole-card link (stretched, sits below the WhatsApp button) */}
