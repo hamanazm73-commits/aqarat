@@ -39,7 +39,7 @@ travels on the card instead, under the price.
 
 # Two people work on this, and neither of them runs git
 
-The owner and his partner both drive this repository through an assistant,
+The owner and their partner both drive this repository through an assistant,
 from different machines, and neither types a git command by hand. Nobody is
 watching for conflicts, so the agent has to be.
 
@@ -57,3 +57,33 @@ Every session, without being asked:
 Pushing is deploying. The Vercel project builds from this repository, so a
 push to the default branch replaces the live site within a minute. Run the
 build first — `npm run build` — and do not push what does not compile.
+
+## Before starting work, read TEAM-LOG.md
+
+`TEAM-LOG.md` at the repo root is how the two sides avoid building the same
+thing twice — it has already happened once. Read the top of it right after
+pulling.
+
+- Already listed as **done**? Say so and show what was done. Do not redo it.
+- Listed as **in progress** by the other side? Say so and offer something
+  else. Do not start it in parallel.
+
+Claim the work before doing it: add an entry at the top of the log, then commit
+and push **that entry alone**, immediately, before the real work starts. A claim
+nobody can see prevents nothing.
+
+    ## <YYYY-MM-DD HH:MM> — <who> · in progress
+    <one line: what is about to change>
+
+When the work lands, change `in progress` to `done`, say what actually shipped,
+and push it together with the code.
+
+## Two things that are never worth it
+
+Never `git push --force`: it deletes the other side's work. Never commit
+`.env.local`, a Firebase adminsdk json, `*.pem`, or `*.key` — they are ignored
+on purpose, and the two humans exchange them by hand.
+
+If a rebase stops on a conflict you cannot resolve with confidence, stop and
+explain the choice in Kurdish. Do not guess, and never discard the other side's
+version to make the conflict go away.
