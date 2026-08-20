@@ -18,6 +18,7 @@ import {
 } from "@/lib/i18n/dictionaries";
 import { AMENITY_KEYS, CITY_KEYS, PROPERTY_TYPE_KEYS } from "@/lib/constants";
 import { compressImage } from "@/lib/compress-image";
+import { useAuth } from "@/lib/firebase/auth";
 import { Button } from "@/components/ui/button";
 import { coordsFromMapsUrl } from "@/lib/maps";
 
@@ -38,6 +39,7 @@ const empty: Draft = {
 };
 
 export function PropertyForm({ initial }: { initial?: Property }) {
+  const { isSeller, user } = useAuth();
   const router = useRouter();
   const editing = Boolean(initial);
   const [d, setD] = useState<Draft>(() =>
@@ -165,6 +167,13 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           ? { discount: { active: true, oldPriceIQD: Number(d.discount.oldPriceIQD) || 0 } }
           : { discount: undefined }),
       };
+      // Stamped once, on creation. An admin editing a seller's listing must
+      // not quietly take it off them, and a seller must not be able to put
+      // their name on somebody else's.
+      if (!editing && isSeller && user?.email) {
+        clean.sellerEmail = user.email.toLowerCase();
+      }
+
       // Firestore rejects undefined — drop optional empties.
       const payload = JSON.parse(JSON.stringify(clean)) as Omit<Property, "id">;
 

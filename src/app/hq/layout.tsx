@@ -7,6 +7,7 @@ import {
   Building2,
   Home,
   Inbox,
+  KeyRound,
   Loader2,
   LogOut,
   MapPin,
@@ -36,7 +37,8 @@ function Centered({ children }: { children: React.ReactNode }) {
 }
 
 function AdminShell({ children }: { children: React.ReactNode }) {
-  const { user, isAdmin, isOwner, loading, configured, signOutUser } = useAuth();
+  const { user, isAdmin, isOwner, isSeller, loading, configured, signOutUser } =
+    useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -70,7 +72,8 @@ function AdminShell({ children }: { children: React.ReactNode }) {
 
   if (!user) return <Centered><Loader2 className="h-8 w-8 animate-spin text-primary" /></Centered>;
 
-  if (!isAdmin) {
+  // A seller belongs here too, on a smaller version of it.
+  if (!isAdmin && !isSeller) {
     return (
       <Centered>
         <ShieldCheck className="h-10 w-10 text-danger" />
@@ -88,13 +91,20 @@ function AdminShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const nav = [
-    { href: "/hq", label: "خانووبەرەکان", icon: Building2, exact: true },
-    { href: "/hq/submissions", label: "ناردنەکان", icon: Send },
-    { href: "/hq/inquiries", label: "داواکارییەکان", icon: Inbox },
-    { href: "/hq/cities", label: "شارەکان", icon: MapPin },
-    ...(isOwner ? [{ href: "/hq/admins", label: "بەڕێوەبەران", icon: Users }] : []),
-  ];
+  // A seller gets one entry, because everything else on this list is about
+  // other people's listings or the shape of the site itself.
+  const nav = isSeller
+    ? [{ href: "/hq", label: "موڵکەکانم", icon: Building2, exact: true }]
+    : [
+        { href: "/hq", label: "خانووبەرەکان", icon: Building2, exact: true },
+        { href: "/hq/sellers", label: "خاوەن موڵکەکان", icon: KeyRound },
+        { href: "/hq/submissions", label: "ناردنەکان", icon: Send },
+        { href: "/hq/inquiries", label: "داواکارییەکان", icon: Inbox },
+        { href: "/hq/cities", label: "شارەکان", icon: MapPin },
+        ...(isOwner
+          ? [{ href: "/hq/admins", label: "بەڕێوەبەران", icon: Users }]
+          : []),
+      ];
 
   return (
     <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[230px_1fr]">

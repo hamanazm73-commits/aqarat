@@ -25,9 +25,33 @@ service cloud.firestore {
           && (myRole().role == 'admin' || myRole().role == 'owner'));
     }
 
-    // Properties: anyone reads; only owner/admins write.
+    function isSeller() {
+      return hasRole() && myRole().enabled == true && myRole().role == 'seller';
+    }
+
+    // Properties: anyone reads. Admins write anything; a seller writes only
+    // listings carrying their own address, and only ever with their own
+    // address on them — so one seller can neither reach into another's
+    // listing nor hand their own away.
     match /properties/{id} {
       allow read: if true;
+      allow create: if isAdmin() ||
+        (isSeller() && request.resource.data.sellerEmail == emailLower());
+      allow update: if isAdmin() ||
+        (isSeller()
+          && resource.data.sellerEmail == emailLower()
+          && request.resource.data.sellerEmail == emailLower());
+      allow delete: if isAdmin() ||
+        (isSeller() && resource.data.sellerEmail == emailLower());
+    }
+
+    // Access links: the document id IS the secret, so whoever holds it may
+    // read the credentials behind it — that is what lets the link work with
+    // nothing to type. `list` stays shut, and that is what keeps the id
+    // secret: without it the collection cannot be enumerated to find one.
+    match /accessLinks/{token} {
+      allow get: if true;
+      allow list: if false;
       allow create, update, delete: if isAdmin();
     }
 
@@ -59,7 +83,15 @@ service cloud.firestore {
     // Roles / admins: a user reads their own role; only the owner manages roles.
     match /roles/{email} {
       allow get: if isOwner() || (isSignedIn() && emailLower() == email);
-      allow list, create, update, delete: if isOwner();
+      allow list: if isAdmin();
+      // An admin may hand out and withdraw seller access, which is the point
+      // of the sellers page. Only the owner may make another administrator —
+      // otherwise anyone let in to manage listings could let themselves in
+      // further.
+      allow create, update: if isOwner() ||
+        (isAdmin() && request.resource.data.role == 'seller');
+      allow delete: if isOwner() ||
+        (isAdmin() && resource.data.role == 'seller');
     }
 
     // Site settings (e.g. which cities appear in filters): public read, admin write.

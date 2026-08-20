@@ -27,6 +27,8 @@ interface AuthValue {
   configured: boolean;
   isOwner: boolean;
   isAdmin: boolean;
+  /** Signed in through a link of their own; sees only what they entered. */
+  isSeller: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOutUser: () => Promise<void>;
 }
@@ -65,6 +67,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAdmin =
     isOwner ||
     Boolean(role && role.enabled && (role.role === "admin" || role.role === "owner"));
+  // Deliberately not implied by isAdmin. The dashboard asks "may this account
+  // manage everything" and "is this account limited to its own listings" as
+  // two separate questions, and an administrator is not a seller.
+  const isSeller = Boolean(role && role.enabled && role.role === "seller");
 
   const value = useMemo<AuthValue>(
     () => ({
@@ -74,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       configured,
       isOwner,
       isAdmin,
+      isSeller,
       signIn: async (e, p) => {
         const fb = getFirebase();
         if (!fb) throw new Error("Firebase is not configured");
@@ -84,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (fb) await signOut(fb.auth);
       },
     }),
-    [user, role, loading, configured, isOwner, isAdmin],
+    [user, role, loading, configured, isOwner, isAdmin, isSeller],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

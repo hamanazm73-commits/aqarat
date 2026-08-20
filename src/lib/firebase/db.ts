@@ -21,9 +21,17 @@ import { SEED_PROPERTIES } from "@/lib/data";
 /** Role document stored at roles/{email}. */
 export interface RoleDoc {
   email: string;
-  role: "owner" | "admin";
+  /** A seller manages only their own listings; the other two manage every
+      listing and everything around them. */
+  role: "owner" | "admin" | "seller";
   enabled: boolean;
   createdAt: string;
+  /** Sellers only. Their address is generated, so without somewhere to keep
+      the real name the admin list would be a column of random strings. */
+  name?: string;
+  phone?: string;
+  /** Which link signs this account in, so it can be copied again later. */
+  token?: string;
 }
 
 function db() {
@@ -234,4 +242,75 @@ export async function fsUploadImage(file: File): Promise<string> {
   const path = `properties/${Date.now()}-${safe}`;
   const snap = await uploadBytes(ref(storage, path), file);
   return getDownloadURL(snap.ref);
+}
+
+/* ---------------------------- Seller links ---------------------------- */
+
+/**
+ * A link that signs its holder in.
+ *
+ * A property owner should not have to be given a password, remember it, or
+ * be trusted to pick a good one. Instead each gets a URL of their own; the
+ * unguessable part of it is the key to a throwaway account created for them,
+ * and opening it puts them straight in the dashboard looking at their own
+ * listings.
+ *
+ * The token is the secret, so the document holding those credentials is
+ * readable by its exact id and cannot be listed — see firestore.rules. That
+ * is the same trade the hotels site makes: 32 random bytes are not guessed,
+ * and a link nobody can enumerate is worth more here than a password
+ * everybody writes on a receipt.
+ */
+export interface SellerLink {
+  /** The synthetic account. Never receives mail; it exists to be signed in as. */
+  email: string;
+  password: string;
+  /** What the person is called, so the admin list is readable. */
+  name: string;
+  phone?: string;
+  createdAt: string;
+}
+
+export async function fsGetSellerLink(token: string): Promise<SellerLink | null> {
+  const d = await getDoc(doc(db(), "accessLinks", token));
+  return d.exists() ? (d.data() as SellerLink) : null;
+}
+
+export async function fsSaveSellerLink(
+  token: string,
+  link: SellerLink,
+): Promise<void> {
+  await setDoc(doc(db(), "accessLinks", token), link);
+}
+
+/** Every seller account, newest first. Roles are keyed by email. */
+export async function fsListSellers(): Promise<RoleDoc[]> {
+  const snap = await getDocs(collection(db(), "roles"));
+  return snap.docs
+    .map((d) => d.data() as RoleDoc)
+    .filter((r) => r.role === "seller")
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+}
+
+/**
+ * Withdraw a seller's access.
+ *
+ * The role goes and the link stops working, which is what revoking means
+ * here. Their listings stay: taking away someone's key should not delete
+ * the property behind the door. Remove those separately if that is wanted.
+ */
+export async function fsRevokeSeller(email: string, token: string): Promise<void> {
+  const batch = writeBatch(db());
+  batch.delete(doc(db(), "roles", email.toLowerCase()));
+  batch.delete(doc(db(), "accessLinks", token));
+  await batch.commit();
+}
+
+/** Only the listings this seller entered. */
+export async function fsListPropertiesBySeller(
+  email: string,
+): Promise<Property[]> {
+  const all = await fsListProperties();
+  const mine = email.toLowerCase();
+  return all.filter((p) => (p.sellerEmail ?? "").toLowerCase() === mine);
 }

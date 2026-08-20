@@ -111,6 +111,15 @@ export interface Property {
   hidden?: boolean;
   /** How many times the detail page has been opened. */
   views?: number;
+  /**
+   * The account that entered this listing, when it was not an administrator.
+   *
+   * A seller reaches the dashboard through a link of their own and sees only
+   * the rows carrying their address here. Absent on anything an admin enters,
+   * which is why the seller's view filters on a match rather than on the
+   * field merely being present.
+   */
+  sellerEmail?: string;
 }
 
 /** Inbound inquiry from the contact / booking form. */

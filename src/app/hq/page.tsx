@@ -8,7 +8,6 @@ import {
   Plus,
   Pencil,
   Trash2,
-  Download,
   Eye,
   EyeOff,
 } from "lucide-react";
@@ -16,19 +15,28 @@ import type { Property } from "@/lib/types";
 import {
   fsListProperties,
   fsDeleteProperty,
-  fsImportSeed,
+  fsListPropertiesBySeller,
 } from "@/lib/firebase/db";
 import { cityNames, typeNames } from "@/lib/i18n/dictionaries";
 import { formatIQDCompact } from "@/lib/format";
+import { useAuth } from "@/lib/firebase/auth";
 import { Button } from "@/components/ui/button";
 
 export default function AdminListingsPage() {
+  const { isSeller, user } = useAuth();
   const [items, setItems] = useState<Property[] | null>(null);
   const [working, setWorking] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    setItems(await fsListProperties());
-  }, []);
+    // A seller sees the rows carrying their own address and nothing else.
+    // This is a convenience, not the boundary — the rules in firestore.rules
+    // are what actually stop one seller touching another's listing.
+    setItems(
+      isSeller && user?.email
+        ? await fsListPropertiesBySeller(user.email)
+        : await fsListProperties(),
+    );
+  }, [isSeller, user?.email]);
 
   useEffect(() => {
     load().catch(() => setItems([]));
@@ -45,15 +53,6 @@ export default function AdminListingsPage() {
     }
   }
 
-  async function onImport() {
-    setWorking("import");
-    try {
-      await fsImportSeed();
-      await load();
-    } finally {
-      setWorking(null);
-    }
-  }
 
   return (
     <div>
@@ -69,12 +68,15 @@ export default function AdminListingsPage() {
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : items.length === 0 ? (
+        // The button that stood here imported twelve invented listings. The
+        // list it copied from is empty now, so it offered to import nothing.
         <div className="rounded-2xl border border-dashed border-border py-16 text-center">
-          <p className="text-muted-foreground">هیچ خانووبەرەیەک نییە.</p>
-          <Button className="mt-5" onClick={onImport} disabled={working === "import"}>
-            {working === "import" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-            هێنانی ١٢ خانووبەرەی نموونەیی
-          </Button>
+          <p className="text-muted-foreground">
+            {isSeller ? "هێشتا هیچ موڵکێکت زیاد نەکردووە." : "هیچ خانووبەرەیەک نییە."}
+          </p>
+          <Link href="/hq/new">
+            <Button className="mt-5"><Plus className="h-4 w-4" /> زیادکردنی یەکەم</Button>
+          </Link>
         </div>
       ) : (
         <div className="space-y-3">
