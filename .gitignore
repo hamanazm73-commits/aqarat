@@ -43,3 +43,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Personal to one machine — not shared between developers.
+.claude/settings.local.json
