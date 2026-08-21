@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import type { CityKey, Locale, Property, PropertyFilters } from "@/lib/types";
 import { filterProperties } from "@/lib/data";
@@ -104,6 +104,38 @@ export function PropertyExplorer({
   }
 
   const steps = f.purpose === "rent" ? RENT_STEPS : SALE_STEPS;
+
+  /** How many filters are narrowing the results, for the badge on the button. */
+  const activeCount = useMemo(
+    () =>
+      [
+        f.purpose && f.purpose !== "all",
+        f.type && f.type !== "all",
+        f.city && f.city !== "all",
+        f.minPrice,
+        f.maxPrice,
+        f.bedrooms,
+        f.floors,
+        f.q,
+      ].filter(Boolean).length,
+    [f],
+  );
+
+  /*
+   * The page behind the sheet does not scroll.
+   *
+   * Left alone, a flick inside the sheet carries on into the results once the
+   * sheet runs out — the list moves under the panel and the buyer loses their
+   * place in something they cannot see.
+   */
+  useEffect(() => {
+    if (!openMobile) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [openMobile]);
   function reset() {
     setF({ sort: "newest" });
   }
@@ -246,8 +278,14 @@ export function PropertyExplorer({
       </aside>
 
       <div>
-        {/* Toolbar */}
-        <div className="mb-6 flex items-center justify-between gap-3">
+        {/*
+          The toolbar, which on a phone is two rows rather than one squeezed.
+
+          Filter and sort were sharing a line with the result count, which at
+          375px left the filter button about as wide as its own label. They get
+          a row to themselves and half of it each, so both are a real target.
+        */}
+        <div className="mb-6 space-y-3">
           <p className="text-sm text-muted-foreground">
             <span className="font-semibold text-foreground">
               {formatNumber(results.length, locale)}
@@ -255,23 +293,30 @@ export function PropertyExplorer({
             {t.filters.results}
           </p>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setOpenMobile(true)}
+              className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card text-sm font-medium transition-colors hover:bg-muted cursor-pointer lg:hidden"
+            >
+              <SlidersHorizontal className="size-4" />
+              {t.filters.title}
+              {/* How many filters are on. Without it the only way to tell is
+                  to open the sheet and read every control. */}
+              {activeCount > 0 && (
+                <span className="flex size-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  {formatNumber(activeCount, locale)}
+                </span>
+              )}
+            </button>
             <select
               value={f.sort ?? "newest"}
               onChange={(e) => set("sort", e.target.value as PropertyFilters["sort"])}
-              className="h-10 rounded-lg border border-border bg-background px-3 text-sm outline-none"
+              className="h-11 flex-1 cursor-pointer rounded-xl border border-border bg-card px-3 text-sm outline-none lg:flex-none"
             >
               {SORTS.map((s) => (
                 <option key={s} value={s}>{t.sort[s]}</option>
               ))}
             </select>
-            <Button
-              variant="outline"
-              size="sm"
-              className="lg:hidden"
-              onClick={() => setOpenMobile(true)}
-            >
-              <SlidersHorizontal className="h-4 w-4" /> {t.filters.title}
-            </Button>
           </div>
         </div>
 
@@ -289,21 +334,59 @@ export function PropertyExplorer({
         )}
       </div>
 
-      {/* Mobile filter sheet */}
+      {/*
+        The filters, as a sheet up from the bottom.
+
+        It used to come in from the side and fill the height, which put the
+        apply button off the end of a scroll on every phone — the way out of
+        the panel was below the fold, and the panel covered the results it was
+        filtering. From the bottom it stops at 85% of the height, the results
+        stay visible behind it, and the two buttons that end it are pinned
+        where the thumb already is.
+      */}
       {openMobile && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpenMobile(false)} />
-          <div className="absolute inset-y-0 end-0 w-[85%] max-w-sm overflow-y-auto bg-card p-5 shadow-xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-semibold">{t.filters.title}</h2>
-              <button onClick={() => setOpenMobile(false)} className="cursor-pointer">
-                <X className="h-5 w-5" />
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"
+            onClick={() => setOpenMobile(false)}
+          />
+          <div className="absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col rounded-t-3xl border-t border-border bg-card shadow-2xl">
+            {/* The handle says "this pulls down" without a word in any
+                language, which is the point on a trilingual site. */}
+            <div className="flex shrink-0 justify-center pt-3">
+              <span className="h-1.5 w-10 rounded-full bg-border" />
+            </div>
+
+            <div className="flex shrink-0 items-center justify-between px-5 pb-3 pt-2">
+              <h2 className="flex items-center gap-2 font-semibold">
+                <SlidersHorizontal className="size-4" />
+                {t.filters.title}
+              </h2>
+              <button
+                onClick={() => setOpenMobile(false)}
+                aria-label={t.filters.title}
+                className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted cursor-pointer"
+              >
+                <X className="size-5" />
               </button>
             </div>
-            {filterBody}
-            <Button className="mt-4 w-full" onClick={() => setOpenMobile(false)}>
-              {t.filters.apply}
-            </Button>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-4">
+              {filterBody}
+            </div>
+
+            {/* Pinned, and clear of the home bar on a phone that has one. */}
+            <div className="shrink-0 border-t border-border bg-card px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4">
+              <Button className="w-full" onClick={() => setOpenMobile(false)}>
+                {t.filters.apply}
+                {results.length > 0 && (
+                  <span className="opacity-80">
+                    {" · "}
+                    {formatNumber(results.length, locale)} {t.filters.results}
+                  </span>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -315,7 +398,10 @@ export function PropertyExplorer({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      {/* No tracking, and no uppercase. Letter-spacing pulls Arabic script
+          apart at the joins — the letters stop being one connected word and
+          the label reads as loose glyphs — and there is no upper case to make. */}
+      <label className="mb-2 block text-xs font-semibold text-muted-foreground">
         {label}
       </label>
       {children}
@@ -337,7 +423,9 @@ function Chip({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-lg border px-2 py-2 text-xs font-medium transition-colors cursor-pointer",
+        // h-10 because this is tapped with a thumb. The old chip was as tall
+        // as its text, which on a phone is a target you miss.
+        "flex h-10 items-center justify-center rounded-lg border px-2 text-sm font-medium transition-colors cursor-pointer",
         active
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border hover:bg-muted",
