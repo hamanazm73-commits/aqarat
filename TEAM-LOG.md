@@ -28,12 +28,17 @@ doing its job on an unauthenticated probe.
 back `204` with `Access-Control-Allow-Methods: PUT, GET`. Video upload has
 what it needs.
 
-**One thing left half-done, and it is not urgent.** Only homes.layhama.com was
-added. A preflight from bedozawa.layhama.com still answers `403`, and
-hotels.layhama.com will too. Neither uploads video today, so nothing is broken
-— but the first one that tries will hit exactly what you hit, and the entry
-above will read as though it were already solved. The other origins go in the
-same box when somebody is next in there.
+**All three sites are allowed, not just this one.** A first check read
+`403` from bedozawa and I wrote that only homes had been added — the policy
+had simply not propagated yet. Re-checked a minute later:
+
+    homes.layhama.com      204  PUT, GET
+    hotels.layhama.com     204  PUT, GET
+    bedozawa.layhama.com   204  PUT, GET
+    layhama.com            403
+
+The hub is the only one refused, which is correct — it uploads nothing. The
+hotels site does take video, so it needed the rule as much as this one did.
 
 ## 2026-08-22 — hamakali2005 · TWO THINGS FOR MOHAMMED
 
