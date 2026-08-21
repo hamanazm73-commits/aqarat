@@ -34,7 +34,7 @@ export function BrandMark({ className }: { className?: string }) {
           cy="50"
           r="43"
           fill="none"
-          stroke="#DFB250"
+          stroke="#e7ba54"
           strokeWidth="2.4"
         />
         <circle
@@ -42,13 +42,13 @@ export function BrandMark({ className }: { className?: string }) {
           cy="50"
           r="37"
           fill="none"
-          stroke="#DFB250"
+          stroke="#e7ba54"
           strokeWidth="1"
         />
 
         {/* Three stars: one leading, two flanking and smaller, so the group
             reads as an arc over the roof rather than a row of equals. */}
-        <g fill="#DFB250">
+        <g fill="#e7ba54">
           <path d={STAR_D} transform={place(50, 23, 1)} />
           <path d={STAR_D} transform={place(34.5, 30, 0.62)} />
           <path d={STAR_D} transform={place(65.5, 30, 0.62)} />
@@ -57,7 +57,7 @@ export function BrandMark({ className }: { className?: string }) {
         {/* House: eaves overhanging the walls, in one filled path. */}
         <path
           d="M50 36 L27 55 L33 55 L33 72 L67 72 L67 55 L73 55 Z"
-          fill="#DFB250"
+          fill="#e7ba54"
         />
         {/* Door, punched out in the badge colour. */}
         <rect x="45" y="59" width="10" height="13" rx="1.4" fill="#15304A" />

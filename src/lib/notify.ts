@@ -16,7 +16,7 @@ import nodemailer from "nodemailer";
 
 const BRAND = "Lay Hama Homes";
 const NAVY = "#15304A";
-const GOLD = "#DFB250";
+const GOLD = "#e7ba54";
 
 const esc = (s: unknown) =>
   String(s).replace(/[<>&]/g, (c) =>

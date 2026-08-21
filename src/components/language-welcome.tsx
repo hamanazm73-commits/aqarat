@@ -195,7 +195,7 @@ export function LanguageWelcome() {
               className={`pointer-events-none absolute rounded-full bg-gold/20 blur-3xl ${o.cls}`}
             />
           ))}
-          <div className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_100%_60%_at_50%_0%,rgba(223,178,80,0.10),transparent_60%)]" />
+          <div className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_100%_60%_at_50%_0%,rgba(231, 186, 84,0.10),transparent_60%)]" />
 
           {/* centred when it fits, scrolls when the screen is short */}
           <div className="relative h-full overflow-y-auto">
