@@ -12,8 +12,6 @@ import {
   writeBatch,
   increment,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getStorage } from "firebase/storage";
 import { getFirebase } from "./client";
 import type { Inquiry, Property, Submission } from "@/lib/types";
 import { SEED_PROPERTIES } from "@/lib/data";
@@ -234,14 +232,45 @@ export async function fsSetEnabledCities(cities: string[]): Promise<void> {
 
 /* ------------------------------ Storage ------------------------------ */
 
+/**
+ * Put a file in the bucket and hand back the path it is served from.
+ *
+ * This used to call Firebase Storage's uploadBytes. Firebase Storage has to
+ * be provisioned before it exists, and when it is not there the SDK does not
+ * fail — it retries for a couple of minutes while the seller watches a spinner
+ * that never resolves. That is what "the upload is slow" turned out to be.
+ *
+ * It goes to this site's own /api/upload now, which writes to the same R2
+ * bucket the hotels and shops sites have been using all along. Same
+ * credentials, one bucket, split by key prefix.
+ *
+ * The name is kept: every caller passes a File and wants a URL back, and that
+ * contract has not changed. Photographs uploaded before today are absolute
+ * Firebase URLs still sitting in the same array, and they keep working.
+ */
 export async function fsUploadImage(file: File): Promise<string> {
   const fb = getFirebase();
-  if (!fb) throw new Error("Firebase is not configured");
-  const storage = getStorage(fb.app);
-  const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const path = `properties/${Date.now()}-${safe}`;
-  const snap = await uploadBytes(ref(storage, path), file);
-  return getDownloadURL(snap.ref);
+  const token = await fb?.auth.currentUser?.getIdToken();
+  if (!token) throw new Error("not-signed-in");
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers: { "Content-Type": file.type, "x-id-token": token },
+    body: file,
+  });
+
+  if (!res.ok) {
+    // The route says which of the several things went wrong; passing it on
+    // is the difference between fixing it and guessing at it.
+    const { error, message } = (await res
+      .json()
+      .catch(() => ({}))) as { error?: string; message?: string };
+    throw new Error(message ? `${error}: ${message}` : (error ?? "upload-failed"));
+  }
+
+  const { url } = (await res.json()) as { url?: string };
+  if (!url) throw new Error("upload-failed");
+  return url;
 }
 
 /* ---------------------------- Seller links ---------------------------- */

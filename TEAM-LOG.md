@@ -10,6 +10,38 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 — hamakali2005 · done
+
+**The photo upload was not slow, it was hanging.** This is the only one of the
+four sites that still called Firebase Storage's `uploadBytes`. Firebase Storage
+has to be provisioned before it exists, and when it is not there the SDK does
+not fail — it retries for about two minutes while the seller watches a spinner
+that never resolves.
+
+Moved onto the R2 bucket the hotels and shops sites already use: `/api/upload`
+and `/api/img/[...key]`, ported from the shops site. One bucket for the family,
+split by prefix — `properties/` here, `shops/` there, hotel media alongside.
+
+Who may upload matches what the Storage rules allowed: the owner, plus any
+account with an enabled role, because a seller uploads photographs of their own
+listing. Checked over the REST APIs — firebase-admin's auth subpath crashes on
+Vercel's runtime.
+
+`fsUploadImage` keeps its name and contract, and returns `/api/img/…` rather
+than a bare key, so the Firebase URLs already in listings keep working.
+
+Verified locally: unauthenticated POST refused in 0.4s instead of hanging, a
+missing key 404s, and a key the **shops** site wrote comes back through this
+site at 200 with its bytes intact — so both directions of the shared bucket
+work from here.
+
+### Needs doing on Vercel
+
+`S3_ENDPOINT`, `S3_BUCKET`, `S3_REGION`, `S3_ACCESS_KEY_ID`,
+`S3_SECRET_ACCESS_KEY` — the same five the hotels project has. Until they are
+set the route answers **501 storage-not-configured** straight away, which is a
+fast honest failure rather than the old silent one, but it is still a failure.
+
 ## 2026-08-21 16:09 — hamakali2005 · done
 
 **Photo upload when publishing a listing was slow.** Three causes, all of them
