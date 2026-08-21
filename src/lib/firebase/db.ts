@@ -13,7 +13,7 @@ import {
   increment,
 } from "firebase/firestore";
 import { getFirebase } from "./client";
-import type { Inquiry, Property, Submission } from "@/lib/types";
+import type { Inquiry, Property } from "@/lib/types";
 import { SEED_PROPERTIES } from "@/lib/data";
 
 /** Role document stored at roles/{email}. */
@@ -121,71 +121,6 @@ export async function fsListInquiries(): Promise<Inquiry[]> {
     query(collection(db(), "inquiries"), orderBy("createdAt", "desc")),
   );
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Inquiry) }));
-}
-
-/* --------------------------- Submissions --------------------------- */
-// Properties submitted by the public, held for admin review.
-
-export async function fsCreateSubmission(
-  data: Omit<Submission, "id">,
-): Promise<void> {
-  await addDoc(collection(db(), "submissions"), data);
-}
-
-export async function fsListSubmissions(): Promise<Submission[]> {
-  const snap = await getDocs(
-    query(collection(db(), "submissions"), orderBy("createdAt", "desc")),
-  );
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Submission) }));
-}
-
-export async function fsDeleteSubmission(id: string): Promise<void> {
-  await deleteDoc(doc(db(), "submissions", id));
-}
-
-/**
- * Whether a submission carries enough to become a listing.
- *
- * The public form asks for a name, a phone number and a city now — none of
- * which is a property anyone could browse. Those are leads: somebody rings
- * them and writes the listing properly in the dashboard. Only the older,
- * fuller submissions can go straight through.
- */
-export function canPublishSubmission(s: Submission): boolean {
-  return Boolean(s.title && s.purpose && s.type);
-}
-
-/** Publish a submission as a live property, then remove the submission. */
-export async function fsApproveSubmission(s: Submission): Promise<void> {
-  // Guarded rather than defaulted: inventing a purpose and a price to fill the
-  // gaps would put a listing on the public site that nobody wrote.
-  if (!canPublishSubmission(s)) throw new Error("submission has nothing to publish");
-
-  const three = (v: string) => ({ ku: v, en: v, ar: v });
-  const type = s.type!;
-  const property: Omit<Property, "id"> = {
-    title: three(s.title!),
-    description: three(s.description ?? ""),
-    purpose: s.purpose!,
-    type,
-    city: s.city,
-    priceIQD: Number(s.priceIQD) || 0,
-    area: Number(s.area) || 0,
-    images: s.images?.length ? s.images : [`/img/${type}.svg`],
-    amenities: [],
-    agent: {
-      name: s.name,
-      phone: s.phone,
-      ...(s.whatsapp ? { whatsapp: s.whatsapp } : {}),
-    },
-    createdAt: new Date().toISOString(),
-    ...(typeof s.bedrooms === "number" ? { bedrooms: s.bedrooms } : {}),
-    ...(typeof s.bathrooms === "number" ? { bathrooms: s.bathrooms } : {}),
-    ...(s.district ? { district: three(s.district) } : {}),
-  };
-  const payload = JSON.parse(JSON.stringify(property)) as Omit<Property, "id">;
-  await addDoc(collection(db(), "properties"), payload);
-  if (s.id) await deleteDoc(doc(db(), "submissions", s.id));
 }
 
 /* ------------------------------- Roles ------------------------------- */

@@ -132,37 +132,6 @@ export interface Inquiry {
   createdAt: string;
 }
 
-/**
- * Someone asking us to list their property.
- *
- * Only three things are required, because that is all the form asks for now:
- * who they are, how to reach them, and where the property is. The rest is
- * settled on the phone and entered by an admin — a stranger filling in a
- * fifteen-field form on a phone is a stranger who closes the tab.
- *
- * Everything below `city` is optional rather than gone: submissions already in
- * Firestore carry those fields, and the review screen still shows them when
- * they are there.
- */
-export interface Submission {
-  id?: string;
-  city: CityKey;
-  name: string;
-  phone: string;
-  createdAt: string;
-  title?: string;
-  description?: string;
-  purpose?: Purpose;
-  type?: PropertyType;
-  district?: string;
-  priceIQD?: number;
-  area?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  images?: string[];
-  whatsapp?: string;
-}
-
 /** Filters used by the listing page. */
 export interface PropertyFilters {
   q?: string;

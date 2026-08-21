@@ -11,7 +11,6 @@ import {
   Loader2,
   LogOut,
   MapPin,
-  Send,
   ShieldCheck,
   Users,
   AlertTriangle,
@@ -97,8 +96,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
     ? [{ href: "/hq", label: "موڵکەکانم", icon: Building2, exact: true }]
     : [
         { href: "/hq", label: "خانووبەرەکان", icon: Building2, exact: true },
-        { href: "/hq/sellers", label: "خاوەن موڵکەکان", icon: KeyRound },
-        { href: "/hq/submissions", label: "ناردنەکان", icon: Send },
+        { href: "/hq/sellers", label: "نووسینگەکان", icon: KeyRound },
         { href: "/hq/inquiries", label: "داواکارییەکان", icon: Inbox },
         { href: "/hq/cities", label: "شارەکان", icon: MapPin },
         ...(isOwner

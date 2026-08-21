@@ -113,32 +113,8 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Submissions: anyone may submit a property; only admins read/manage it.
-    match /submissions/{id} {
-      allow read: if isAdmin();
-      allow create: if
-        request.resource.data.keys().hasOnly(['title', 'description',
-          'purpose', 'type', 'city', 'district', 'priceIQD', 'area',
-          'bedrooms', 'bathrooms', 'images', 'name', 'phone', 'whatsapp',
-          'createdAt']) &&
-        request.resource.data.title is string &&
-        request.resource.data.title.size() >= 2 &&
-        request.resource.data.title.size() <= 120 &&
-        request.resource.data.purpose is string &&
-        request.resource.data.type is string &&
-        request.resource.data.city is string &&
-        request.resource.data.priceIQD is number &&
-        request.resource.data.area is number &&
-        request.resource.data.name is string &&
-        request.resource.data.name.size() >= 2 &&
-        request.resource.data.name.size() <= 80 &&
-        request.resource.data.phone is string &&
-        request.resource.data.phone.size() >= 6 &&
-        request.resource.data.phone.size() <= 20 &&
-        request.resource.data.images is list &&
-        request.resource.data.images.size() <= 20 &&
-        request.resource.data.createdAt is string;
-      allow update, delete: if isAdmin();
-    }
+    // Submissions are gone. Nothing wrote to this collection any more — the
+    // public form that fed it was taken off the site — and an open `create`
+    // rule with nothing behind it is a way in for junk, not a feature.
   }
 }

@@ -148,7 +148,7 @@ export default function SellersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-bold">خاوەن موڵکەکان</h1>
+        <h1 className="text-xl font-bold">نووسینگەکان</h1>
         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
           بۆ هەرکەسێک لینکێک دروست بکە و بۆی بنێرە. لینکەکە خۆی وشەی نهێنییە —
           دەیکاتەوە و ڕاستەوخۆ دەچێتە ژوورەوە، تەنها موڵکەکانی خۆی دەبینێت.
@@ -222,7 +222,7 @@ export default function SellersPage() {
         <Loader2 className="mx-auto size-6 animate-spin text-primary" />
       ) : rows.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-          هێشتا هیچ خاوەن موڵکێک نییە.
+          هێشتا هیچ نووسینگەیەک نییە.
         </p>
       ) : (
         <ul className="space-y-2">
