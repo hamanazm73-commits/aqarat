@@ -10,6 +10,21 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 23:37 — hamakali2005 · done
+
+**Photographs and video are one section now**, titled
+**زیادکردنی وێنە و ڤیدیۆ** — Hama asked for the separate video card to go.
+
+One picker (`accept="image/*,video/*"`), sorted after upload: photos to
+`images`, clips to `videos`, since the first photo is the cover. Clips skip the
+compressor — a video handed to a canvas comes back as one frame. The link box
+takes either and routes YouTube/Vimeo/.mp4 to `videos`.
+
+`/api/upload` accepts mp4, webm and quicktime too. **Long video still cannot go
+through it** — the function body is capped at 4.5MB — so over the limit it
+returns `too-large` and the form now says in Kurdish to use a YouTube link.
+The old message only said the upload failed.
+
 ## 2026-08-21 23:28 — hamakali2005 · done
 
 **Gallery arrows were pointing the wrong ways.** The page is RTL, so

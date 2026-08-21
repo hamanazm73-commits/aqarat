@@ -47,11 +47,9 @@ export function PropertyForm({ initial }: { initial?: Property }) {
   );
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [mapInput, setMapInput] = useState("");
   const [mapError, setMapError] = useState<string | null>(null);
   const [urlInput, setUrlInput] = useState("");
-  const [videoInput, setVideoInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   /** how many of this batch have landed, so the wait shows movement */
   const [progress, setProgress] = useState({ done: 0, total: 0 });
@@ -106,7 +104,12 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           // buyer afterwards pays far less to receive. If it can't be
           // compressed — an odd format, no canvas — the original goes up
           // rather than nothing.
-          const ready = await compressImage(chosen[i]).catch(() => chosen[i]);
+          // A clip is sent as it is. Shrinking is for photographs, and a
+          // video handed to a canvas comes back as one frame of itself.
+          const isVideo = chosen[i].type.startsWith("video/");
+          const ready = isVideo
+            ? chosen[i]
+            : await compressImage(chosen[i]).catch(() => chosen[i]);
           urls[i] = await fsUploadImage(ready);
           setProgress((p) => ({ ...p, done: p.done + 1 }));
         }
@@ -115,43 +118,43 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       await Promise.all(
         Array.from({ length: Math.min(3, chosen.length) }, worker),
       );
-      setD((p) => ({ ...p, images: [...p.images, ...urls.filter(Boolean)] }));
-    } catch {
-      setError("ئەپلۆدی وێنە سەرکەوتوو نەبوو / Image upload failed.");
+      // One picker, but they are not the same thing once they land: the first
+      // photograph is the cover, and a clip has no business being it.
+      const pickedImages = urls.filter((u, i) => u && !chosen[i].type.startsWith("video/"));
+      const pickedVideos = urls.filter((u, i) => u && chosen[i].type.startsWith("video/"));
+      setD((p) => ({
+        ...p,
+        images: [...p.images, ...pickedImages],
+        videos: [...(p.videos ?? []), ...pickedVideos],
+      }));
+    } catch (err) {
+      // "too-large" is the one a seller can act on, and the action is the
+      // link box directly underneath.
+      const tooBig = err instanceof Error && err.message.includes("too-large");
+      setError(
+        tooBig
+          ? "فایلەکە زۆر گەورەیە. بۆ ڤیدیۆ، بەستەری YouTube دابنێ."
+          : "ئەپلۆد سەرکەوتوو نەبوو / Upload failed.",
+      );
     } finally {
       setUploading(false);
       setProgress({ done: 0, total: 0 });
     }
   }
 
-  /**
-   * The same picker as the photographs, pointed at video.
-   *
-   * `fsUploadImage` is only named for images — it takes a File and hands back
-   * a URL, which is as true of a clip from the camera roll. On a phone this
-   * opens the gallery, which is where the video already is.
-   */
-  async function onVideoFiles(files: FileList | null) {
-    if (!files?.length) return;
-    setUploadingVideo(true);
-    setError(null);
-    try {
-      const urls: string[] = [];
-      for (const f of Array.from(files)) urls.push(await fsUploadImage(f));
-      setD((p) => ({ ...p, videos: [...(p.videos ?? []), ...urls] }));
-    } catch {
-      setError("ئەپلۆدی ڤیدیۆ سەرکەوتوو نەبوو / Video upload failed.");
-    } finally {
-      setUploadingVideo(false);
-    }
-  }
 
+  /** Anything that is plainly a video goes to the videos; the rest is a photo. */
   function addUrl() {
     const u = urlInput.trim();
-    if (u) {
-      setD((p) => ({ ...p, images: [...p.images, u] }));
-      setUrlInput("");
-    }
+    if (!u) return;
+    const isVideo =
+      /youtu\.be|youtube\.com|vimeo\.com|\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
+    setD((p) =>
+      isVideo
+        ? { ...p, videos: [...(p.videos ?? []), u] }
+        : { ...p, images: [...p.images, u] },
+    );
+    setUrlInput("");
   }
 
   function removeImage(i: number) {
@@ -171,13 +174,6 @@ export function PropertyForm({ initial }: { initial?: Property }) {
     setD((p) => ({ ...p, lat: c.lat, lng: c.lng }));
   }
 
-  function addVideo() {
-    const u = videoInput.trim();
-    if (u) {
-      setD((p) => ({ ...p, videos: [...(p.videos ?? []), u] }));
-      setVideoInput("");
-    }
-  }
 
   function removeVideo(i: number) {
     setD((p) => ({
@@ -337,7 +333,16 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       </Card>
 
       {/* Images */}
-      <Card title="وێنەکان">
+      {/*
+        One place for everything the seller shows.
+
+        Photographs and video were two cards asking the same question. A seller
+        with ten photos and one clip of the street had to find two uploaders,
+        and the second looked like a feature rather than a place to put the
+        thing already in their gallery. One picker takes both — on a phone it
+        opens the gallery, which is where all of it already is.
+      */}
+      <Card title="زیادکردنی وێنە و ڤیدیۆ">
         <div className="flex flex-wrap gap-3">
           {d.images.map((src, i) => (
             <div key={i} className="relative h-24 w-32 overflow-hidden rounded-lg border border-border">
@@ -356,41 +361,12 @@ export function PropertyForm({ initial }: { initial?: Property }) {
             {uploading && progress.total > 1
               ? `${progress.done}/${progress.total}`
               : "ئەپلۆد"}
-            <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            <input type="file" accept="image/*,video/*" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
           </label>
         </div>
-        <div className="mt-3 flex gap-2">
-          <input className="input" placeholder="یان بەستەری وێنە زیادبکە (URL)" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} />
-          <Button type="button" variant="outline" onClick={addUrl}><Plus className="h-4 w-4" /></Button>
-        </div>
-      </Card>
 
-      {/* Videos */}
-      <Card title="ڤیدیۆکان">
-        <p className="mb-3 text-xs text-muted-foreground">
-          ڤیدیۆ لە گەلەری مۆبایلەکەتەوە باربکە، یان بەستەرێک دابنێ — YouTube
-          یان MP4. بۆ ڤیدیۆی زۆر گەورە، YouTube هێشتا خێراترە و تێچوونی نییە.
-        </p>
-
-        {/* The same control the photographs use, pointed at video: on a phone
-            this opens the gallery, which is where the clip already is. */}
-        <label className="mb-3 flex h-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-xs text-muted-foreground hover:bg-muted">
-          {uploadingVideo ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Upload className="h-5 w-5" />
-          )}
-          ڤیدیۆ باربکە
-          <input
-            type="file"
-            accept="video/*"
-            multiple
-            className="hidden"
-            onChange={(e) => onVideoFiles(e.target.files)}
-          />
-        </label>
         {(d.videos ?? []).length > 0 && (
-          <div className="mb-3 space-y-2">
+          <div className="mt-3 space-y-2">
             {(d.videos ?? []).map((v, i) => (
               <div key={i} className="flex items-center gap-2 rounded-lg border border-border p-2 text-sm">
                 <Video className="h-4 w-4 shrink-0 text-primary" />
@@ -402,15 +378,14 @@ export function PropertyForm({ initial }: { initial?: Property }) {
             ))}
           </div>
         )}
-        <div className="flex gap-2">
-          <input
-            className="input"
-            placeholder="بەستەری ڤیدیۆ (بۆ نموونە https://youtu.be/...)"
-            value={videoInput}
-            onChange={(e) => setVideoInput(e.target.value)}
-          />
-          <Button type="button" variant="outline" onClick={addVideo}><Plus className="h-4 w-4" /></Button>
+
+        <div className="mt-3 flex gap-2">
+          <input className="input" placeholder="یان بەستەرێک دابنێ — وێنە، یان ڤیدیۆی YouTube" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} />
+          <Button type="button" variant="outline" onClick={addUrl}><Plus className="h-4 w-4" /></Button>
         </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          ڤیدیۆی گەورە بە بەستەری YouTube دابنێ — خێراترە و تێچوونی نییە.
+        </p>
       </Card>
 
       {/* Flags + discount + agent */}
@@ -436,7 +411,7 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       {error && <p className="text-sm text-danger">{error}</p>}
 
       <div className="flex gap-3">
-        <Button type="submit" disabled={busy || uploading || uploadingVideo}>
+        <Button type="submit" disabled={busy || uploading}>
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {editing ? "پاشەکەوتکردن" : "زیادکردن"}
         </Button>
