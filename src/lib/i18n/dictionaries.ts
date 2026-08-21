@@ -87,7 +87,10 @@ export const dict = {
       type: "جۆر",
       purpose: "مەبەست",
       posted: "بڵاوکراوەتەوە",
-      reference: "ژمارەی ناسنامە",
+      // Not an identity card. It is this listing’s own code, which is what
+      // somebody reads out on the phone to say which house they mean — and
+      // "ناسنامە" had sellers asking whose ID number the site wanted.
+      reference: "کۆدی مووڵک",
     },
     inquiry: {
       title: "داواکاری زانیاری",

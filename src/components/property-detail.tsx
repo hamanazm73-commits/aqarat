@@ -280,13 +280,13 @@ export function PropertyDetail({
             ))}
           </div>
 
-          {/* Description */}
-          <section className="mt-8">
-            <h2 className="text-lg font-semibold">{t.detail.description}</h2>
-            <p className="mt-3 leading-relaxed text-muted-foreground">{tr(p.description)}</p>
-          </section>
+          {/*
+            What the house has, before what somebody wrote about it.
 
-          {/* Amenities */}
+            The description is prose and gets skimmed; the list is the part a
+            buyer is actually checking — parking, a garden, a lift. Underneath
+            the paragraph it was being scrolled past.
+          */}
           {p.amenities.length > 0 && (
             <section className="mt-8">
               <h2 className="text-lg font-semibold">{t.detail.amenities}</h2>
@@ -302,6 +302,12 @@ export function PropertyDetail({
               </div>
             </section>
           )}
+
+          {/* Description */}
+          <section className="mt-8">
+            <h2 className="text-lg font-semibold">{t.detail.description}</h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">{tr(p.description)}</p>
+          </section>
 
           {/* Location */}
           {typeof p.lat === "number" && typeof p.lng === "number" && (

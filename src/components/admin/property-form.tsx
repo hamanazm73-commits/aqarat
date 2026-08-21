@@ -23,6 +23,22 @@ import { useAuth } from "@/lib/firebase/auth";
 import { getFirebase } from "@/lib/firebase/client";
 import { Button } from "@/components/ui/button";
 import { coordsFromMapsUrl } from "@/lib/maps";
+import { districts } from "@/lib/districts";
+
+/** The value that means "not on the list", never a real district name. */
+const OTHER_DISTRICT = "__other__";
+
+/*
+ * A district name is a proper noun, so it is the same in all three.
+ *
+ * The record wants ku/ar/en and translating a place name would be wrong
+ * anyway — عەنکاوا is Ankawa is عنكاوا, written how the people there write it.
+ * Storing one string three times keeps every reader that already does
+ * tr(district) working, without teaching any of them a second shape.
+ */
+function sameInAll(name: string) {
+  return { ku: name, ar: name, en: name };
+}
 
 type Draft = Omit<Property, "id" | "createdAt"> & { createdAt?: string };
 
@@ -68,6 +84,23 @@ export function PropertyForm({ initial }: { initial?: Property }) {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [mapInput, setMapInput] = useState("");
+  const [resolving, setResolving] = useState(false);
+  /*
+   * Whether the district box is a list or something typed.
+   *
+   * Sellers were typing the district by hand, in two boxes, in two languages,
+   * and the same neighbourhood arrived spelled four ways — which the search
+   * then treats as four places. A list of the city’s own districts fixes the
+   * spelling and saves the typing.
+   *
+   * The list is not complete and never will be, so a district that is not on
+   * it can still be typed. A listing being edited that was written before this
+   * opens typed, or the form would silently drop what the seller wrote.
+   */
+  const [typedDistrict, setTypedDistrict] = useState(() => {
+    const name = initial?.district?.ku;
+    return !!name && !(districts[initial.city] ?? []).includes(name);
+  });
   const [mapError, setMapError] = useState<string | null>(null);
   const [urlInput, setUrlInput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -248,11 +281,48 @@ export function PropertyForm({ initial }: { initial?: Property }) {
     setD((p) => ({ ...p, images: p.images.filter((_, idx) => idx !== i) }));
   }
 
-  function applyMapUrl() {
-    const c = coordsFromMapsUrl(mapInput);
+  /*
+   * Read the pin out of whatever was pasted.
+   *
+   * A short maps.app.goo.gl link is what the share button on a phone gives
+   * out, and it holds no coordinates — the form used to say "paste the long
+   * one instead", which nobody could, because the app does not offer it. So
+   * when the text alone yields nothing, the server follows the link and the
+   * long address it lands on is read instead.
+   */
+  async function applyMapUrl() {
+    const raw = mapInput.trim();
+    if (!raw) return;
+
+    let c = coordsFromMapsUrl(raw);
+    if (!c) {
+      setResolving(true);
+      try {
+        const res = await fetch("/api/resolve-map", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: raw }),
+        });
+        const body = (await res.json().catch(() => ({}))) as {
+          url?: string;
+          error?: string;
+        };
+        if (res.ok && body.url) {
+          c = coordsFromMapsUrl(body.url);
+        } else if (body.error === "dead-link") {
+          setMapError("ئەم بەستەرە کار ناکات. لە Google Maps بەستەرێکی نوێ Share بکە.");
+          return;
+        }
+      } catch {
+        /* offline or blocked — handled by the message below */
+      } finally {
+        setResolving(false);
+      }
+    }
+
     if (!c) {
       setMapError(
-        "نەتوانرا شوێنەکە دەربهێنرێت. بەستەری تەواوی Google Maps دابنێ (نەک بەستەری کورت).",
+        "نەتوانرا شوێنەکە دەربهێنرێت. لە Google Maps شوێنەکە دیاری بکە، Share لێبدە و بەستەرەکە هەروەک خۆی لێرە دابنێ.",
       );
       return;
     }
@@ -345,9 +415,23 @@ export function PropertyForm({ initial }: { initial?: Property }) {
             </select>
           </Field>
           <Field label="شار">
-            <select className="input" value={d.city} onChange={(e) => up("city", e.target.value as Property["city"])}>
+            {/* Changing the city drops the district with it: a neighbourhood
+                belongs to the city it was picked in, and one left behind puts
+                an Erbil street on a Basra listing. */}
+            <select className="input" value={d.city} onChange={(e) => { setD((p) => ({ ...p, city: e.target.value as Property["city"], district: undefined })); setTypedDistrict(false); }}>
               {CITY_KEYS.map((c) => <option key={c} value={c}>{cityNames[c].ku}</option>)}
             </select>
+          </Field>
+          <Field label="گەڕەک">
+            {typedDistrict ? (
+              <input className="input" placeholder="ناوی گەڕەک بنووسە" value={d.district?.ku ?? ""} onChange={(e) => up("district", e.target.value ? sameInAll(e.target.value) : undefined)} />
+            ) : (
+              <select className="input" value={d.district?.ku ?? ""} onChange={(e) => { const v = e.target.value; if (v === OTHER_DISTRICT) { setTypedDistrict(true); up("district", undefined); return; } up("district", v ? sameInAll(v) : undefined); }}>
+                <option value="">— گەڕەک هەڵبژێرە —</option>
+                {(districts[d.city] ?? []).map((n) => <option key={n} value={n}>{n}</option>)}
+                <option value={OTHER_DISTRICT}>گەڕەکێکی تر…</option>
+              </select>
+            )}
           </Field>
           <Field label="نرخ (IQD)"><input type="number" className="input" value={d.priceIQD || ""} onChange={(e) => up("priceIQD", Number(e.target.value))} required /></Field>
           <Field label="ڕووبەر (مەتر)"><input type="number" className="input" value={d.area || ""} onChange={(e) => up("area", Number(e.target.value))} required /></Field>
@@ -355,8 +439,6 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           <Field label="حەمام"><input type="number" className="input" value={d.bathrooms ?? ""} onChange={(e) => up("bathrooms", e.target.value ? Number(e.target.value) : undefined)} /></Field>
           <Field label="نهۆم"><input type="number" className="input" value={d.floors ?? ""} onChange={(e) => up("floors", e.target.value ? Number(e.target.value) : undefined)} /></Field>
           <Field label="چێشتخانە"><input type="number" className="input" value={d.kitchens ?? ""} onChange={(e) => up("kitchens", e.target.value ? Number(e.target.value) : undefined)} /></Field>
-          <Field label="ناوچە (کوردی)"><input className="input" value={d.district?.ku ?? ""} onChange={(e) => up("district", { ku: e.target.value, en: d.district?.en ?? "", ar: d.district?.ar ?? "" })} /></Field>
-          <Field label="ناوچە (English)"><input className="input" value={d.district?.en ?? ""} onChange={(e) => up("district", { ku: d.district?.ku ?? "", en: e.target.value, ar: d.district?.ar ?? "" })} /></Field>
         </div>
       </Card>
 
@@ -364,8 +446,8 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       <Card title="شوێن لەسەر نەخشە">
         <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
           لە Google Maps شوێنەکە دیاری بکە، «Share» لێبدە و بەستەرەکە لێرە
-          دابنێ — خۆی شوێنەکە دەردەهێنێت. بەستەری کورتی <span dir="ltr">goo.gl</span>{" "}
-          کار ناکات، بەستەری تەواو بەکاربهێنە.
+          دابنێ — خۆی شوێنەکە دەردەهێنێت. بەستەری کورتیش
+          (<span dir="ltr">maps.app.goo.gl</span>) کاردەکات.
         </p>
         <div className="flex gap-2">
           <input
@@ -375,8 +457,8 @@ export function PropertyForm({ initial }: { initial?: Property }) {
             value={mapInput}
             onChange={(e) => setMapInput(e.target.value)}
           />
-          <Button type="button" variant="outline" onClick={applyMapUrl}>
-            <MapPin className="h-4 w-4" />
+          <Button type="button" variant="outline" onClick={applyMapUrl} disabled={resolving}>
+            {resolving ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
           </Button>
         </div>
 
