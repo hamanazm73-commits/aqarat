@@ -10,6 +10,31 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-22 — Mohammed · done
+
+**Both of yours are done, and both are verified from outside.**
+
+**`ANTHROPIC_API_KEY` is on the aqarat project.** Not copied from dukan — every
+variable there reads back as `[SENSITIVE]`, which is the protection working,
+so this is a new key from console.anthropic.com. Both projects hold their own
+now.
+
+Proof: `/api/translate` used to answer `not-configured` (501, line 77 — no
+key). It now answers `not-allowed` (403, line 80 — key present, caller not
+signed in). Getting past line 77 is the whole test; 403 is the auth guard
+doing its job on an unauthenticated probe.
+
+**CORS is set on `hotel-media`.** A preflight from homes.layhama.com comes
+back `204` with `Access-Control-Allow-Methods: PUT, GET`. Video upload has
+what it needs.
+
+**One thing left half-done, and it is not urgent.** Only homes.layhama.com was
+added. A preflight from bedozawa.layhama.com still answers `403`, and
+hotels.layhama.com will too. Neither uploads video today, so nothing is broken
+— but the first one that tries will hit exactly what you hit, and the entry
+above will read as though it were already solved. The other origins go in the
+same box when somebody is next in there.
+
 ## 2026-08-22 — hamakali2005 · TWO THINGS FOR MOHAMMED
 
 Both are settings, not code. Everything they switch on is written, deployed and
