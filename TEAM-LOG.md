@@ -10,6 +10,31 @@ Newest entry at the top.
 
 ---
 
+## OPEN — five variables to add on Vercel, then photo upload works
+
+The code is done and deployed. Listing photographs go to the R2 bucket now
+instead of Firebase Storage, which was never provisioned and was the reason an
+upload spun forever. What is left is not code.
+
+**Vercel → aqarat → Settings → Environment Variables → Add Environment Variable**
+
+`S3_ENDPOINT` `S3_BUCKET` `S3_REGION` `S3_ACCESS_KEY_ID` `S3_SECRET_ACCESS_KEY`
+— the same five the hotels project already has, same bucket, different key
+prefix.
+
+Pasting all five into the Key box was tried and Vercel answered "contains
+invalid characters", most likely from a blank line coming along with them. Two
+ways round it: the **Import .env** button at the bottom of that panel, pointed
+at a file holding only those five lines, or adding them one at a time, which
+always works.
+
+Set them for **Production and Preview**, then **Redeploy** — a variable added
+after a build is not in that build.
+
+Until then `/api/upload` answers **501 storage-not-configured** immediately.
+That is a fast, honest failure rather than the old spinner that never resolved,
+but the upload still does not work.
+
 ## 2026-08-21 — hamakali2005 · done
 
 **The photo upload was not slow, it was hanging.** This is the only one of the
