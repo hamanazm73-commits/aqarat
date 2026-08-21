@@ -63,7 +63,17 @@ const empty: Draft = {
  * away, which reads as the form doing something it was not asked to. Said out
  * loud once, it reads as help.
  */
-function TranslateNote({ busy }: { busy: boolean }) {
+function TranslateNote({ busy, off }: { busy: boolean; off: boolean }) {
+  // A promise the form cannot keep is worse than no promise. When the
+  // translator is not switched on, say so — a seller who is told the boxes
+  // fill themselves will sit and wait for boxes that never do.
+  if (off) {
+    return (
+      <p className="mt-2 text-xs text-danger">
+        وەرگێڕانی خۆکار ناکار نەکراوە — ئێستا دەبێت بە دەست بنووسرێت.
+      </p>
+    );
+  }
   return (
     <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
       {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
@@ -86,21 +96,20 @@ export function PropertyForm({ initial }: { initial?: Property }) {
   const [mapInput, setMapInput] = useState("");
   const [resolving, setResolving] = useState(false);
   /*
-   * Whether the district box is a list or something typed.
+   * The district is picked, not typed.
    *
-   * Sellers were typing the district by hand, in two boxes, in two languages,
-   * and the same neighbourhood arrived spelled four ways — which the search
-   * then treats as four places. A list of the city’s own districts fixes the
-   * spelling and saves the typing.
+   * Sellers were typing it by hand, in two boxes, in two languages, and the
+   * same neighbourhood arrived spelled four ways — which the search then reads
+   * as four places.
    *
-   * The list is not complete and never will be, so a district that is not on
-   * it can still be typed. A listing being edited that was written before this
-   * opens typed, or the form would silently drop what the seller wrote.
+   * This stays a list even when the listing already holds a name the list does
+   * not have: that name is added to the top of the options instead of dropping
+   * the seller into a text box. Opening the form typed, which is what it did
+   * before, meant an old listing looked like the list had never been built.
+   * Typing is still there behind "a different district" for the genuinely
+   * missing ones — the list is not complete and never will be.
    */
-  const [typedDistrict, setTypedDistrict] = useState(() => {
-    const name = initial?.district?.ku;
-    return !!name && !(districts[initial.city] ?? []).includes(name);
-  });
+  const [typedDistrict, setTypedDistrict] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   const [urlInput, setUrlInput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -117,6 +126,8 @@ export function PropertyForm({ initial }: { initial?: Property }) {
   const [vidPct, setVidPct] = useState<number | null>(null);
   /** which field is being filled in, so the seller sees it happening */
   const [translating, setTranslating] = useState<"title" | "description" | null>(null);
+  /** Set once the route says it has no key, so the note stops promising. */
+  const [translatorOff, setTranslatorOff] = useState(false);
 
   /**
    * The seller writes one language; the other two fill themselves.
@@ -143,6 +154,10 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         headers: { "Content-Type": "application/json", "x-id-token": token },
         body: JSON.stringify({ text: source, from }),
       });
+      if (res.status === 501) {
+        setTranslatorOff(true);
+        return;
+      }
       if (!res.ok) return;
       const out = (await res.json()) as Record<Locale, string>;
       setD((p) => {
@@ -158,6 +173,13 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       setTranslating(null);
     }
   }
+
+  /** That city’s districts, with whatever this listing already says kept. */
+  const districtOptions = (() => {
+    const list = districts[d.city] ?? [];
+    const saved = d.district?.ku ?? "";
+    return saved && !list.includes(saved) ? [saved, ...list] : list;
+  })();
 
   function up<K extends keyof Draft>(k: K, v: Draft[K]) {
     setD((p) => ({ ...p, [k]: v }));
@@ -385,10 +407,10 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       <Card title="ناونیشان (Title)">
         <div className="grid gap-3 sm:grid-cols-3">
           <Field label="کوردی"><input className="input" value={d.title.ku} onChange={(e) => up("title", { ...d.title, ku: e.target.value })} onBlur={() => translateFrom("title", "ku")} required /></Field>
-          <Field label="English"><input className="input" value={d.title.en} onChange={(e) => up("title", { ...d.title, en: e.target.value })} onBlur={() => translateFrom("title", "en")} required /></Field>
-          <Field label="عربي"><input className="input" value={d.title.ar} onChange={(e) => up("title", { ...d.title, ar: e.target.value })} onBlur={() => translateFrom("title", "ar")} required /></Field>
+          <Field label="English"><input className="input" value={d.title.en} onChange={(e) => up("title", { ...d.title, en: e.target.value })} onBlur={() => translateFrom("title", "en")} /></Field>
+          <Field label="عربي"><input className="input" value={d.title.ar} onChange={(e) => up("title", { ...d.title, ar: e.target.value })} onBlur={() => translateFrom("title", "ar")} /></Field>
         </div>
-        <TranslateNote busy={translating === "title"} />
+        <TranslateNote busy={translating === "title"} off={translatorOff} />
       </Card>
 
       {/* Descriptions */}
@@ -398,7 +420,7 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           <Field label="English"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.en} onChange={(e) => up("description", { ...d.description, en: e.target.value })} onBlur={() => translateFrom("description", "en")} /></Field>
           <Field label="عربي"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.ar} onChange={(e) => up("description", { ...d.description, ar: e.target.value })} onBlur={() => translateFrom("description", "ar")} /></Field>
         </div>
-        <TranslateNote busy={translating === "description"} />
+        <TranslateNote busy={translating === "description"} off={translatorOff} />
       </Card>
 
       {/* Core */}
@@ -428,7 +450,7 @@ export function PropertyForm({ initial }: { initial?: Property }) {
             ) : (
               <select className="input" value={d.district?.ku ?? ""} onChange={(e) => { const v = e.target.value; if (v === OTHER_DISTRICT) { setTypedDistrict(true); up("district", undefined); return; } up("district", v ? sameInAll(v) : undefined); }}>
                 <option value="">— گەڕەک هەڵبژێرە —</option>
-                {(districts[d.city] ?? []).map((n) => <option key={n} value={n}>{n}</option>)}
+                {districtOptions.map((n) => <option key={n} value={n}>{n}</option>)}
                 <option value={OTHER_DISTRICT}>گەڕەکێکی تر…</option>
               </select>
             )}

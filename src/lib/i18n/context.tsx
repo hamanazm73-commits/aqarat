@@ -47,6 +47,25 @@ interface I18nValue {
 
 const I18nContext = createContext<I18nValue | null>(null);
 
+/**
+ * The asked-for language, or the nearest thing that was actually written.
+ *
+ * A listing is meant to carry all three, and plenty do not: the auto-fill is
+ * off, or the seller saved before it answered. Reading v[locale] straight out
+ * then puts a blank where the title goes — a listing with no name, which looks
+ * broken rather than untranslated. Kurdish is tried first because that is what
+ * nearly every seller writes in.
+ */
+function localized(v: Localized | undefined, locale: Locale): string {
+  if (!v) return "";
+  const order: Locale[] = [locale, "ku", "ar", "en"];
+  for (const l of order) {
+    const s = v[l]?.trim();
+    if (s) return s;
+  }
+  return "";
+}
+
 function isLocale(v: string | null): v is Locale {
   return !!v && (LOCALES as string[]).includes(v);
 }
@@ -100,7 +119,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       dir,
       t: dict[locale],
       setLocale,
-      tr: (v) => (v ? v[locale] : ""),
+      tr: (v) => localized(v, locale),
     };
   }, [locale, setLocale]);
 
