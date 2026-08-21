@@ -10,9 +10,12 @@ Newest entry at the top.
 
 ---
 
-## 2026-08-22 — hamakali2005 · BLOCKED, needs one dashboard change
+## 2026-08-22 — hamakali2005 · BLOCKED, for Mohammed to do
 
-**Video upload will fail until the R2 bucket allows a cross-origin PUT.**
+**Video upload will fail until the R2 bucket allows a cross-origin PUT, and
+this one is yours — Hama does not have the Cloudflare login.** He tried, got as
+far as the sign-in page, and has left it with you. Everything else below is
+done and deployed; this is the last step and it is about four clicks.
 
 YouTube links are gone from the property form — a listing pointing a buyer at
 somebody else's channel is not what the site is for, and on the page there was
