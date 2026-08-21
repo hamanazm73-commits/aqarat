@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
-import type { CityKey, Property, PropertyFilters } from "@/lib/types";
+import type { CityKey, Locale, Property, PropertyFilters } from "@/lib/types";
 import { filterProperties } from "@/lib/data";
 import { useI18n } from "@/lib/i18n/context";
 import {
@@ -17,6 +17,30 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
 const SORTS = ["newest", "price_asc", "price_desc", "area_desc"] as const;
+
+/*
+ * The rungs on the price filter, in dinars.
+ *
+ * A million is where a property starts being worth listing, and the steps
+ * widen as the numbers do — twenty rungs from one million to a billion, close
+ * together at the bottom where most of the houses are and further apart at the
+ * top where a five-million difference stops mattering.
+ */
+const PRICE_STEPS = [
+  1, 5, 10, 20, 30, 40, 50, 75,
+  100, 125, 150, 200, 250, 300, 400, 500, 750, 1000,
+].map((m) => m * 1_000_000);
+
+/** "١٥٠ ملیۆن د.ع" rather than 150000000, which nobody reads at a glance. */
+function priceLabel(v: number, locale: Locale): string {
+  const unit = v >= 1_000_000_000 ? BILLION[locale] : MILLION[locale];
+  const n = v >= 1_000_000_000 ? v / 1_000_000_000 : v / 1_000_000;
+  return `${formatNumber(n, locale)} ${unit} ${CURRENCY[locale]}`;
+}
+
+const MILLION: Record<Locale, string> = { ku: "ملیۆن", ar: "مليون", en: "million" };
+const BILLION: Record<Locale, string> = { ku: "ملیار", ar: "مليار", en: "billion" };
+const CURRENCY: Record<Locale, string> = { ku: "د.ع", ar: "د.ع", en: "IQD" };
 
 export function PropertyExplorer({
   all,
@@ -85,25 +109,39 @@ export function PropertyExplorer({
         </select>
       </Field>
 
-      {/* Price */}
+      {/*
+        Price is chosen, not typed.
+
+        Two empty number boxes asked a buyer to know the market before they
+        could use them, on a phone keypad, and every stray digit was a filter
+        that quietly matched nothing — one zero too many on a house priced in
+        the hundreds of millions is easy to type and impossible to see. The
+        rungs are the prices these houses actually go for.
+      */}
       <Field label={t.filters.priceRange}>
         <div className="grid grid-cols-2 gap-2">
-          <input
-            type="number"
-            inputMode="numeric"
-            placeholder={t.filters.minPrice}
+          <select
             value={f.minPrice ?? ""}
             onChange={(e) => set("minPrice", e.target.value ? Number(e.target.value) : undefined)}
             className="input"
-          />
-          <input
-            type="number"
-            inputMode="numeric"
-            placeholder={t.filters.maxPrice}
+          >
+            <option value="">{t.filters.minPrice}</option>
+            {PRICE_STEPS.map((v) => (
+              <option key={v} value={v}>{priceLabel(v, locale)}</option>
+            ))}
+          </select>
+          <select
             value={f.maxPrice ?? ""}
             onChange={(e) => set("maxPrice", e.target.value ? Number(e.target.value) : undefined)}
             className="input"
-          />
+          >
+            <option value="">{t.filters.maxPrice}</option>
+            {/* Anything below the minimum already chosen would select
+                nothing, so it is not offered. */}
+            {PRICE_STEPS.filter((v) => !f.minPrice || v > f.minPrice).map((v) => (
+              <option key={v} value={v}>{priceLabel(v, locale)}</option>
+            ))}
+          </select>
         </div>
       </Field>
 
