@@ -96,7 +96,7 @@ export interface Property {
   floors?: number;
   kitchens?: number;
   images: string[];
-  /** Video URLs — a YouTube link, a direct MP4, or a file uploaded here. */
+  /** Video the seller uploaded, served back through /api/img. */
   videos?: string[];
   amenities: AmenityKey[];
   featured?: boolean;

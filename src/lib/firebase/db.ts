@@ -248,6 +248,61 @@ export async function fsSetEnabledCities(cities: string[]): Promise<void> {
  * contract has not changed. Photographs uploaded before today are absolute
  * Firebase URLs still sitting in the same array, and they keep working.
  */
+/**
+ * Send a video straight to the bucket, past this site entirely.
+ *
+ * A function request body is capped at 4.5MB and a clip off a phone is many
+ * times that, so /api/upload could never carry one. This asks for a signed
+ * address and the browser writes to R2 itself, which has no such limit.
+ *
+ * Needs CORS on the bucket, because the browser is writing across an origin.
+ * Without it this fails with "Failed to fetch" and nothing else — the message
+ * a blocked cross-origin request always gives, and the one that cost the shops
+ * site an evening.
+ */
+export async function fsUploadVideo(
+  file: File,
+  onProgress?: (fraction: number) => void,
+): Promise<string> {
+  const fb = getFirebase();
+  const token = await fb?.auth.currentUser?.getIdToken();
+  if (!token) throw new Error("not-signed-in");
+
+  const signed = await fetch("/api/upload-url", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-id-token": token },
+    body: JSON.stringify({ contentType: file.type, size: file.size }),
+  });
+  if (!signed.ok) {
+    const { error } = (await signed.json().catch(() => ({}))) as { error?: string };
+    throw new Error(error ?? "sign-failed");
+  }
+  const { uploadUrl, url } = (await signed.json()) as {
+    uploadUrl: string;
+    url: string;
+  };
+
+  // XHR rather than fetch: it is the only one that reports how far a body has
+  // got, and on a 60MB clip over mobile data a seller needs to see it moving.
+  await new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", uploadUrl, true);
+    xhr.setRequestHeader("Content-Type", file.type);
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total);
+    };
+    xhr.onload = () =>
+      xhr.status >= 200 && xhr.status < 300
+        ? resolve()
+        : reject(new Error(`bucket-refused-${xhr.status}`));
+    // No status, no body: this is what a blocked cross-origin PUT looks like.
+    xhr.onerror = () => reject(new Error("bucket-unreachable-check-cors"));
+    xhr.send(file);
+  });
+
+  return url;
+}
+
 export async function fsUploadImage(file: File): Promise<string> {
   const fb = getFirebase();
   const token = await fb?.auth.currentUser?.getIdToken();

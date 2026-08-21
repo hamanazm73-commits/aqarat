@@ -9,6 +9,7 @@ import {
   fsCreateProperty,
   fsUpdateProperty,
   fsUploadImage,
+  fsUploadVideo,
 } from "@/lib/firebase/db";
 import {
   amenityNames,
@@ -72,6 +73,15 @@ export function PropertyForm({ initial }: { initial?: Property }) {
   const [error, setError] = useState<string | null>(null);
   /** how many of this batch have landed, so the wait shows movement */
   const [progress, setProgress] = useState({ done: 0, total: 0 });
+  /*
+   * How far the clip has got, 0–100.
+   *
+   * The photo counter cannot carry this. Ten photos tick over one by one, but
+   * a video is a single item that can take two minutes on mobile data — the
+   * counter would read 0/1 the whole way and then jump, which is
+   * indistinguishable from stuck. Null when no video is moving.
+   */
+  const [vidPct, setVidPct] = useState<number | null>(null);
   /** which field is being filled in, so the seller sees it happening */
   const [translating, setTranslating] = useState<"title" | "description" | null>(null);
 
@@ -166,13 +176,24 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           // buyer afterwards pays far less to receive. If it can't be
           // compressed — an odd format, no canvas — the original goes up
           // rather than nothing.
-          // A clip is sent as it is. Shrinking is for photographs, and a
-          // video handed to a canvas comes back as one frame of itself.
-          const isVideo = chosen[i].type.startsWith("video/");
-          const ready = isVideo
-            ? chosen[i]
-            : await compressImage(chosen[i]).catch(() => chosen[i]);
-          urls[i] = await fsUploadImage(ready);
+          /*
+           * Two roads, because the two are not the same size.
+           *
+           * A photograph is redrawn to about 150KB first and goes through
+           * /api/upload. A clip cannot be shrunk in a browser — that needs a
+           * transcoder, not a canvas — and is far past what a function body
+           * may carry, so it is signed and sent to the bucket directly.
+           */
+          const f = chosen[i];
+          if (f.type.startsWith("video/")) {
+            urls[i] = await fsUploadVideo(f, (fraction) =>
+              setVidPct(Math.round(fraction * 100)),
+            );
+            setVidPct(null);
+          } else {
+            const ready = await compressImage(f).catch(() => f);
+            urls[i] = await fsUploadImage(ready);
+          }
           setProgress((p) => ({ ...p, done: p.done + 1 }));
         }
       }
@@ -190,32 +211,36 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         videos: [...(p.videos ?? []), ...pickedVideos],
       }));
     } catch (err) {
-      // "too-large" is the one a seller can act on, and the action is the
-      // link box directly underneath.
-      const tooBig = err instanceof Error && err.message.includes("too-large");
+      // Each of these is something the seller can actually do something
+      // about, so each says which it was rather than "upload failed".
+      const m = err instanceof Error ? err.message : "";
       setError(
-        tooBig
-          ? "فایلەکە زۆر گەورەیە. بۆ ڤیدیۆ، بەستەری YouTube دابنێ."
-          : "ئەپلۆد سەرکەوتوو نەبوو / Upload failed.",
+        m.includes("too-large")
+          ? "فایلەکە زۆر گەورەیە."
+          : m.includes("cors")
+            ? "ڤیدیۆکە نەگەیشتە کۆگاکە — ڕێکخستنی CORS پێویستە."
+            : "ئەپلۆد سەرکەوتوو نەبوو / Upload failed.",
       );
     } finally {
       setUploading(false);
       setProgress({ done: 0, total: 0 });
+      setVidPct(null);
     }
   }
 
 
-  /** Anything that is plainly a video goes to the videos; the rest is a photo. */
+  /**
+   * A link to a photograph, and only that.
+   *
+   * It used to take a YouTube address as well. A listing sending a buyer off to
+   * somebody else's site is not what this is for, and on the page there was no
+   * telling whether the video was the property's own or a link — so video is
+   * uploaded here or it is not on the listing.
+   */
   function addUrl() {
     const u = urlInput.trim();
     if (!u) return;
-    const isVideo =
-      /youtu\.be|youtube\.com|vimeo\.com|\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
-    setD((p) =>
-      isVideo
-        ? { ...p, videos: [...(p.videos ?? []), u] }
-        : { ...p, images: [...p.images, u] },
-    );
+    setD((p) => ({ ...p, images: [...p.images, u] }));
     setUrlInput("");
   }
 
@@ -422,9 +447,11 @@ export function PropertyForm({ initial }: { initial?: Property }) {
                 mobile data the seller needs to know it is moving and roughly
                 how much is left, or the honest answer to "is it stuck?" is
                 that they cannot tell. */}
-            {uploading && progress.total > 1
-              ? `${progress.done}/${progress.total}`
-              : "ئەپلۆد"}
+            {vidPct !== null
+              ? `${vidPct}%`
+              : uploading && progress.total > 1
+                ? `${progress.done}/${progress.total}`
+                : "ئەپلۆد"}
             <input type="file" accept="image/*,video/*" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
           </label>
         </div>
@@ -444,11 +471,11 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         )}
 
         <div className="mt-3 flex gap-2">
-          <input className="input" placeholder="یان بەستەرێک دابنێ — وێنە، یان ڤیدیۆی YouTube" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} />
+          <input className="input" placeholder="یان بەستەری وێنە زیادبکە (URL)" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} />
           <Button type="button" variant="outline" onClick={addUrl}><Plus className="h-4 w-4" /></Button>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          ڤیدیۆی گەورە بە بەستەری YouTube دابنێ — خێراترە و تێچوونی نییە.
+          ڤیدیۆ ڕاستەوخۆ بار دەکرێت و لە ژێر وێنەکاندا دەردەکەوێت.
         </p>
       </Card>
 

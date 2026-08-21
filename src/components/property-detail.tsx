@@ -33,7 +33,6 @@ import {
 } from "@/lib/format";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
-import { youtubeEmbed } from "@/lib/video";
 import { fsCountView } from "@/lib/firebase/db";
 
 export function PropertyDetail({
@@ -45,6 +44,19 @@ export function PropertyDetail({
 }) {
   const { t, locale, tr } = useI18n();
   const [active, setActive] = useState(0);
+
+  /*
+   * Only clips this site can actually play.
+   *
+   * Listings made before today may hold a YouTube address in `videos` — the
+   * form used to accept one. Handed to a <video> element that is a player that
+   * never starts, which is worse on the page than no video at all. Anything
+   * that is not a file we host is left out until somebody removes it in the
+   * editor.
+   */
+  const playable = (p.videos ?? []).filter(
+    (v) => v.startsWith("/api/img/") || /\.(mp4|webm|mov|m4v)(\?|$)/i.test(v),
+  );
 
   /**
    * One view per listing per mount.
@@ -191,6 +203,36 @@ export function PropertyDetail({
             ))}
           </div>
         )}
+
+        {/*
+          The walk-through, directly beneath the photographs.
+
+          It was down past the description under a heading of its own, which
+          read as an afterthought — a buyer who had already decided by then
+          never scrolled that far. Here it is plainly one more thing to look at
+          about the same house, and it is given a shade more height than the
+          picture above so it is clearly the moving one.
+
+          Framed rather than left to its own size: phone footage is as often
+          held upright as sideways, and a portrait clip at full width would
+          stand two thousand pixels tall on a desktop and push the whole
+          listing off the screen. The frame is fixed, the video is contained
+          inside it, and black fills whatever is left either side.
+        */}
+        {playable.length > 0 && (
+          <div className="mt-3 space-y-3">
+            {playable.map((v) => (
+              <video
+                key={v}
+                src={v}
+                controls
+                playsInline
+                preload="metadata"
+                className="aspect-[3/2] max-h-[80vh] w-full rounded-2xl border border-border bg-black object-contain"
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
@@ -243,36 +285,6 @@ export function PropertyDetail({
             <h2 className="text-lg font-semibold">{t.detail.description}</h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">{tr(p.description)}</p>
           </section>
-
-          {/* Videos */}
-          {p.videos && p.videos.length > 0 && (
-            <section className="mt-8">
-              <h2 className="text-lg font-semibold">{t.detail.videos}</h2>
-              <div className="mt-3 grid gap-4 sm:grid-cols-2">
-                {p.videos.map((v, i) => {
-                  const embed = youtubeEmbed(v);
-                  return (
-                    <div
-                      key={i}
-                      className="aspect-video overflow-hidden rounded-xl border border-border bg-black"
-                    >
-                      {embed ? (
-                        <iframe
-                          src={embed}
-                          title={`${tr(p.title)} — video ${i + 1}`}
-                          className="h-full w-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                      ) : (
-                        <video src={v} controls className="h-full w-full" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          )}
 
           {/* Amenities */}
           {p.amenities.length > 0 && (

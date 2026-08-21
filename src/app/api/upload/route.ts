@@ -72,23 +72,15 @@ async function allowed(idToken: string): Promise<boolean> {
 }
 
 /**
- * Photographs, and short clips.
+ * Photographs only.
  *
- * Video is here because the form asks for both in one place, and a seller with
- * a ten-second walk past the gate should not have to find a second uploader
- * for it. Long video does not belong here and cannot: a function body is
- * capped at 4.5MB and a minute off a phone is many times that. Over the limit
- * the route says "too-large" and the form points at the YouTube box, which is
- * both faster and free.
+ * Video used to be accepted here too, and it could not work: a function body
+ * is capped at 4.5MB and a minute of phone footage is many times that, so
+ * every real clip was refused. Video now goes to /api/upload-url instead,
+ * which signs an address and lets the browser send the bytes straight to the
+ * bucket with no limit of ours in the way.
  */
-const ALLOWED = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "video/mp4",
-  "video/webm",
-  "video/quicktime",
-]);
+const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_BYTES = 4 * 1024 * 1024;
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -122,9 +114,6 @@ export async function POST(request: Request): Promise<NextResponse> {
     "image/jpeg": "jpg",
     "image/png": "png",
     "image/webp": "webp",
-    "video/mp4": "mp4",
-    "video/webm": "webm",
-    "video/quicktime": "mov",
   };
   const key = `properties/${Date.now().toString(36)}-${Math.random()
     .toString(36)
