@@ -145,20 +145,31 @@ export function PropertyDetail({
             {p.purpose === "sale" ? t.card.forSale : t.card.forRent}
           </span>
           {p.images.length > 1 && (
+            /*
+              The page is right-to-left, so `justify-between` puts the first
+              child on the RIGHT. The icons are ordered for where the buttons
+              land, not for the order they are written in — written the obvious
+              way round, the left-hand button drew an arrow pointing right.
+
+              Which one goes back also follows the script: content runs right to
+              left, so moving rightwards is moving back through it.
+            */
             <div className="absolute inset-x-4 top-1/2 z-10 flex -translate-y-1/2 justify-between">
+              {/* lands on the right */}
               <button
                 onClick={() => setActive((a) => (a - 1 + p.images.length) % p.images.length)}
                 className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/50 text-white backdrop-blur hover:bg-black/70"
                 aria-label="Previous"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronRight className="h-5 w-5" />
               </button>
+              {/* lands on the left */}
               <button
                 onClick={() => setActive((a) => (a + 1) % p.images.length)}
                 className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/50 text-white backdrop-blur hover:bg-black/70"
                 aria-label="Next"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronLeft className="h-5 w-5" />
               </button>
             </div>
           )}

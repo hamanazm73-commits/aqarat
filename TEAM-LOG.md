@@ -10,6 +10,19 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 23:28 — hamakali2005 · done
+
+**Gallery arrows were pointing the wrong ways.** The page is RTL, so
+`justify-between` puts the first child on the *right* — written the obvious way
+round, the left button drew a right-pointing arrow and vice versa.
+
+Icons now follow where the buttons land rather than the order they are written
+in. Which one goes back follows the script as well: content runs right to left,
+so rightwards is backwards.
+
+Checked in the browser: Previous sits on the right and points right, Next sits
+on the left and points left.
+
 ## 2026-08-21 — hamakali2005 · done
 
 **Gallery rebuilt to match the hotels site**, which is what Hama asked for with
