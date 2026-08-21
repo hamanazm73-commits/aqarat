@@ -85,12 +85,27 @@ function TranslateNote({ busy, off }: { busy: boolean; off: boolean }) {
 }
 
 export function PropertyForm({ initial }: { initial?: Property }) {
-  const { isSeller, user } = useAuth();
+  const { isSeller, isAdmin, user } = useAuth();
   const router = useRouter();
   const editing = Boolean(initial);
-  const [d, setD] = useState<Draft>(() =>
-    initial ? { ...initial, videos: initial.videos ?? [] } : { ...empty },
-  );
+  const [d, setD] = useState<Draft>(() => {
+    if (!initial) return { ...empty };
+    /*
+     * A district that is not one of that city’s own is dropped on the way in.
+     *
+     * Before the list existed sellers typed whatever they liked, and what
+     * survives is things like "ra7imawa" — Rahimawa, in Latin letters, which
+     * matches nothing a buyer searching in Kurdish will ever type. Carrying it
+     * into the list as an option only offers it again. Left empty, the seller
+     * picks the real one, and the listing is findable afterwards.
+     */
+    const known = districts[initial.city] ?? [];
+    const district =
+      initial.district && known.includes(initial.district.ku)
+        ? initial.district
+        : undefined;
+    return { ...initial, district, videos: initial.videos ?? [] };
+  });
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [mapInput, setMapInput] = useState("");
@@ -173,13 +188,6 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       setTranslating(null);
     }
   }
-
-  /** That city’s districts, with whatever this listing already says kept. */
-  const districtOptions = (() => {
-    const list = districts[d.city] ?? [];
-    const saved = d.district?.ku ?? "";
-    return saved && !list.includes(saved) ? [saved, ...list] : list;
-  })();
 
   function up<K extends keyof Draft>(k: K, v: Draft[K]) {
     setD((p) => ({ ...p, [k]: v }));
@@ -446,11 +454,18 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           </Field>
           <Field label="گەڕەک">
             {typedDistrict ? (
-              <input className="input" placeholder="ناوی گەڕەک بنووسە" value={d.district?.ku ?? ""} onChange={(e) => up("district", e.target.value ? sameInAll(e.target.value) : undefined)} />
+              <div className="flex items-center gap-2">
+                <input className="input" placeholder="ناوی گەڕەک بنووسە" value={d.district?.ku ?? ""} onChange={(e) => up("district", e.target.value ? sameInAll(e.target.value) : undefined)} />
+                {/* Picking "a different district" was a one-way door: the list
+                    went away and nothing brought it back. */}
+                <button type="button" onClick={() => { setTypedDistrict(false); up("district", undefined); }} className="shrink-0 cursor-pointer text-xs text-primary underline">
+                  گەڕانەوە بۆ لیست
+                </button>
+              </div>
             ) : (
               <select className="input" value={d.district?.ku ?? ""} onChange={(e) => { const v = e.target.value; if (v === OTHER_DISTRICT) { setTypedDistrict(true); up("district", undefined); return; } up("district", v ? sameInAll(v) : undefined); }}>
                 <option value="">— گەڕەک هەڵبژێرە —</option>
-                {districtOptions.map((n) => <option key={n} value={n}>{n}</option>)}
+                {(districts[d.city] ?? []).map((n) => <option key={n} value={n}>{n}</option>)}
                 <option value={OTHER_DISTRICT}>گەڕەکێکی تر…</option>
               </select>
             )}
@@ -585,16 +600,35 @@ export function PropertyForm({ initial }: { initial?: Property }) {
 
       {/* Flags + discount + agent */}
       <Card title="ئاڵا و بریکار">
+        {/*
+          Featured and recommended are the office’s to give, not the seller’s
+          to take.
+
+          They are the two places on the site that get looked at first, and
+          that is what the office sells — somebody who wants their listing up
+          there asks, and pays. A seller who can tick the boxes themselves
+          takes for nothing what is being charged for, and every listing ends
+          up featured, which means none of them is.
+
+          Hiding is not promotion and stays: a seller whose house has sold
+          needs to take it down without deleting it.
+        */}
         <div className="grid gap-3 sm:grid-cols-3">
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.featured} onChange={(e) => up("featured", e.target.checked)} /> ⭐ تایبەت</label>
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.recommended} onChange={(e) => up("recommended", e.target.checked)} /> 👍 پێشنیارکراو</label>
+          {isAdmin && (
+            <>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.featured} onChange={(e) => up("featured", e.target.checked)} /> ⭐ تایبەت</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.recommended} onChange={(e) => up("recommended", e.target.checked)} /> 👍 پێشنیارکراو</label>
+            </>
+          )}
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.hidden} onChange={(e) => up("hidden", e.target.checked)} /> 🚫 شاردنەوە لە سایت</label>
         </div>
-        {/* One word each and no clue what any of them does. "شاردنەوە" in
-            particular reads as a setting somebody would tick to be safe. */}
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-          <span className="font-medium">تایبەت</span> = لە سەرەتای لاپەڕەی سەرەکی دەردەکەوێت ·{" "}
-          <span className="font-medium">پێشنیارکراو</span> = لە بەشی پێشنیارەکان دەردەکەوێت ·{" "}
+          {isAdmin && (
+            <>
+              <span className="font-medium">تایبەت</span> = لە سەرەتای لاپەڕەی سەرەکی دەردەکەوێت ·{" "}
+              <span className="font-medium">پێشنیارکراو</span> = لە بەشی پێشنیارەکان دەردەکەوێت ·{" "}
+            </>
+          )}
           <span className="font-medium">شاردنەوە لە سایت</span> = کەس نایبینێت (بۆ کاتێک فرۆشرا)
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">

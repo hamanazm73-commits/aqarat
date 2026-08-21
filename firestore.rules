@@ -33,14 +33,27 @@ service cloud.firestore {
     // listings carrying their own address, and only ever with their own
     // address on them — so one seller can neither reach into another's
     // listing nor hand their own away.
+    //
+    // featured and recommended are the two spots on the site that get looked
+    // at first, and the office charges for them. The form no longer shows a
+    // seller the boxes; this is what stops one being ticked anyway. A seller
+    // may leave them as they are — they edit their own listing after the
+    // office has promoted it — but may not turn one on.
     match /properties/{id} {
       allow read: if true;
       allow create: if isAdmin() ||
-        (isSeller() && request.resource.data.sellerEmail == emailLower());
+        (isSeller()
+          && request.resource.data.sellerEmail == emailLower()
+          && request.resource.data.get("featured", false) == false
+          && request.resource.data.get("recommended", false) == false);
       allow update: if isAdmin() ||
         (isSeller()
           && resource.data.sellerEmail == emailLower()
-          && request.resource.data.sellerEmail == emailLower());
+          && request.resource.data.sellerEmail == emailLower()
+          && request.resource.data.get("featured", false)
+             == resource.data.get("featured", false)
+          && request.resource.data.get("recommended", false)
+             == resource.data.get("recommended", false));
       allow delete: if isAdmin() ||
         (isSeller() && resource.data.sellerEmail == emailLower());
     }
