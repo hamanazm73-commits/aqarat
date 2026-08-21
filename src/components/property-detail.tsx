@@ -32,7 +32,6 @@ import {
   formatDate,
   discountPercent,
 } from "@/lib/format";
-import { InquiryForm } from "./inquiry-form";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
 import { youtubeEmbed } from "@/lib/video";
@@ -323,9 +322,12 @@ export function PropertyDetail({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <InquiryForm propertyId={p.id} propertyTitle={tr(p.title)} />
-          </div>
+          {/* The enquiry form is gone from this page. A buyer who wants this
+              property rings the number or opens WhatsApp, both of which are
+              directly above — a form asking for a name and a number is a
+              slower version of what they already had, and it answers into an
+              inbox rather than a phone. /hq/inquiries and everything already
+              sent are untouched. */}
         </aside>
       </div>
 

@@ -10,6 +10,15 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 23:14 — hamakali2005 · done
+
+**Enquiry form removed from the property page.** The call and WhatsApp buttons
+are directly above where it sat, so it was a slower path to the same thing —
+and it answered into an inbox rather than a phone.
+
+Only the form on that page. `/hq/inquiries`, `/api/inquiries` and every enquiry
+already sent are untouched, so nothing that was received is lost.
+
 ## 2026-08-21 23:06 — hamakali2005 · done
 
 - **مۆبلیاکراو** is **بە ئەساسەوە** now — the word a seller here would use.
