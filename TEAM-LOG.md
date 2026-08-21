@@ -10,6 +10,36 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-22 — hamakali2005 · TWO THINGS FOR MOHAMMED
+
+Both are settings, not code. Everything they switch on is written, deployed and
+sitting there doing nothing until they are done. Hama cannot do either — the
+first needs a Cloudflare login he does not have, and the second needs a value
+only your Vercel account can show.
+
+**1 — `ANTHROPIC_API_KEY` on the aqarat project.**
+
+A seller writes the listing in one language and the other two fill themselves,
+each in its own script. Without the key `/api/translate` answers 501 and
+nothing fills, which is what is happening now: `homes.layhama.com/api/translate`
+returns `not-configured`.
+
+The key already exists and works — the shops site is using it, and
+`bedozawa.layhama.com/api/interpret` answers with it right now. Copy it from
+the dukan project's environment variables into the aqarat project under the
+same name, all three environments, then redeploy. If it is marked Sensitive
+and will not show its value, a new key from console.anthropic.com does just as
+well; both projects can hold different keys.
+
+Until then the form still works. Only the Kurdish title is required now, so a
+listing saves with one language and reading it falls back to whatever was
+written rather than showing a blank title.
+
+**2 — CORS on the `hotel-media` bucket.**
+
+The rule and the reasoning are in the entry below this one. Nothing has
+changed about it; it is still four clicks and still only you can do it.
+
 ## 2026-08-22 — hamakali2005 · BLOCKED, for Mohammed to do
 
 **Video upload will fail until the R2 bucket allows a cross-origin PUT, and
