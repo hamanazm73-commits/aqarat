@@ -21,13 +21,32 @@
  * cannot make from the browser.
  */
 export function coordsFromMapsUrl(input: string): { lat: number; lng: number } | null {
-  const s = input.trim();
-  if (!s) return null;
+  const raw = input.trim();
+  if (!raw) return null;
+
+  /*
+   * Read it the way it was written, not the way it was encoded.
+   *
+   * What a short link redirects to looks like
+   * `/maps/search/35.411335,+44.404492?entry=tts` — the pair is a path
+   * segment, and the space between the two numbers arrives as a plus. Left
+   * alone, none of the patterns below sees a comma-separated pair at all,
+   * which is why following the redirect still came back with no location.
+   */
+  let s = raw;
+  try {
+    s = decodeURIComponent(raw);
+  } catch {
+    /* a stray % — the undecoded string still matches most shapes */
+  }
+  s = s.replace(/\+/g, " ");
 
   const patterns = [
     /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/,
     /[?&](?:q|ll|daddr|center)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/,
-    /@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,
+    /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/,
+    // /maps/search/35.41, 44.40 — and the place and dir forms of the same.
+    /\/(?:search|place|dir)\/(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/,
     // A bare "36.19, 44.00" pasted on its own.
     /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/,
   ];

@@ -588,8 +588,15 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         <div className="grid gap-3 sm:grid-cols-3">
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.featured} onChange={(e) => up("featured", e.target.checked)} /> ⭐ تایبەت</label>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.recommended} onChange={(e) => up("recommended", e.target.checked)} /> 👍 پێشنیارکراو</label>
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.hidden} onChange={(e) => up("hidden", e.target.checked)} /> 🚫 شاردنەوە</label>
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.hidden} onChange={(e) => up("hidden", e.target.checked)} /> 🚫 شاردنەوە لە سایت</label>
         </div>
+        {/* One word each and no clue what any of them does. "شاردنەوە" in
+            particular reads as a setting somebody would tick to be safe. */}
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+          <span className="font-medium">تایبەت</span> = لە سەرەتای لاپەڕەی سەرەکی دەردەکەوێت ·{" "}
+          <span className="font-medium">پێشنیارکراو</span> = لە بەشی پێشنیارەکان دەردەکەوێت ·{" "}
+          <span className="font-medium">شاردنەوە لە سایت</span> = کەس نایبینێت (بۆ کاتێک فرۆشرا)
+        </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!d.discount?.active} onChange={(e) => up("discount", { active: e.target.checked, oldPriceIQD: d.discount?.oldPriceIQD ?? 0 })} /> داشکاندن</label>
           {d.discount?.active && (
