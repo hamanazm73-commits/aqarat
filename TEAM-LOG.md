@@ -10,6 +10,17 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 23:03 — hamakali2005 · done
+
+Hama asked for three things on the add-listing form:
+
+- `ڕووبەر (م²)` is `ڕووبەر (مەتر)` now — the word, not the symbol.
+- **تانکی ئاو** and **وزەی خۆر** are off the amenity list a seller picks from.
+
+Their labels stay in `dictionaries.ts` deliberately, only `AMENITY_KEYS` lost
+them. A listing entered before today may still carry one, and a key with no
+label renders as nothing at all.
+
 ## OPEN — five variables to add on Vercel, then photo upload works
 
 The code is done and deployed. Listing photographs go to the R2 bucket now

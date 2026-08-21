@@ -69,7 +69,7 @@ export const dict = {
       floors: "نهۆم",
       kitchens: "چێشتخانە",
       views: "بینین",
-      area: "م²",
+      area: "مەتر",
       viewDetails: "بینینی وردەکاری",
       whatsappMsg: "سڵاو، زانیاریم دەربارەی ئەم موڵکە دەوێت:",
     },
@@ -114,7 +114,7 @@ export const dict = {
       propTitle: "ناونیشانی موڵک",
       desc: "وەسف",
       price: "نرخ (د.ع)",
-      area: "ڕووبەر (م²)",
+      area: "ڕووبەر (مەتر)",
       beds: "ژووری نوستن",
       baths: "حەمام",
       district: "ناوچە / گەڕەک",
@@ -333,7 +333,7 @@ export const dict = {
       floors: "طوابق",
       kitchens: "مطابخ",
       views: "مشاهدة",
-      area: "م²",
+      area: "مەتر",
       viewDetails: "شوف التفاصيل",
       whatsappMsg: "هلو، أريد معلومات عن هذا العقار:",
     },
@@ -465,6 +465,9 @@ export const amenityNames: Record<AmenityKey, Record<Locale, string>> = {
   security: { ku: "ئاسایش", en: "Security", ar: "أمن" },
   pool: { ku: "مەلەوانگە", en: "Pool", ar: "مسبح" },
   generator: { ku: "مۆلێد", en: "Generator", ar: "مولد" },
+  /* Not offered when adding a listing any more — see AMENITIES in constants.
+     The labels stay because listings entered before today may still carry
+     one, and a key with no label renders as nothing at all. */
   water_tank: { ku: "تانکی ئاو", en: "Water tank", ar: "خزان ماء" },
   solar: { ku: "وزەی خۆر", en: "Solar power", ar: "طاقة شمسية" },
   balcony: { ku: "بەلکۆن", en: "Balcony", ar: "شرفة" },
