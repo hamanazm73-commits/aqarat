@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, Mail, ShieldCheck, BedDouble, Store } from "lucide-react";
+import { Phone, Mail, ShieldCheck, BedDouble } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { BrandMark } from "./brand-mark";
 
@@ -98,23 +98,6 @@ export function SiteFooter() {
           className="inline-flex items-center gap-1 transition-colors hover:text-gold"
         >
           <BedDouble className="size-3.5" /> {t.footer.sister}
-        </a>
-        <span className="hidden sm:inline">·</span>
-        <a
-          href="https://bedozawa.layhama.com"
-          className="inline-flex items-center gap-1 transition-colors hover:text-gold"
-        >
-          <Store className="size-3.5" /> لای حەمە بیدۆزەوە
-        </a>
-        <span className="hidden sm:inline">·</span>
-        {/* The hub links down to all three; nothing linked back, so from
-            outside this read as a site the hub had adopted rather than one of
-            its own. */}
-        <a
-          href="https://layhama.com"
-          className="inline-flex items-center gap-1 transition-colors hover:text-gold"
-        >
-          لای حەمە
         </a>
         <span className="hidden sm:inline">·</span>
         <Link
