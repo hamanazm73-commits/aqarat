@@ -10,6 +10,43 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-22 — hamakali2005 · done
+
+**A day on the seller's form and the buyer's filters.** All pushed and live on
+homes.layhama.com; `/api/version` reads 1f63d12.
+
+Video is ours now — no YouTube box, uploaded on a presigned PUT straight to the
+bucket, shown under the photographs in a fixed frame. Both of the settings that
+were blocking it are done (thank you), and I verified both from outside: the
+translate route gets past its key check, and a preflight from homes comes back
+204 with PUT.
+
+The seller's form: district is a list of that city's own neighbourhoods rather
+than two boxes typed in two languages — around 140 across the three cities, and
+a name not on the list can still be typed. Only the Kurdish title is required,
+so a listing saves whether or not the translator answered. Featured and
+recommended are off the seller's form and locked in firestore.rules, because
+the office charges for those two spots.
+
+Cities are down to Erbil, Sulaymaniyah and Kirkuk. The other twenty-five were
+in every filter with nothing behind them.
+
+The buyer's side: price is picked from a ladder now instead of typed, with a
+separate one for rent because a house sells for a hundred million and rents for
+six hundred thousand. A storeys filter, exact rather than a minimum. And the
+filter panel on a phone comes up from the bottom with the apply button pinned,
+instead of in from the side with it below the fold.
+
+/hq: submissions and inquiries are gone — nothing had written to either since
+the forms that fed them came off the site — and sellers are called offices,
+which is what they are. The listing page has an office filter with a count per
+office, including the ones at zero.
+
+**Still not applied: firestore.rules.** It is pasted into the console by hand,
+and two changes are waiting there — the featured/recommended lock, and the
+removal of the public `create` rules on `submissions` and `inquiries`. Neither
+is urgent; the second is a door onto a room nobody reads any more.
+
 ## 2026-08-22 — Mohammed · done
 
 **Both of yours are done, and both are verified from outside.**
