@@ -19,6 +19,7 @@ export function parseFilters(sp: SP): PropertyFilters {
   const type = one(sp.type);
   const city = one(sp.city);
   const bedrooms = one(sp.bedrooms);
+  const floors = one(sp.floors);
   const minPrice = one(sp.minPrice);
   const maxPrice = one(sp.maxPrice);
 
@@ -31,6 +32,7 @@ export function parseFilters(sp: SP): PropertyFilters {
       : undefined,
     city: CITY_KEYS.includes(city as CityKey) ? (city as CityKey) : undefined,
     bedrooms: bedrooms ? Number(bedrooms) : undefined,
+    floors: floors ? Number(floors) : undefined,
     minPrice: minPrice ? Number(minPrice) : undefined,
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
     sort: "newest",

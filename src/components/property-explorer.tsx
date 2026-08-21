@@ -10,7 +10,7 @@ import {
   purposeNames,
   typeNames,
 } from "@/lib/i18n/dictionaries";
-import { PROPERTY_TYPE_KEYS } from "@/lib/constants";
+import { FLOORS_MAX, PROPERTY_TYPE_KEYS } from "@/lib/constants";
 import { formatNumber } from "@/lib/format";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
@@ -200,6 +200,24 @@ export function PropertyExplorer({
           {[1, 2, 3, 4].map((n) => (
             <Chip key={n} active={f.bedrooms === n} onClick={() => set("bedrooms", n)}>
               {formatNumber(n, locale)}+
+            </Chip>
+          ))}
+        </div>
+      </Field>
+
+      {/* Floors */}
+      <Field label={t.filters.floors}>
+        <div className="grid grid-cols-5 gap-2">
+          <Chip active={!f.floors} onClick={() => set("floors", undefined)}>
+            {t.filters.any}
+          </Chip>
+          {/* No "+" until the last one. Unlike bedrooms these are exact: a
+              three-storey house is not a better version of the single-storey
+              one somebody asked for, usually because of the stairs. */}
+          {Array.from({ length: FLOORS_MAX }, (_, i) => i + 1).map((n) => (
+            <Chip key={n} active={f.floors === n} onClick={() => set("floors", n)}>
+              {formatNumber(n, locale)}
+              {n === FLOORS_MAX ? "+" : ""}
             </Chip>
           ))}
         </div>

@@ -1,5 +1,6 @@
 import type { Property, PropertyFilters } from "./types";
 import { looseMatch } from "./search-normalise";
+import { FLOORS_MAX } from "./constants";
 
 /**
  * Listings shown when Firestore has none.
@@ -28,6 +29,12 @@ export function filterProperties(
   if (typeof f.minPrice === "number") out = out.filter((p) => p.priceIQD >= f.minPrice!);
   if (typeof f.maxPrice === "number") out = out.filter((p) => p.priceIQD <= f.maxPrice!);
   if (typeof f.bedrooms === "number") out = out.filter((p) => (p.bedrooms ?? 0) >= f.bedrooms!);
+  if (typeof f.floors === "number") {
+    const want = f.floors;
+    out = out.filter((p) =>
+      want >= FLOORS_MAX ? (p.floors ?? 0) >= want : p.floors === want,
+    );
+  }
   if (f.q) {
     const q = f.q.trim();
     // Field by field rather than one joined string: joining lets a query match

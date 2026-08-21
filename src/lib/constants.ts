@@ -33,6 +33,16 @@ export const PROPERTY_TYPE_KEYS: PropertyType[] = [
 
 export const PURPOSE_KEYS: Purpose[] = ["sale", "rent"];
 
+/**
+ * The top rung on the storeys filter, and the point it stops counting.
+ *
+ * One, two and three are what somebody is actually choosing between — a
+ * bungalow, a house with an upstairs, a house with two. Past that the exact
+ * number is not what anyone is deciding on, so the chip means "this many or
+ * more" and the listings above it are not split into chips nobody taps.
+ */
+export const FLOORS_MAX = 4;
+
 export const AMENITY_KEYS: AmenityKey[] = [
   "parking",
   "garden",

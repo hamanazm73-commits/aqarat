@@ -131,5 +131,17 @@ export interface PropertyFilters {
   minPrice?: number;
   maxPrice?: number;
   bedrooms?: number; // minimum
+  /*
+   * How many storeys, exactly — not a minimum.
+   *
+   * Bedrooms reads as "at least this many": four bedrooms will do if you asked
+   * for three. Storeys does not. Somebody asking for a single-storey house is
+   * usually asking because of stairs, and a three-storey one is not a better
+   * version of what they wanted.
+   *
+   * FLOORS_MAX is the one exception — the top chip means that many or more,
+   * because past it the exact number stops being what anyone is choosing on.
+   */
+  floors?: number;
   sort?: "newest" | "price_asc" | "price_desc" | "area_desc";
 }
