@@ -5,6 +5,7 @@ import { Providers } from "@/components/providers";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FloatingWhatsApp } from "@/components/floating-whatsapp";
+import { Analytics } from "@vercel/analytics/next";
 
 // Same pairing as the sister site: Jakarta for Latin, Naskh for Kurdish and
 // Arabic — the typography is half of what makes the two look related.
@@ -67,6 +68,14 @@ export default function RootLayout({
         <Providers>
           <SiteHeader />
           <main className="flex-1">{children}</main>
+        {/*
+          How many people actually come.
+          Counts a page view and nothing else — no cookie, no identifier, no
+          profile, so there is nothing to put a consent banner in front of.
+          Turn it on per project at Vercel > Analytics; until then this sends
+          nothing and costs nothing.
+        */}
+        <Analytics />
           <SiteFooter />
           <FloatingWhatsApp />
         </Providers>
