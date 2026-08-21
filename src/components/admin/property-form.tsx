@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Loader2, Upload, X, Plus, Video, MapPin } from "lucide-react";
-import type { AmenityKey, Property, PropertyType, Purpose } from "@/lib/types";
+import type { AmenityKey, Locale, Property, PropertyType, Purpose } from "@/lib/types";
 import {
   fsCreateProperty,
   fsUpdateProperty,
@@ -19,6 +19,7 @@ import {
 import { AMENITY_KEYS, CITY_KEYS, PROPERTY_TYPE_KEYS } from "@/lib/constants";
 import { compressImage } from "@/lib/compress-image";
 import { useAuth } from "@/lib/firebase/auth";
+import { getFirebase } from "@/lib/firebase/client";
 import { Button } from "@/components/ui/button";
 import { coordsFromMapsUrl } from "@/lib/maps";
 
@@ -38,6 +39,24 @@ const empty: Draft = {
   agent: { name: "", phone: "" },
 };
 
+/**
+ * The one line the seller needs about this.
+ *
+ * Without it the other two boxes fill themselves a second after they look
+ * away, which reads as the form doing something it was not asked to. Said out
+ * loud once, it reads as help.
+ */
+function TranslateNote({ busy }: { busy: boolean }) {
+  return (
+    <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+      {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+      {busy
+        ? "وەرگێڕان…"
+        : "بە یەک زمان بینووسە — دوو زمانەکەی تر خۆیان پڕ دەبنەوە."}
+    </p>
+  );
+}
+
 export function PropertyForm({ initial }: { initial?: Property }) {
   const { isSeller, user } = useAuth();
   const router = useRouter();
@@ -53,6 +72,49 @@ export function PropertyForm({ initial }: { initial?: Property }) {
   const [error, setError] = useState<string | null>(null);
   /** how many of this batch have landed, so the wait shows movement */
   const [progress, setProgress] = useState({ done: 0, total: 0 });
+  /** which field is being filled in, so the seller sees it happening */
+  const [translating, setTranslating] = useState<"title" | "description" | null>(null);
+
+  /**
+   * The seller writes one language; the other two fill themselves.
+   *
+   * Only ever into empty boxes. Something already written was written on
+   * purpose — by them, or by this on an earlier pass and corrected since — and
+   * overwriting it would be the form arguing with the person using it.
+   *
+   * On blur rather than on every keystroke: mid-sentence is not a sentence.
+   */
+  async function translateFrom(field: "title" | "description", from: Locale) {
+    const source = (d[field] as Record<Locale, string>)[from]?.trim();
+    if (!source || source.length < 2) return;
+
+    const others = (["ku", "ar", "en"] as Locale[]).filter((l) => l !== from);
+    if (others.every((l) => (d[field] as Record<Locale, string>)[l]?.trim())) return;
+
+    try {
+      const token = await getFirebase()?.auth.currentUser?.getIdToken();
+      if (!token) return;
+      setTranslating(field);
+      const res = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-id-token": token },
+        body: JSON.stringify({ text: source, from }),
+      });
+      if (!res.ok) return;
+      const out = (await res.json()) as Record<Locale, string>;
+      setD((p) => {
+        const cur = p[field] as Record<Locale, string>;
+        const next = { ...cur };
+        for (const l of others) if (!cur[l]?.trim() && out[l]) next[l] = out[l];
+        return { ...p, [field]: next };
+      });
+    } catch {
+      // A translation that did not arrive leaves the boxes as they were. The
+      // seller can still type them, which is what they did before this.
+    } finally {
+      setTranslating(null);
+    }
+  }
 
   function up<K extends keyof Draft>(k: K, v: Draft[K]) {
     setD((p) => ({ ...p, [k]: v }));
@@ -227,19 +289,21 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       {/* Titles */}
       <Card title="ناونیشان (Title)">
         <div className="grid gap-3 sm:grid-cols-3">
-          <Field label="کوردی"><input className="input" value={d.title.ku} onChange={(e) => up("title", { ...d.title, ku: e.target.value })} required /></Field>
-          <Field label="English"><input className="input" value={d.title.en} onChange={(e) => up("title", { ...d.title, en: e.target.value })} required /></Field>
-          <Field label="عربي"><input className="input" value={d.title.ar} onChange={(e) => up("title", { ...d.title, ar: e.target.value })} required /></Field>
+          <Field label="کوردی"><input className="input" value={d.title.ku} onChange={(e) => up("title", { ...d.title, ku: e.target.value })} onBlur={() => translateFrom("title", "ku")} required /></Field>
+          <Field label="English"><input className="input" value={d.title.en} onChange={(e) => up("title", { ...d.title, en: e.target.value })} onBlur={() => translateFrom("title", "en")} required /></Field>
+          <Field label="عربي"><input className="input" value={d.title.ar} onChange={(e) => up("title", { ...d.title, ar: e.target.value })} onBlur={() => translateFrom("title", "ar")} required /></Field>
         </div>
+        <TranslateNote busy={translating === "title"} />
       </Card>
 
       {/* Descriptions */}
       <Card title="وەسف (Description)">
         <div className="grid gap-3 sm:grid-cols-3">
-          <Field label="کوردی"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.ku} onChange={(e) => up("description", { ...d.description, ku: e.target.value })} /></Field>
-          <Field label="English"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.en} onChange={(e) => up("description", { ...d.description, en: e.target.value })} /></Field>
-          <Field label="عربي"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.ar} onChange={(e) => up("description", { ...d.description, ar: e.target.value })} /></Field>
+          <Field label="کوردی"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.ku} onChange={(e) => up("description", { ...d.description, ku: e.target.value })} onBlur={() => translateFrom("description", "ku")} /></Field>
+          <Field label="English"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.en} onChange={(e) => up("description", { ...d.description, en: e.target.value })} onBlur={() => translateFrom("description", "en")} /></Field>
+          <Field label="عربي"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.ar} onChange={(e) => up("description", { ...d.description, ar: e.target.value })} onBlur={() => translateFrom("description", "ar")} /></Field>
         </div>
+        <TranslateNote busy={translating === "description"} />
       </Card>
 
       {/* Core */}

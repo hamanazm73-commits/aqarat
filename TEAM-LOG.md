@@ -10,6 +10,25 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 — hamakali2005 · done
+
+**A seller writes the title and description once; the other two languages fill
+themselves.** Hama asked for this — three boxes per field meant the Kurdish got
+pasted into all three, which shows a buyer Kurdish and calls it Arabic.
+
+`/api/translate` returns all three, each in its own script. Only empty boxes are
+filled — anything already written stays. Triggered on blur, not per keystroke.
+The prompt translates and nothing more: no embellishing, no inventing a detail
+the seller did not give.
+
+Signed-in only; each call costs money.
+
+### Needs doing on Vercel
+
+**`ANTHROPIC_API_KEY` on the aqarat project** — the same key the dukan project
+already has. Until it is set the route answers 501 and the boxes simply stay
+empty, which is how the form worked before, so nothing is broken meanwhile.
+
 ## 2026-08-21 23:37 — hamakali2005 · done
 
 **Photographs and video are one section now**, titled
