@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import type { CityKey, Property } from "./types";
 import { SEED_PROPERTIES } from "./data";
 import { CITY_KEYS, DEFAULT_ENABLED_CITIES } from "./constants";
@@ -16,14 +17,38 @@ import {
 
 const visible = (list: Property[]) => list.filter((p) => !p.hidden);
 
+/**
+ * The read itself, held for a minute and shared by everyone.
+ *
+ * Without this, every visitor to the home page or the listings page pulled the
+ * whole properties collection out of Firestore. Firestore's free tier allows
+ * 50,000 document reads a day, and one visitor costs one read per listing — so
+ * the site's capacity fell as its content grew: 100 listings meant 500 visitors
+ * a day, 500 listings meant 100. The busier it got, the sooner it stopped.
+ *
+ * Held for a minute rather than an hour, and the minute is chosen against the
+ * seller rather than the visitor: somebody who has just added a house wants to
+ * see it, and waiting a minute is tolerable where waiting an hour is alarming.
+ *
+ * It throws rather than returning the seed when the read fails, so a momentary
+ * outage is not what gets stored for the next minute.
+ */
+const readLive = unstable_cache(
+  async (): Promise<Property[]> => {
+    const live = await fsListProperties();
+    if (!live.length) throw new Error("empty");
+    return live;
+  },
+  ["public-properties"],
+  { revalidate: 60, tags: ["properties"] },
+);
+
 async function source(): Promise<Property[]> {
   if (isFirebaseConfigured()) {
     try {
-      const live = await fsListProperties();
-      // If the collection is empty (not seeded yet), fall back to the seed.
-      if (live.length) return live;
+      return await readLive();
     } catch {
-      /* fall through to seed */
+      // Empty collection, or unreachable — the seed answers either way.
     }
   }
   return SEED_PROPERTIES;
