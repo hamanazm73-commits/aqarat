@@ -99,6 +99,24 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
       />
+      {/* The name Google prints where the address would otherwise go. It is
+          read from the home page of each host, so this site has to say its
+          own — the parent saying it does not cover the children. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "@id": "https://homes.layhama.com/#website",
+            name: "نووسینگەی لای حەمە",
+            alternateName: ["Lay Hama Homes", "مكتب يم حمة", "Lay Hama"],
+            url: "https://homes.layhama.com",
+            inLanguage: "ckb",
+            publisher: { "@id": "https://layhama.com/#organization" },
+          }),
+        }}
+      />
       <HomeContent
         properties={all}
         counts={{ listings: all.length, cities: cities.length }}

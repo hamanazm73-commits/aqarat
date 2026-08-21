@@ -40,7 +40,9 @@ export const metadata: Metadata = {
     title: "نووسینگەی لای حەمە | Lay Hama Homes — Real Estate",
     description: DESCRIPTION,
     url: SITE_URL,
-    siteName: "Lay Hama Homes",
+    // In Kurdish, because this is the name a search result is headed with
+    // and Kurdish is what someone looking for it types.
+    siteName: "نووسینگەی لای حەمە",
     type: "website",
     locale: "ckb_IQ",
   },
