@@ -68,30 +68,9 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
-    // Inquiries: anyone may CREATE a valid inquiry (contact form); only
-    // owner/admins may read them. No client update/delete. Fields and sizes are
-    // locked down so the public write can't be abused with junk or huge data.
-    match /inquiries/{id} {
-      allow read: if isAdmin();
-      allow create: if
-        request.resource.data.keys().hasOnly(
-          ['propertyId', 'name', 'phone', 'message', 'createdAt']) &&
-        request.resource.data.propertyId is string &&
-        request.resource.data.propertyId.size() > 0 &&
-        request.resource.data.propertyId.size() <= 120 &&
-        request.resource.data.name is string &&
-        request.resource.data.name.size() >= 2 &&
-        request.resource.data.name.size() <= 80 &&
-        request.resource.data.phone is string &&
-        request.resource.data.phone.size() >= 6 &&
-        request.resource.data.phone.size() <= 20 &&
-        request.resource.data.createdAt is string &&
-        request.resource.data.createdAt.size() <= 40 &&
-        (!('message' in request.resource.data) ||
-          (request.resource.data.message is string &&
-           request.resource.data.message.size() <= 1000));
-      allow update, delete: if false;
-    }
+    // Inquiries are gone with the contact form that fed them. A public
+    // `create` rule on a collection nothing reads is an open door with no
+    // room behind it.
 
     // Roles / admins: a user reads their own role; only the owner manages roles.
     match /roles/{email} {

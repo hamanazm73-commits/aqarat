@@ -13,7 +13,7 @@ import {
   increment,
 } from "firebase/firestore";
 import { getFirebase } from "./client";
-import type { Inquiry, Property } from "@/lib/types";
+import type { Property } from "@/lib/types";
 import { SEED_PROPERTIES } from "@/lib/data";
 
 /** Role document stored at roles/{email}. */
@@ -106,21 +106,6 @@ export async function fsImportSeed(): Promise<number> {
   }
   await batch.commit();
   return SEED_PROPERTIES.length;
-}
-
-/* ----------------------------- Inquiries ----------------------------- */
-
-export async function fsCreateInquiry(
-  data: Omit<Inquiry, "id">,
-): Promise<void> {
-  await addDoc(collection(db(), "inquiries"), data);
-}
-
-export async function fsListInquiries(): Promise<Inquiry[]> {
-  const snap = await getDocs(
-    query(collection(db(), "inquiries"), orderBy("createdAt", "desc")),
-  );
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Inquiry) }));
 }
 
 /* ------------------------------- Roles ------------------------------- */

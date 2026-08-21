@@ -122,16 +122,6 @@ export interface Property {
   sellerEmail?: string;
 }
 
-/** Inbound inquiry from the contact / booking form. */
-export interface Inquiry {
-  id?: string;
-  propertyId: string;
-  name: string;
-  phone: string;
-  message?: string;
-  createdAt: string;
-}
-
 /** Filters used by the listing page. */
 export interface PropertyFilters {
   q?: string;

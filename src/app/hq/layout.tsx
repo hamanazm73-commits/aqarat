@@ -97,7 +97,6 @@ function AdminShell({ children }: { children: React.ReactNode }) {
     : [
         { href: "/hq", label: "خانووبەرەکان", icon: Building2, exact: true },
         { href: "/hq/sellers", label: "نووسینگەکان", icon: KeyRound },
-        { href: "/hq/inquiries", label: "داواکارییەکان", icon: Inbox },
         { href: "/hq/cities", label: "شارەکان", icon: MapPin },
         ...(isOwner
           ? [{ href: "/hq/admins", label: "بەڕێوەبەران", icon: Users }]

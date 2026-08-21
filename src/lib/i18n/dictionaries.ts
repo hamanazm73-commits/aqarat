@@ -92,17 +92,6 @@ export const dict = {
       // "ناسنامە" had sellers asking whose ID number the site wanted.
       reference: "کۆدی مووڵک",
     },
-    inquiry: {
-      title: "داواکاری زانیاری",
-      subtitle: "فۆرمەکە پڕبکەرەوە، بریکارەکەمان پەیوەندیت پێوە دەکات.",
-      name: "ناوی تەواو",
-      phone: "ژمارەی مۆبایل",
-      message: "پەیام (ئیختیاری)",
-      send: "ناردن",
-      sending: "دەنێردرێت...",
-      success: "سوپاس! داواکارییەکەت گەیشت، بەمزووانە پەیوەندیت پێوە دەکەین.",
-      error: "ببورە، هەڵەیەک ڕوویدا. دووبارە هەوڵ بدەرەوە.",
-    },
     footer: {
       tagline: "هاوکارە متمانەپێکراوەکەت لە بازاڕی خانووبەرەی کوردستان.",
       quickLinks: "بەستەرە خێراکان",
@@ -224,17 +213,6 @@ export const dict = {
       posted: "Posted",
       reference: "Reference",
     },
-    inquiry: {
-      title: "Request information",
-      subtitle: "Fill in the form and our agent will contact you.",
-      name: "Full name",
-      phone: "Phone number",
-      message: "Message (optional)",
-      send: "Send",
-      sending: "Sending...",
-      success: "Thank you! We received your request and will contact you soon.",
-      error: "Sorry, something went wrong. Please try again.",
-    },
     footer: {
       tagline: "Your trusted partner in the Kurdistan real-estate market.",
       quickLinks: "Quick links",
@@ -355,17 +333,6 @@ export const dict = {
       purpose: "الغرض",
       posted: "اننشر",
       reference: "الرقم المرجعي",
-    },
-    inquiry: {
-      title: "طلب معلومات",
-      subtitle: "عبّي النموذج وراح يتواصل وياك وكيلنا.",
-      name: "الاسم الكامل",
-      phone: "رقم التلفون",
-      message: "رسالة (اختياري)",
-      send: "إرسال",
-      sending: "دايرسل...",
-      success: "شكراً! وصلنا طلبك وراح نتواصل وياك قريب.",
-      error: "عذراً، صار خطأ. جرب مرة ثانية.",
     },
     footer: {
       tagline: "شريكك المضمون بسوق العقارات بكردستان.",
