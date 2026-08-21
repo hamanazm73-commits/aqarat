@@ -10,6 +10,17 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 14:39 — hamakali2005 · done
+
+**`/api/version` reports the commit this site is actually running.** A push is
+not a deploy: code sat right on origin for five hours today while the live site
+served the morning's words, and the only way that surfaced was somebody
+noticing the old name on the page.
+
+`check-live.ps1` in `C:\Users\Admin\dev` asks all four and compares each
+against its branch. BEHIND means the code is fine and the deployment did not
+happen — a different problem, and one only the Vercel account holder can see.
+
 ## 2026-08-21 13:57 — hamakali2005 · done
 
 **Reverted the row of sister-site links in the footer.** Hama saw it turn up
