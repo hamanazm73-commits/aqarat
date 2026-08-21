@@ -53,6 +53,8 @@ export function PropertyForm({ initial }: { initial?: Property }) {
   const [urlInput, setUrlInput] = useState("");
   const [videoInput, setVideoInput] = useState("");
   const [error, setError] = useState<string | null>(null);
+  /** how many of this batch have landed, so the wait shows movement */
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
 
   function up<K extends keyof Draft>(k: K, v: Draft[K]) {
     setD((p) => ({ ...p, [k]: v }));
@@ -72,20 +74,53 @@ export function PropertyForm({ initial }: { initial?: Property }) {
     setUploading(true);
     setError(null);
     try {
-      const urls: string[] = [];
-      for (const f of Array.from(files)) {
-        // Shrink before it leaves the phone. A 4MB camera photo becomes about
-        // 150KB, which the seller waits far less to send and every buyer
-        // afterwards pays far less to receive. If it can't be compressed —
-        // an odd format, no canvas — the original goes up rather than nothing.
-        const ready = await compressImage(f).catch(() => f);
-        urls.push(await fsUploadImage(ready));
+      /*
+       * Several at once, in order.
+       *
+       * This used to be a plain for-loop with two awaits in it, so ten photos
+       * meant ten shrinks and ten uploads strictly one after another — and
+       * nearly all of that time is spent waiting on the network, not using it.
+       * Sending a few in parallel overlaps the waiting and turns a minute into
+       * a handful of seconds on the same connection.
+       *
+       * Three at a time, not all of them: a phone on mobile data that opens
+       * twelve uploads at once gets slower, not faster, and a mid-range
+       * handset decoding twelve photos at once runs out of memory. Three keeps
+       * the link busy without either.
+       *
+       * The results are written back by index, so the order the seller picked
+       * them in is the order they appear — which matters, because the first
+       * one is the cover.
+       */
+      const chosen = Array.from(files);
+      const urls: string[] = new Array(chosen.length);
+      let next = 0;
+      setProgress({ done: 0, total: chosen.length });
+
+      async function worker() {
+        for (;;) {
+          const i = next++;
+          if (i >= chosen.length) return;
+          // Shrink before it leaves the phone. A 4MB camera photo becomes
+          // about 150KB, which the seller waits far less to send and every
+          // buyer afterwards pays far less to receive. If it can't be
+          // compressed — an odd format, no canvas — the original goes up
+          // rather than nothing.
+          const ready = await compressImage(chosen[i]).catch(() => chosen[i]);
+          urls[i] = await fsUploadImage(ready);
+          setProgress((p) => ({ ...p, done: p.done + 1 }));
+        }
       }
-      setD((p) => ({ ...p, images: [...p.images, ...urls] }));
+
+      await Promise.all(
+        Array.from({ length: Math.min(3, chosen.length) }, worker),
+      );
+      setD((p) => ({ ...p, images: [...p.images, ...urls.filter(Boolean)] }));
     } catch {
       setError("ئەپلۆدی وێنە سەرکەوتوو نەبوو / Image upload failed.");
     } finally {
       setUploading(false);
+      setProgress({ done: 0, total: 0 });
     }
   }
 
@@ -314,7 +349,13 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           ))}
           <label className="flex h-24 w-32 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-xs text-muted-foreground hover:bg-muted">
             {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
-            ئەپلۆد
+            {/* A spinner alone says "wait" and nothing else. On ten photos over
+                mobile data the seller needs to know it is moving and roughly
+                how much is left, or the honest answer to "is it stuck?" is
+                that they cannot tell. */}
+            {uploading && progress.total > 1
+              ? `${progress.done}/${progress.total}`
+              : "ئەپلۆد"}
             <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
           </label>
         </div>

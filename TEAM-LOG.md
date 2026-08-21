@@ -10,6 +10,31 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 16:09 — hamakali2005 · done
+
+**Photo upload when publishing a listing was slow.** Three causes, all of them
+waiting rather than working:
+
+1. **One at a time.** The loop awaited a shrink and an upload per file in
+   sequence. Three at a time now — not all, since a phone on mobile data
+   opening twelve at once gets slower, and a mid-range handset decoding twelve
+   photos at once runs out of memory. Written back by index, so the order the
+   seller picked survives; the first photo is the cover.
+2. **base64 decode.** Each file was read into a data URL — a string a third
+   bigger than the file, built on the main thread, then parsed again by an
+   `<img>`. On a 6MB photo that was most of the wait and it froze the page.
+   `createImageBitmap` now, off-thread, with an object-URL fallback for older
+   Safari.
+3. **JPEG.** WebP where the browser can write it: a quarter to a third fewer
+   bytes at the same visible quality. Proved with a 1x1 canvas, because
+   `toBlob` silently returns PNG for a format it does not know.
+
+The button counts photos as they land. A spinner alone cannot answer "is it
+stuck?".
+
+Also `npm install` in aqarat, hotels and hub — `@vercel/analytics` was in
+package.json but not in these clones, and aqarat would not build without it.
+
 ## OPEN — Mohammed: Vercel is blocking everything Hama pushes
 
 Vercel's own words, on the dukan deployment of `0b92381`:
