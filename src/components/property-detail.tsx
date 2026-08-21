@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   BedDouble,
@@ -105,20 +104,39 @@ export function PropertyDetail({
         <span className="text-foreground line-clamp-1">{tr(p.title)}</span>
       </nav>
 
-      {/* Gallery */}
-      <div className="grid gap-3 lg:grid-cols-[1fr_120px]">
-        <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
-          <Image
+      {/*
+        Gallery, built the way the hotels site builds its.
+
+        The photograph is contained, not cropped. A seller shoots a house
+        portrait, or with the price written across it, and object-cover took a
+        16:10 bite out of the middle — on the first listing that went up it cut
+        the price off the top of the picture. Whatever shape the photograph is,
+        all of it shows.
+
+        A blurred copy of the same image fills the space either side, so a
+        portrait photo sits in something that belongs to it rather than in two
+        grey bars.
+
+        One large picture, then a row underneath: the exterior is what a buyer
+        is deciding on, and the rooms are what they look at next. Down the side
+        the thumbnails were competing with it for the same glance.
+      */}
+      <div>
+        <div className="group relative overflow-hidden rounded-2xl border border-border bg-muted">
+          <div
+            aria-hidden
+            className="absolute inset-0 scale-110 bg-cover bg-center opacity-45 blur-2xl"
+            style={{ backgroundImage: `url("${p.images[active]}")` }}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={p.images[active]}
             alt={tr(p.title)}
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 70vw"
-            className="object-cover"
+            className="relative mx-auto aspect-[16/10] w-full object-contain"
           />
           <span
             className={
-              "absolute start-4 top-4 rounded-full px-3 py-1 text-sm font-bold shadow-lg " +
+              "absolute start-4 top-4 z-10 rounded-full px-3 py-1 text-sm font-bold shadow-lg " +
               (p.purpose === "sale"
                 ? "bg-primary text-primary-foreground"
                 : "bg-gold text-gold-foreground")
@@ -127,17 +145,17 @@ export function PropertyDetail({
             {p.purpose === "sale" ? t.card.forSale : t.card.forRent}
           </span>
           {p.images.length > 1 && (
-            <div className="absolute inset-x-4 top-1/2 flex -translate-y-1/2 justify-between">
+            <div className="absolute inset-x-4 top-1/2 z-10 flex -translate-y-1/2 justify-between">
               <button
                 onClick={() => setActive((a) => (a - 1 + p.images.length) % p.images.length)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur hover:bg-black/70 cursor-pointer"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/50 text-white backdrop-blur hover:bg-black/70"
                 aria-label="Previous"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <button
                 onClick={() => setActive((a) => (a + 1) % p.images.length)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur hover:bg-black/70 cursor-pointer"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/50 text-white backdrop-blur hover:bg-black/70"
                 aria-label="Next"
               >
                 <ChevronRight className="h-5 w-5" />
@@ -146,20 +164,22 @@ export function PropertyDetail({
           )}
         </div>
 
-        {/* Thumbnails */}
-        <div className="flex gap-3 overflow-x-auto lg:flex-col">
-          {p.images.map((src, i) => (
-            <button
-              key={src}
-              onClick={() => setActive(i)}
-              className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 lg:w-full cursor-pointer ${
-                i === active ? "border-primary" : "border-transparent opacity-70"
-              }`}
-            >
-              <Image src={src} alt="" fill sizes="120px" className="object-cover" />
-            </button>
-          ))}
-        </div>
+        {p.images.length > 1 && (
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            {p.images.map((src, i) => (
+              <button
+                key={src}
+                onClick={() => setActive(i)}
+                className={`size-20 shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 bg-muted transition ${
+                  i === active ? "border-primary" : "border-transparent opacity-70 hover:opacity-100"
+                }`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={src} alt="" className="size-full object-contain" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">

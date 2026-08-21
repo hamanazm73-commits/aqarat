@@ -10,6 +10,31 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 — hamakali2005 · done
+
+**Gallery rebuilt to match the hotels site**, which is what Hama asked for with
+the two pages open side by side.
+
+`object-cover` cropped a 16:10 strip out of the middle of every photo. Sellers
+shoot portrait, often with the price written across the top — on the first real
+listing that is what got cut. Contained now, with a blurred copy of the image
+filling either side so a portrait photo has something that belongs to it behind
+it rather than grey bars.
+
+Thumbnails moved from a column beside the picture to a row underneath it. The
+exterior is what a buyer decides on; the rooms are what they look at next.
+
+Verified on the live listing (3:4 photographs): contained at 1230px and 375px,
+thumbnails below at both.
+
+### Noticed while measuring, not from this change
+
+The page scrolls sideways by 11px at 375px, which `AGENTS.md` says it must not.
+It is **not the gallery** — the widest thing on the page is a decorative
+`radial-gradient` div in `language-welcome.tsx` at 386px, and the header, main
+and footer are all simply as wide as the body it stretches. Small, pre-existing,
+and worth someone taking properly rather than being folded into this.
+
 ## 2026-08-21 23:14 — hamakali2005 · done
 
 **Enquiry form removed from the property page.** The call and WhatsApp buttons
