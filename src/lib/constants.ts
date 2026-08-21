@@ -5,46 +5,22 @@ import type {
   PropertyType,
 } from "./types";
 
-export const CITY_KEYS: CityKey[] = [
-  "baghdad",
-  "erbil",
-  "sulaymaniyah",
-  "duhok",
-  "kirkuk",
-  "basra",
-  "mosul",
-  "najaf",
-  "karbala",
-  "halabja",
-  "ramadi",
-  "fallujah",
-  "hilla",
-  "baqubah",
-  "nasiriyah",
-  "amarah",
-  "samawah",
-  "diwaniyah",
-  "tikrit",
-  "samarra",
-  "kut",
-  "zakho",
-  "chamchamal",
-  "ranya",
-  "kalar",
-  "koya",
-  "soran",
-  "shaqlawa",
-];
+/*
+ * Where the office works, and nowhere else.
+ *
+ * This ran to twenty-eight cities — Basra, Najaf, Samawah, the lot. Every one
+ * of them appeared in the city filter and in the form, and behind all but a
+ * few there was nothing to find: a buyer picking Najaf got an empty page, and
+ * a seller could file a listing somewhere the office cannot show a house.
+ *
+ * `CityKey` still names them all and so does `cityNames`, so a listing already
+ * filed under one keeps its name on the page. Adding a city back is adding a
+ * line here.
+ */
+export const CITY_KEYS: CityKey[] = ["erbil", "sulaymaniyah", "kirkuk"];
 
-/** Default cities shown publicly until the owner customises them in /hq/cities. */
-export const DEFAULT_ENABLED_CITIES: CityKey[] = [
-  "erbil",
-  "sulaymaniyah",
-  "kirkuk",
-  "chamchamal",
-  "duhok",
-  "halabja",
-];
+/** Cities shown publicly until the owner narrows them further in /hq/cities. */
+export const DEFAULT_ENABLED_CITIES: CityKey[] = ["erbil", "sulaymaniyah", "kirkuk"];
 
 export const PROPERTY_TYPE_KEYS: PropertyType[] = [
   "house",

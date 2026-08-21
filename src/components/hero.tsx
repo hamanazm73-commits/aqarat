@@ -271,7 +271,7 @@ export function Hero({
                     {L.chooseDistrict}
                   </option>
                   <option value={ALL}>{L.allDistricts}</option>
-                  {districts[city as CityKey].map((d) => (
+                  {(districts[city as CityKey] ?? []).map((d) => (
                     <option key={d} value={d}>
                       {d}
                     </option>
