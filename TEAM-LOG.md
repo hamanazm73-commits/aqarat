@@ -42,10 +42,25 @@ the forms that fed them came off the site — and sellers are called offices,
 which is what they are. The listing page has an office filter with a count per
 office, including the ones at zero.
 
-**Still not applied: firestore.rules.** It is pasted into the console by hand,
-and two changes are waiting there — the featured/recommended lock, and the
-removal of the public `create` rules on `submissions` and `inquiries`. Neither
-is urgent; the second is a door onto a room nobody reads any more.
+**Mohammed — one left, and it is not urgent: firestore.rules.**
+
+The file goes into the console by hand, so two changes are sitting in it
+unapplied:
+
+1. A seller cannot turn on `featured` or `recommended`. Both are off the
+   seller’s form already; this is what makes it true rather than merely
+   hidden, since the office charges for those two spots.
+2. The public `create` rules on `submissions` and `inquiries` are gone with
+   the collections. Nothing reads either any more, and an open create rule on
+   a collection nobody reads is a door onto an empty room.
+
+To apply: `git pull`, open `firestore.rules`, copy the whole file, then
+console.firebase.google.com → the project → Firestore Database → Rules tab →
+select all, paste, Publish.
+
+Hama asked me to pass this on — he has gone to bed. Tell your Claude when it is
+done and it can verify: a seller’s write with `featured: true` should be
+refused.
 
 ## 2026-08-22 — Mohammed · done
 
