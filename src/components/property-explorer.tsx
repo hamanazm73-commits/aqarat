@@ -19,28 +19,59 @@ import { cn } from "@/lib/utils";
 const SORTS = ["newest", "price_asc", "price_desc", "area_desc"] as const;
 
 /*
- * The rungs on the price filter, in dinars.
+ * The rungs on the price filter, in dinars — two ladders, because buying and
+ * renting are not the same numbers.
  *
- * A million is where a property starts being worth listing, and the steps
- * widen as the numbers do — twenty rungs from one million to a billion, close
- * together at the bottom where most of the houses are and further apart at the
- * top where a five-million difference stops mattering.
+ * A house sells for a hundred million and rents for six hundred thousand a
+ * month. One ladder cannot serve both: rungs fine enough to be useful for rent
+ * would run to hundreds of options before reaching a house price, and a ladder
+ * starting at a million puts every rental below its first rung.
+ *
+ * Either way the steps widen as the numbers do — close together at the bottom
+ * where most of the listings are, further apart at the top where five million
+ * either way stops mattering.
  */
-const PRICE_STEPS = [
+const SALE_STEPS = [
   1, 5, 10, 20, 30, 40, 50, 75,
   100, 125, 150, 200, 250, 300, 400, 500, 750, 1000,
 ].map((m) => m * 1_000_000);
 
+const RENT_STEPS = [
+  50, 100, 150, 200, 250, 300, 400, 500, 750,
+  1000, 1500, 2000, 3000, 5000, 7500, 10000,
+].map((k) => k * 1_000);
+
+/*
+ * The top of the sale ladder, as a maximum only.
+ *
+ * "Up to a billion" leaves out the house above it, and a buyer looking at that
+ * end of the market wants no ceiling at all rather than a higher one. As a
+ * minimum it would be meaningless — the billion rung already means a billion
+ * and up — so it is only ever offered on the right-hand box.
+ */
+const NO_CEILING = 1_000_000_000_000;
+
 /** "١٥٠ ملیۆن د.ع" rather than 150000000, which nobody reads at a glance. */
 function priceLabel(v: number, locale: Locale): string {
-  const unit = v >= 1_000_000_000 ? BILLION[locale] : MILLION[locale];
-  const n = v >= 1_000_000_000 ? v / 1_000_000_000 : v / 1_000_000;
+  if (v === NO_CEILING) return OVER_A_BILLION[locale];
+  const [n, unit] =
+    v >= 1_000_000_000
+      ? [v / 1_000_000_000, BILLION[locale]]
+      : v >= 1_000_000
+        ? [v / 1_000_000, MILLION[locale]]
+        : [v / 1_000, THOUSAND[locale]];
   return `${formatNumber(n, locale)} ${unit} ${CURRENCY[locale]}`;
 }
 
+const THOUSAND: Record<Locale, string> = { ku: "هەزار", ar: "ألف", en: "thousand" };
 const MILLION: Record<Locale, string> = { ku: "ملیۆن", ar: "مليون", en: "million" };
 const BILLION: Record<Locale, string> = { ku: "ملیار", ar: "مليار", en: "billion" };
 const CURRENCY: Record<Locale, string> = { ku: "د.ع", ar: "د.ع", en: "IQD" };
+const OVER_A_BILLION: Record<Locale, string> = {
+  ku: "زیاتر لە ١ ملیار د.ع",
+  ar: "أكثر من مليار د.ع",
+  en: "over 1 billion IQD",
+};
 
 export function PropertyExplorer({
   all,
@@ -60,6 +91,19 @@ export function PropertyExplorer({
   function set<K extends keyof PropertyFilters>(k: K, v: PropertyFilters[K]) {
     setF((prev) => ({ ...prev, [k]: v }));
   }
+
+  /*
+   * Switching between buying and renting clears the price with it.
+   *
+   * The two ladders share no rungs. A minimum of a hundred million left over
+   * from buying, carried into renting, is a filter that matches nothing and
+   * shows a value the rent ladder cannot even display.
+   */
+  function setPurpose(v: PropertyFilters["purpose"]) {
+    setF((prev) => ({ ...prev, purpose: v, minPrice: undefined, maxPrice: undefined }));
+  }
+
+  const steps = f.purpose === "rent" ? RENT_STEPS : SALE_STEPS;
   function reset() {
     setF({ sort: "newest" });
   }
@@ -69,13 +113,13 @@ export function PropertyExplorer({
       {/* Purpose */}
       <Field label={t.filters.purpose}>
         <div className="grid grid-cols-3 gap-2">
-          <Chip active={!f.purpose || f.purpose === "all"} onClick={() => set("purpose", "all")}>
+          <Chip active={!f.purpose || f.purpose === "all"} onClick={() => setPurpose("all")}>
             {t.filters.any}
           </Chip>
-          <Chip active={f.purpose === "sale"} onClick={() => set("purpose", "sale")}>
+          <Chip active={f.purpose === "sale"} onClick={() => setPurpose("sale")}>
             {tr(purposeNames.sale)}
           </Chip>
-          <Chip active={f.purpose === "rent"} onClick={() => set("purpose", "rent")}>
+          <Chip active={f.purpose === "rent"} onClick={() => setPurpose("rent")}>
             {tr(purposeNames.rent)}
           </Chip>
         </div>
@@ -126,7 +170,7 @@ export function PropertyExplorer({
             className="input"
           >
             <option value="">{t.filters.minPrice}</option>
-            {PRICE_STEPS.map((v) => (
+            {steps.map((v) => (
               <option key={v} value={v}>{priceLabel(v, locale)}</option>
             ))}
           </select>
@@ -138,9 +182,11 @@ export function PropertyExplorer({
             <option value="">{t.filters.maxPrice}</option>
             {/* Anything below the minimum already chosen would select
                 nothing, so it is not offered. */}
-            {PRICE_STEPS.filter((v) => !f.minPrice || v > f.minPrice).map((v) => (
-              <option key={v} value={v}>{priceLabel(v, locale)}</option>
-            ))}
+            {[...steps, ...(f.purpose === "rent" ? [] : [NO_CEILING])]
+              .filter((v) => !f.minPrice || v > f.minPrice)
+              .map((v) => (
+                <option key={v} value={v}>{priceLabel(v, locale)}</option>
+              ))}
           </select>
         </div>
       </Field>
