@@ -459,15 +459,15 @@ export const amenityNames: Record<AmenityKey, Record<Locale, string>> = {
   parking: { ku: "پارکینگ", en: "Parking", ar: "موقف سيارات" },
   garden: { ku: "باخچە", en: "Garden", ar: "حديقة" },
   elevator: { ku: "ئاسانسۆر", en: "Elevator", ar: "مصعد" },
-  furnished: { ku: "مۆبلیاکراو", en: "Furnished", ar: "مفروش" },
+  furnished: { ku: "بە ئەساسەوە", en: "Furnished", ar: "مفروش" },
   ac: { ku: "ساردکەرەوە", en: "A/C", ar: "تكييف" },
   heating: { ku: "گەرمکەرەوە", en: "Heating", ar: "تدفئة" },
   security: { ku: "ئاسایش", en: "Security", ar: "أمن" },
   pool: { ku: "مەلەوانگە", en: "Pool", ar: "مسبح" },
-  generator: { ku: "مۆلێد", en: "Generator", ar: "مولد" },
   /* Not offered when adding a listing any more — see AMENITIES in constants.
      The labels stay because listings entered before today may still carry
      one, and a key with no label renders as nothing at all. */
+  generator: { ku: "مۆلێد", en: "Generator", ar: "مولد" },
   water_tank: { ku: "تانکی ئاو", en: "Water tank", ar: "خزان ماء" },
   solar: { ku: "وزەی خۆر", en: "Solar power", ar: "طاقة شمسية" },
   balcony: { ku: "بەلکۆن", en: "Balcony", ar: "شرفة" },

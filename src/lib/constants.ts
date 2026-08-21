@@ -66,6 +66,5 @@ export const AMENITY_KEYS: AmenityKey[] = [
   "heating",
   "security",
   "pool",
-  "generator",
   "balcony",
 ];

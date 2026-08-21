@@ -10,6 +10,15 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-21 23:06 — hamakali2005 · done
+
+- **مۆبلیاکراو** is **بە ئەساسەوە** now — the word a seller here would use.
+  Only the Kurdish; Furnished and مفروش were already right.
+- **مۆلێد** is off the amenity list, alongside تانکی ئاو and وزەی خۆر.
+
+The three labels stay in `dictionaries.ts`; only `AMENITY_KEYS` lost them, so
+listings entered before today still render what they carry.
+
 ## 2026-08-21 23:03 — hamakali2005 · done
 
 Hama asked for three things on the add-listing form:
