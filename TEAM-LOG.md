@@ -10,6 +10,48 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-22 — hamakali2005 · BLOCKED, needs one dashboard change
+
+**Video upload will fail until the R2 bucket allows a cross-origin PUT.**
+
+YouTube links are gone from the property form — a listing pointing a buyer at
+somebody else's channel is not what the site is for, and on the page there was
+no telling whose video you were looking at. Clips are uploaded and served by us
+now, and they sit directly under the photographs.
+
+The bytes go straight from the browser to `hotel-media` on a presigned PUT,
+because a function request body is capped at 4.5MB and phone footage is many
+times that. That cap is real and was measured, not assumed: a 6MB POST to
+`/api/upload` on the live site comes back 413 `FUNCTION_PAYLOAD_TOO_LARGE`
+before our code runs. Chunking through our own server does not get round it
+either — R2 requires every multipart part except the last to be at least 5MiB,
+which is larger than a request may be.
+
+So the browser writes across an origin, and the bucket has to say that is
+allowed. The S3 key in `.env.local` is Object Read & Write, so it cannot set
+this itself: `GetBucketCors` answers AccessDenied. It needs doing once, by hand,
+in the Cloudflare dashboard — Settings on the `hotel-media` bucket, CORS Policy:
+
+```json
+[
+  {
+    "AllowedOrigins": ["https://homes.layhama.com", "http://localhost:3015"],
+    "AllowedMethods": ["PUT", "GET"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+Add an origin per site if the shops or hotels sites ever upload video too — it
+is the same bucket. Until then a seller picking a video gets "ڤیدیۆکە نەگەیشتە
+کۆگاکە" and nothing is uploaded; photographs are unaffected, they go through
+`/api/upload` as before.
+
+Also still open: `ANTHROPIC_API_KEY` is not set on the aqarat project, so the
+three-language auto-fill answers 501 and the boxes stay empty. The form works
+without it, the seller just types all three.
+
 ## 2026-08-21 — hamakali2005 · done
 
 **A seller writes the title and description once; the other two languages fill
