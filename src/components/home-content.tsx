@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Building, Headphones, Home, Landmark, ShieldCheck, Store, Trees, Warehouse } from "lucide-react";
+import { ArrowDown, Building, Headphones, Home, Landmark, ShieldCheck, Store, Trees, Warehouse } from "lucide-react";
 import type { CityKey, Property, PropertyType } from "@/lib/types";
 import { useI18n } from "@/lib/i18n/context";
 import { typeNames } from "@/lib/i18n/dictionaries";
@@ -26,13 +26,7 @@ export function HomeContent({
   counts: { listings: number; cities: number };
   cities: CityKey[];
 }) {
-  const { t, tr, dir } = useI18n();
-  const Arrow = dir === "rtl" ? ArrowLeft : ArrowRight;
-  // Forward is leftwards in Kurdish and Arabic, rightwards in English. Worked
-  // out here rather than with an rtl: variant, which has to state both cases
-  // and gets one of them wrong.
-  const arrowNudge =
-    dir === "rtl" ? "group-hover:-translate-x-1" : "group-hover:translate-x-1";
+  const { t, tr } = useI18n();
   // Show every listing on the home page, featured ones first.
   const sorted = [...properties].sort(
     (a, b) => Number(!!b.featured) - Number(!!a.featured),
@@ -88,8 +82,11 @@ export function HomeContent({
             href="/properties"
             className="group inline-flex h-11 shrink-0 items-center gap-2 rounded-xl border border-gold/30 bg-gold/8 px-5 text-sm font-medium text-gold transition-colors hover:bg-gold hover:text-gold-foreground"
           >
-            {t.nav.viewAll}
-            <Arrow className={`size-4 transition-transform ${arrowNudge}`} />
+            {t.filters.title}
+            {/* Down, not along. Whichever way the script runs, more of the
+                page is below — and it nudges downward on hover for the same
+                reason. */}
+            <ArrowDown className="size-4 transition-transform group-hover:translate-y-0.5" />
           </Link>
         </div>
 

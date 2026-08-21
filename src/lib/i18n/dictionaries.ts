@@ -21,9 +21,6 @@ export const dict = {
       contact: "پەیوەندی",
       admin: "بەڕێوەبردن",
       submit: "زیادکردنی موڵک",
-      /* The link under the home page grid. It used to borrow the filter
-         label, which said "filtering" on something that opens a list. */
-      viewAll: "بینینی هەموو خانووبەرەکان",
     },
     hero: {
       badge: "گەورەترین بازاڕی خانووبەرەی کوردستان",
@@ -149,7 +146,6 @@ export const dict = {
       contact: "Contact",
       admin: "Admin",
       submit: "List property",
-      viewAll: "See all properties",
     },
     hero: {
       badge: "Kurdistan's largest real-estate marketplace",
@@ -272,7 +268,6 @@ export const dict = {
       contact: "تواصل وينا",
       admin: "الإدارة",
       submit: "ضيف عقارك",
-      viewAll: "عرض جميع العقارات",
     },
     hero: {
       badge: "أكبر سوق عقاري بكردستان",
