@@ -451,14 +451,30 @@ export function PropertyForm({ initial }: { initial?: Property }) {
               {preview.description.ku}
             </p>
           )}
-          <p className="mt-2 text-xs leading-relaxed text-muted-foreground" dir="ltr">
-            {preview.title.en}
-            {preview.description.en ? ` — ${preview.description.en}` : ""}
-          </p>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            {preview.title.ar}
-            {preview.description.ar ? ` — ${preview.description.ar}` : ""}
-          </p>
+          {/*
+            The other three, all down the same edge as the Kurdish above them.
+
+            English and Turkmen keep dir="ltr" — the words have to run left to
+            right or the punctuation lands on the wrong end — but that also
+            flushed those lines to the left of a panel where everything else
+            sits on the right.
+
+            `text-right`, not `text-end`. The logical one resolves against the
+            element's own direction, so it means right for the two Latin lines
+            and *left* for the Arabic one — measured it doing exactly that,
+            which would have fixed two lines and broken the third. Physical
+            right is the same edge for all four whatever way the letters run.
+          */}
+          {(["ar", "en", "tk"] as const).map((l) => (
+            <p
+              key={l}
+              dir={l === "ar" ? "rtl" : "ltr"}
+              className="mt-1 text-right text-xs leading-relaxed text-muted-foreground"
+            >
+              {preview.title[l]}
+              {preview.description[l] ? ` — ${preview.description[l]}` : ""}
+            </p>
+          ))}
         </div>
       </Card>
 
