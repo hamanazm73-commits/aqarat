@@ -18,7 +18,7 @@ const orgJsonLd = {
   "@context": "https://schema.org",
   "@type": "RealEstateAgent",
   "@id": `${SITE_URL}/#organization`,
-  name: "Lay Hama Homes — نووسینگەی لای حەمە",
+  name: "Lay Hama Homes — ماڵەکان لای حەمە",
   /*
    * Every way someone asks for this place.
    *
@@ -35,7 +35,7 @@ const orgJsonLd = {
    */
   alternateName: [
     // The office, written properly.
-    "نووسینگەی لای حەمە",
+    "ماڵەکان لای حەمە",
     "يم حمة للعقارات",
     "يم حمة",
     "عند حمة للعقارات",
@@ -109,7 +109,7 @@ export default async function HomePage() {
             "@context": "https://schema.org",
             "@type": "WebSite",
             "@id": "https://homes.layhama.com/#website",
-            name: "نووسینگەی لای حەمە",
+            name: "ماڵەکان لای حەمە",
             alternateName: ["Lay Hama Homes", "مكتب يم حمة", "Lay Hama"],
             url: "https://homes.layhama.com",
             inLanguage: "ckb",

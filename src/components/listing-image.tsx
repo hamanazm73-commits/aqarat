@@ -35,7 +35,7 @@ import type { PropertyType } from "@/lib/types";
  *
  * The original SVG text was at 740 and 800 — sixty apart, which is enough for
  * Latin and not for Kurdish or Arabic. Measured in the page, "زەوی" and
- * "نووسینگەی لای حەمە" overlapped by eight pixels at those numbers: the script
+ * "ماڵەکان لای حەمە" overlapped by eight pixels at those numbers: the script
  * carries taller ascenders and deeper descenders than the spacing was cut for.
  * Ninety apart clears both, and there is room below because the frame above
  * ends at 640.

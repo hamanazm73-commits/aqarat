@@ -30,8 +30,8 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "نووسینگەی لای حەمە | Lay Hama Homes — Real Estate",
-    template: "%s | نووسینگەی لای حەمە",
+    default: "ماڵەکان لای حەمە | Lay Hama Homes — Real Estate",
+    template: "%s | ماڵەکان لای حەمە",
   },
   description: DESCRIPTION,
   keywords: [
@@ -39,18 +39,18 @@ export const metadata: Metadata = {
     "real estate", "Kurdistan", "Erbil", "Sulaymaniyah", "property", "for sale", "for rent",
   ],
   openGraph: {
-    title: "نووسینگەی لای حەمە | Lay Hama Homes — Real Estate",
+    title: "ماڵەکان لای حەمە | Lay Hama Homes — Real Estate",
     description: DESCRIPTION,
     url: SITE_URL,
     // In Kurdish, because this is the name a search result is headed with
     // and Kurdish is what someone looking for it types.
-    siteName: "نووسینگەی لای حەمە",
+    siteName: "ماڵەکان لای حەمە",
     type: "website",
     locale: "ckb_IQ",
   },
   twitter: {
     card: "summary_large_image",
-    title: "نووسینگەی لای حەمە | Lay Hama Homes",
+    title: "ماڵەکان لای حەمە | Lay Hama Homes",
     description: DESCRIPTION,
   },
 };

@@ -17,6 +17,7 @@ const OPTIONS: {
   { locale: "ku", native: "کوردی", dir: "rtl" },
   { locale: "ar", native: "العربية", dir: "rtl" },
   { locale: "en", native: "English", dir: "ltr" },
+  { locale: "tk", native: "Türkmence", dir: "ltr" },
 ];
 
 /**
@@ -226,7 +227,7 @@ export function LanguageWelcome() {
                   <BrandMark className="size-14 sm:size-16" />
                 </motion.div>
                 <h1 className="mt-4 text-[1.6rem] font-extrabold leading-tight text-white sm:text-3xl">
-                  نووسینگەی لای حەمە
+                  ماڵەکان لای حەمە
                 </h1>
                 <p className="mt-1 text-sm font-medium text-gold">
                   يم حمة للعقارات · Lay Hama Homes
