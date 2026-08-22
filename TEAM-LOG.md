@@ -10,7 +10,34 @@ Newest entry at the top.
 
 ---
 
-## 2026-08-22 — hamakali2005 · OPEN, needs a decision
+## 2026-08-22 — hamakali2005 · built, one setting left
+
+**The seller-link fix is written and deployed. It needs one value to switch
+on.**
+
+`/api/access` reads `accessLinks/{token}` as the project and hands the browser
+only the two fields the sign-in needs, so the rule can close. No
+firebase-admin — the service account signs a JWT, trades it for an access
+token, and calls the Firestore REST API, which is the same shape every other
+route here already uses and runs where the SDK would not.
+
+**To switch it on:** Firebase Console → Project settings → Service accounts →
+Generate new private key. Paste the whole JSON into Vercel on the aqarat
+project as `FIREBASE_SERVICE_ACCOUNT`, marked Sensitive — it is full read and
+write over the project and rules do not apply to it. Then tell me and I will
+close the rule to `allow get: if false` and delete the fallback.
+
+Until that value exists the route answers 501 and the browser falls back to the
+old direct read, so every link keeps working. I got this wrong once already:
+the first commit shipped the client pointed at the route with no fallback and
+broke every seller link for the minutes it took to notice. Worth remembering
+that the route and the key have to arrive in that order, with a bridge between
+them.
+
+Links already sent are unaffected either way — the token does not change, only
+who reads the document.
+
+## 2026-08-22 — hamakali2005 · superseded by the entry above
 
 **Seller links hand out a real password to anyone holding the URL.**
 
