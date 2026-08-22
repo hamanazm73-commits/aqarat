@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { titleFor, descriptionFor } from "@/lib/listing-text";
 import { getProperty, getSimilar } from "@/lib/repo";
 import { PropertyDetail } from "@/components/property-detail";
-import { listingJsonLd, pickLocalized } from "@/lib/listing-seo";
+import { listingJsonLd } from "@/lib/listing-seo";
 import { alternatesFor } from "@/lib/seo";
 import type { Locale } from "@/lib/types";
 

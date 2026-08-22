@@ -1,32 +1,6 @@
-import type { Locale, Localized, Property } from "./types";
+import type { Locale, Property } from "./types";
 import { urlFor } from "./seo";
 import { titleFor, descriptionFor } from "./listing-text";
-
-/**
- * The listing's own words in the reader's language, falling back rather than
- * showing nothing. Owners often fill in one language and leave the others
- * empty, so an English page may honestly have to show the Kurdish title —
- * which still beats a blank one.
- */
-export function pickLocalized(v: Localized | undefined, locale: Locale) {
-  if (!v) return "";
-  /*
-   * The reader's own language first, then the rest.
-   *
-   * A chain of ternaries stopped being readable at three languages and would
-   * be worse at four, so the order is built rather than spelled out: what was
-   * asked for, then everything else. Kurdish and Arabic lead the fallback
-   * because a listing that only has one language almost always has one of
-   * those.
-   */
-  const rest: Locale[] = ["ku", "ar", "en", "tk"];
-  const order = [locale, ...rest.filter((l) => l !== locale)];
-  for (const l of order) {
-    const s = v[l]?.trim();
-    if (s) return s;
-  }
-  return "";
-}
 
 /**
  * What the listing is, in the vocabulary search engines read. Google will not

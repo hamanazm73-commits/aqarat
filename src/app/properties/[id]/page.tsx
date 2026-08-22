@@ -4,7 +4,7 @@ import { getProperty, getSimilar } from "@/lib/repo";
 import { SEED_PROPERTIES } from "@/lib/data";
 import { isFirebaseConfigured } from "@/lib/firebase/client";
 import { PropertyDetail } from "@/components/property-detail";
-import { listingJsonLd, pickLocalized } from "@/lib/listing-seo";
+import { listingJsonLd } from "@/lib/listing-seo";
 import { alternatesFor } from "@/lib/seo";
 
 // Keep listing pages fresh (ISR) so edits show up without a rebuild.

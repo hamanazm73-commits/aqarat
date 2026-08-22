@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Loader2, Upload, X, Plus, Video, MapPin, Check } from "lucide-react";
-import type { AmenityKey, Locale, Property, PropertyType, Purpose } from "@/lib/types";
+import type { AmenityKey, Property, PropertyType, Purpose } from "@/lib/types";
 import {
   fsCreateProperty,
   fsUpdateProperty,
@@ -28,7 +28,6 @@ import {
 import { buildTitle, buildDescription } from "@/lib/listing-text";
 import { compressImage } from "@/lib/compress-image";
 import { useAuth } from "@/lib/firebase/auth";
-import { getFirebase } from "@/lib/firebase/client";
 import { Button } from "@/components/ui/button";
 import { coordsFromMapsUrl } from "@/lib/maps";
 import { districts } from "@/lib/districts";
@@ -37,12 +36,14 @@ import { districts } from "@/lib/districts";
 const OTHER_DISTRICT = "__other__";
 
 /*
- * A district name is a proper noun, so it is the same in all three.
+ * The district is stored once, in Kurdish, under every key.
  *
- * The record wants ku/ar/en and translating a place name would be wrong
- * anyway — عەنکاوا is Ankawa is عنكاوا, written how the people there write it.
- * Storing one string three times keeps every reader that already does
- * tr(district) working, without teaching any of them a second shape.
+ * It is what the office picked from a Kurdish list, and it is the same place
+ * whichever language is reading. The Latin languages do get a Latin spelling —
+ * ڕەحیماوا is Rahimawa, عەنکاوا is Ankawa — but that lives in district-latin.ts
+ * and is applied when the name is displayed, not baked into the record. Keeping
+ * the record in one language means a better spelling later fixes every listing
+ * at once instead of only the ones saved after it.
  */
 function sameInAll(name: string) {
   return { ku: name, ar: name, en: name, tk: name };
