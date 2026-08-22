@@ -1,15 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 
+/**
+ * Whether we are past hydration.
+ *
+ * The theme only exists in the browser, so the server has nothing to render
+ * and the first client render has to match what the server sent. That used to
+ * be a `mounted` flag set from an effect, which costs a second render of this
+ * component on every page and is what the linter was pointing at.
+ *
+ * `useSyncExternalStore` is the API React added for exactly this: give it a
+ * server snapshot and a client snapshot and it returns the right one at the
+ * right time, with no effect and no second render. Nothing here ever changes
+ * after that, so subscribing has nothing to do.
+ */
+const neverChanges = () => () => {};
+const onClient = () => true;
+const onServer = () => false;
+
 export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const hydrated = useSyncExternalStore(neverChanges, onClient, onServer);
 
-  const current = mounted ? resolvedTheme ?? theme : undefined;
+  const current = hydrated ? resolvedTheme ?? theme : undefined;
 
   return (
     <button

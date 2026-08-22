@@ -68,8 +68,16 @@ export default function SellersPage() {
   const [fresh, setFresh] = useState<{ name: string; url: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
+  /*
+   * No setLoading(true) at the top any more.
+   *
+   * It made this a synchronous setState the moment the effect below called it,
+   * which is a render thrown away on every mount. `loading` already starts
+   * true, so the first load needs nothing; and the two refreshes after a
+   * create or a delete are better off leaving the list on screen than blanking
+   * it to a spinner for the half second it takes to come back.
+   */
   const load = useCallback(async () => {
-    setLoading(true);
     try {
       setRows(await fsListSellers());
     } catch {
