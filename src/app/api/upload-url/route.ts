@@ -31,14 +31,15 @@ export const runtime = "nodejs";
 /**
  * May this account put a video in the bucket?
  *
- * Signed in is not the test. This route only ever signs video, and video is
- * the office's to add — a seller uploads photographs, which go through
- * /api/upload and are shrunk to about 150KB first. One clip off a phone is
- * the room of two hundred of those, out of a bucket all three sites share.
+ * Anyone with a dashboard account that is switched on — an office as much as
+ * an administrator. It was admin-only for a while, on the reasoning that one
+ * clip costs the room of two hundred photographs out of a bucket all three
+ * sites share. Hama's call is that an office listing a house should be able to
+ * show it walking through, and the room is his to spend.
  *
- * So the answer is admin or owner, not merely enabled. The form already hides
- * the option from a seller, but a hidden button is a hidden button: the rule
- * has to hold where the signing happens or it does not hold at all.
+ * Still not merely "signed in": the account has to exist in `roles` with
+ * `enabled` true. This route hands out a key that accepts 200MB into the
+ * bucket for fifteen minutes, and that is not something to give a stranger.
  */
 async function allowed(idToken: string): Promise<boolean> {
   const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
@@ -73,16 +74,10 @@ async function allowed(idToken: string): Promise<boolean> {
     );
     if (!res.ok) return false;
     const doc = (await res.json()) as {
-      fields?: {
-        enabled?: { booleanValue?: boolean };
-        role?: { stringValue?: string };
-      };
+      fields?: { enabled?: { booleanValue?: boolean } };
     };
-    if (doc.fields?.enabled?.booleanValue !== true) return false;
-    const role = doc.fields?.role?.stringValue;
-    // Same two roles the dashboard calls isAdmin. A "seller" is an office
-    // that lists houses, and lands here only by going round the form.
-    return role === "admin" || role === "owner";
+    // Enabled is the test — an office counts, the same as an administrator.
+    return doc.fields?.enabled?.booleanValue === true;
   } catch {
     return false;
   }
