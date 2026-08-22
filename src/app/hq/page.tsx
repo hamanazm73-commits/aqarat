@@ -24,6 +24,7 @@ import { cityNames, typeNames } from "@/lib/i18n/dictionaries";
 import { formatIQDCompact } from "@/lib/format";
 import { useAuth } from "@/lib/firebase/auth";
 import { Button } from "@/components/ui/button";
+import { ComingSoonCard } from "@/components/admin/coming-soon-card";
 
 /** Sentinels for the office filter; neither can collide with an address. */
 const ALL = "__all__";
@@ -120,6 +121,15 @@ export default function AdminListingsPage() {
           <Button size="sm"><Plus className="h-4 w-4" /> نوێ</Button>
         </Link>
       </div>
+
+      {/* Not for sellers. It is the whole site it switches, not their
+          listings, and a seller who found it would be turning a banner on
+          over somebody else’s shop. */}
+      {!isSeller && (
+        <div className="mb-6">
+          <ComingSoonCard />
+        </div>
+      )}
 
       {!isSeller && items !== null && items.length > 0 && (
         <div className="mb-5 flex flex-wrap items-center gap-3">

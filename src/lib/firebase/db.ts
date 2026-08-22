@@ -150,6 +150,27 @@ export async function fsSetEnabledCities(cities: string[]): Promise<void> {
   await setDoc(doc(db(), "settings", "site"), { cities }, { merge: true });
 }
 
+/**
+ * Whether to fly the "still being worked on" strip across the top.
+ *
+ * The hotels site has had one of these since it opened, and it does the job
+ * an empty listings page cannot: it tells a visitor the quiet is temporary
+ * rather than the whole offer. Same field name and the same document as the
+ * cities, so there is one settings record rather than two.
+ *
+ * Absent means off here, unlike the hotels site where absent means on. That
+ * site was launched behind the banner; this one is already carrying real
+ * listings, so the office turns it on when it wants it.
+ */
+export async function fsGetComingSoon(): Promise<boolean> {
+  const d = await getDoc(doc(db(), "settings", "site"));
+  return d.exists() && (d.data() as { comingSoon?: boolean }).comingSoon === true;
+}
+
+export async function fsSetComingSoon(on: boolean): Promise<void> {
+  await setDoc(doc(db(), "settings", "site"), { comingSoon: on }, { merge: true });
+}
+
 /* ------------------------------ Storage ------------------------------ */
 
 /**

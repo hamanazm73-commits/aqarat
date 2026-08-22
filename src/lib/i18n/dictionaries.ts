@@ -35,6 +35,10 @@ export const dict = {
         clients: "کڕیاری دڵخۆش",
       },
     },
+    soon: {
+      title: "ماڵپەڕەکە لە چاککردندایە.",
+      text: "بەردەوام مووڵکی نوێ زیاد دەکەین — دواتر سەردانمان بکەرەوە.",
+    },
     filters: {
       title: "فلتەرکردن",
       purpose: "مەبەست",
@@ -160,6 +164,10 @@ export const dict = {
         clients: "Happy clients",
       },
     },
+    soon: {
+      title: "This site is still being built.",
+      text: "We are adding new listings all the time — do come back.",
+    },
     filters: {
       title: "Filters",
       purpose: "Purpose",
@@ -281,6 +289,10 @@ export const dict = {
         cities: "مدينة",
         clients: "زبون راضي",
       },
+    },
+    soon: {
+      title: "الموقع لسه بالشغل.",
+      text: "نضيف عقارات جديدة باستمرار — رجاءً ارجع تشوفنا.",
     },
     filters: {
       title: "الفلاتر",

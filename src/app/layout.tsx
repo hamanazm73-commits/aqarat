@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Noto_Naskh_Arabic } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { ComingSoonBanner } from "@/components/coming-soon-banner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FloatingWhatsApp } from "@/components/floating-whatsapp";
@@ -66,6 +67,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Providers>
+          <ComingSoonBanner />
           <SiteHeader />
           <main className="flex-1">{children}</main>
         {/*
