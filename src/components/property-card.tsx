@@ -15,7 +15,7 @@ import type { Property } from "@/lib/types";
 import { useI18n } from "@/lib/i18n/context";
 import { cityNames, typeNames } from "@/lib/i18n/dictionaries";
 import { formatIQDCompact, formatNumber, discountPercent } from "@/lib/format";
-import { cn } from "@/lib/utils";
+import { cn, isRawSrc } from "@/lib/utils";
 
 const WA_NUMBER = "9647502202191";
 const SITE_URL = "https://homes.layhama.com";
@@ -53,6 +53,7 @@ export function PropertyCard({ p }: { p: Property }) {
           aria-hidden
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
+          unoptimized={isRawSrc(p.images[0])}
           className="scale-110 object-cover opacity-55 blur-xl"
         />
         <Image
@@ -60,6 +61,7 @@ export function PropertyCard({ p }: { p: Property }) {
           alt={tr(p.title)}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
+          unoptimized={isRawSrc(p.images[0])}
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />

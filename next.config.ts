@@ -46,9 +46,23 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   images: {
-    // Listings use local SVG placeholders / pasted URLs, so the optimizer is
-    // off. When real raster photos are hosted, set unoptimized: false.
-    unoptimized: true,
+    /*
+     * Doing what the note that used to sit here said to do.
+     *
+     * It read: "Listings use local SVG placeholders / pasted URLs, so the
+     * optimizer is off. When real raster photos are hosted, set unoptimized:
+     * false." Real raster photos are hosted — offices upload them and they are
+     * served from the bucket through /api/img — so the condition is met.
+     *
+     * What it was costing: a card cover went out at full size to everybody,
+     * about 92KB each, where the hotels site sends the same photograph at
+     * 19KB to a phone. Twenty cards is 1.8MB instead of 400KB, on a listings
+     * page most people open on mobile data.
+     *
+     * The SVGs the note worried about are still there, and the optimizer still
+     * refuses them. `isRawSrc` marks those — and data:/blob: previews —
+     * unoptimized at the call site, so they pass through untouched.
+     */
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "firebasestorage.googleapis.com" },
