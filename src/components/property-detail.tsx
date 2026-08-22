@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   BedDouble,
@@ -32,9 +33,23 @@ import {
   formatDate,
   discountPercent,
 } from "@/lib/format";
+import { isRawSrc } from "@/lib/utils";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
 import { fsCountView } from "@/lib/firebase/db";
+
+/**
+ * How wide the main photograph actually is, so the optimizer sends that much.
+ *
+ * Measured rather than guessed: the gallery runs the full width of the
+ * container on every screen — the contact panel sits below it, not beside it —
+ * so at a 1280px window the picture is about 1230px. A first guess of 800px
+ * here had the browser stretching an 800px file across 1230px of screen.
+ *
+ * Next never upscales past the stored file, so a small photograph still
+ * arrives at its own size; this only stops a large one being sent short.
+ */
+const HERO_SIZES = "(max-width: 1280px) 100vw, 1280px";
 
 export function PropertyDetail({
   p,
@@ -136,17 +151,36 @@ export function PropertyDetail({
       */}
       <div>
         <div className="group relative overflow-hidden rounded-2xl border border-border bg-muted">
-          <div
-            aria-hidden
-            className="absolute inset-0 scale-110 bg-cover bg-center opacity-45 blur-2xl"
-            style={{ backgroundImage: `url("${p.images[active]}")` }}
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={p.images[active]}
-            alt={tr(p.title)}
-            className="relative mx-auto aspect-[16/10] w-full object-contain"
-          />
+          {/*
+            The backdrop and the photograph are the same file, deliberately.
+
+            Both were plain elements pointed straight at the stored image, so
+            every visitor downloaded the full 92KB whatever they were looking
+            at it on. They are `Image` now, with the same src and the same
+            `sizes`, so they resolve to one identical URL and the browser
+            fetches it once — as it did before, but at the size actually shown.
+          */}
+          <div className="relative aspect-[16/10] w-full">
+            <Image
+              src={p.images[active]}
+              alt=""
+              aria-hidden
+              fill
+              sizes={HERO_SIZES}
+              unoptimized={isRawSrc(p.images[active])}
+              className="scale-110 object-cover opacity-45 blur-2xl"
+            />
+            <Image
+              src={p.images[active]}
+              alt={tr(p.title)}
+              fill
+              sizes={HERO_SIZES}
+              unoptimized={isRawSrc(p.images[active])}
+              // The one picture the page exists for; it should not wait its turn.
+              priority
+              className="object-contain"
+            />
+          </div>
           <span
             className={
               "absolute start-4 top-4 z-10 rounded-full px-3 py-1 text-sm font-bold shadow-lg " +
@@ -194,12 +228,25 @@ export function PropertyDetail({
               <button
                 key={src}
                 onClick={() => setActive(i)}
-                className={`size-20 shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 bg-muted transition ${
+                className={`relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 bg-muted transition ${
                   i === active ? "border-primary" : "border-transparent opacity-70 hover:opacity-100"
                 }`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" className="size-full object-contain" />
+                {/*
+                  These are eighty pixels square and were downloading the whole
+                  photograph — 92KB each, so a listing with ten pictures spent
+                  most of a megabyte on a strip of thumbnails smaller than a
+                  postage stamp. `sizes` tells the optimizer the truth about
+                  how big they are.
+                */}
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  sizes="80px"
+                  unoptimized={isRawSrc(src)}
+                  className="object-contain"
+                />
               </button>
             ))}
           </div>
