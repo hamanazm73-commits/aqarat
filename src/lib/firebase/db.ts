@@ -290,7 +290,8 @@ export interface SellerLink {
  * ever saw the URL. The server reads it now, as the project, and hands back
  * only the two fields the sign-in needs.
  *
- * The token is unchanged, so every link already sent still works.
+ * The token is unchanged, so every link already sent still works, and the
+ * browser never sees the document — only the two fields it signs in with.
  */
 export async function fsGetSellerLink(
   token: string,
@@ -308,25 +309,8 @@ export async function fsGetSellerLink(
       : null;
   }
 
-  /*
-   * 501 means the server has no service-account key yet, not that the link is
-   * bad — so fall back to the old direct read rather than telling a seller
-   * their link is broken.
-   *
-   * This is the halfway state and it is deliberate: the route ships before the
-   * key does, and the rule stays open until the key is in place. Once
-   * FIREBASE_SERVICE_ACCOUNT is set the route answers and this branch is never
-   * reached; once the rule closes with it, the branch cannot work anyway.
-   * Delete it then.
-   *
-   * Every other status is a real answer — a bad token, a rate limit — and is
-   * treated as a failure.
-   */
-  if (res.status === 501) {
-    const d = await getDoc(doc(db(), "accessLinks", token));
-    return d.exists() ? (d.data() as SellerLink) : null;
-  }
-
+  // Anything else is a real answer — a bad token, a rate limit, a server that
+  // could not reach Firestore — and the link does not open.
   return null;
 }
 

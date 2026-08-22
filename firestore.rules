@@ -62,9 +62,15 @@ service cloud.firestore {
     // read the credentials behind it — that is what lets the link work with
     // nothing to type. `list` stays shut, and that is what keeps the id
     // secret: without it the collection cannot be enumerated to find one.
+    // Seller links: nothing here is readable from a browser.
+    //
+    // These documents hold a throwaway account’s address and its password in
+    // plain text. `allow get: if true` used to let anyone who knew a token read
+    // them straight out of Firestore — and a token travels in a URL, which gets
+    // forwarded and screenshotted. /api/access reads them as the project now,
+    // rate-limited, and hands the browser only the two fields it signs in with.
     match /accessLinks/{token} {
-      allow get: if true;
-      allow list: if false;
+      allow read: if false;
       allow create, update, delete: if isAdmin();
     }
 
