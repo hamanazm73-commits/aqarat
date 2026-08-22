@@ -282,9 +282,29 @@ export interface SellerLink {
   createdAt: string;
 }
 
-export async function fsGetSellerLink(token: string): Promise<SellerLink | null> {
-  const d = await getDoc(doc(db(), "accessLinks", token));
-  return d.exists() ? (d.data() as SellerLink) : null;
+/**
+ * Ask the server for the credentials behind a token.
+ *
+ * This used to read accessLinks/{token} directly, which is why the rule had to
+ * let anyone read it — and why the password inside was available to anyone who
+ * ever saw the URL. The server reads it now, as the project, and hands back
+ * only the two fields the sign-in needs.
+ *
+ * The token is unchanged, so every link already sent still works.
+ */
+export async function fsGetSellerLink(
+  token: string,
+): Promise<Pick<SellerLink, "email" | "password"> | null> {
+  const res = await fetch("/api/access", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+  if (!res.ok) return null;
+  const link = (await res.json()) as { email?: string; password?: string };
+  return link.email && link.password
+    ? { email: link.email, password: link.password }
+    : null;
 }
 
 export async function fsSaveSellerLink(
