@@ -36,6 +36,7 @@ import {
 import { isRawSrc } from "@/lib/utils";
 import { ROOM_FIELDS } from "@/lib/constants";
 import { titleFor, descriptionFor } from "@/lib/listing-text";
+import { districtFor } from "@/lib/district-latin";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
 import { fsCountView } from "@/lib/firebase/db";
@@ -303,7 +304,7 @@ export function PropertyDetail({
               <p className="mt-2 flex items-center gap-1.5 text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
                 {tr(cityNames[p.city])}
-                {p.district && <span>· {tr(p.district)}</span>}
+                {p.district && <span>· {districtFor(p.district, locale)}</span>}
               </p>
             </div>
             <div className="text-end">

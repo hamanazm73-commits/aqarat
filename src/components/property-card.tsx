@@ -18,6 +18,7 @@ import { formatIQDCompact, formatNumber, discountPercent } from "@/lib/format";
 import { cn, isRawSrc } from "@/lib/utils";
 import { ROOM_FIELDS } from "@/lib/constants";
 import { titleFor } from "@/lib/listing-text";
+import { districtFor } from "@/lib/district-latin";
 
 const WA_NUMBER = "9647502202191";
 const SITE_URL = "https://homes.layhama.com";
@@ -123,7 +124,7 @@ export function PropertyCard({ p }: { p: Property }) {
         <p className="flex items-center gap-1 text-sm text-muted-foreground">
           <MapPin className="size-3.5" />
           {tr(cityNames[p.city])}
-          {p.district && <span>· {tr(p.district)}</span>}
+          {p.district && <span>· {districtFor(p.district, locale)}</span>}
         </p>
 
         <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">

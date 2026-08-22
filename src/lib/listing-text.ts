@@ -7,6 +7,7 @@ import {
   type PropertyType,
   type Purpose,
 } from "./types";
+import { districtInLatin } from "./district-latin";
 import {
   cityNames,
   typeNames,
@@ -68,8 +69,16 @@ function titleIn(
   const t = typeNames[type][locale];
   const p = purposeNames[purpose][locale];
   const c = cityNames[city][locale];
+  /*
+   * The district is stored in Kurdish — it is what the office picked from a
+   * Kurdish list. Kurdish and Arabic both read the script and a place name is
+   * not translated between them, so they take it as it is. The two Latin
+   * languages would otherwise get a Kurdish word dropped into the middle of a
+   * Latin sentence, which is what "ڕەحیماوا, Kerkük'te satılık ev" was.
+   */
+  const d = district ? districtInLatin(district, locale === "tk") : undefined;
   const where = district ? `${district}، ${c}` : c;
-  const whereEn = district ? `${district}, ${c}` : c;
+  const whereEn = d ? `${d}, ${c}` : c;
 
   switch (locale) {
     // "خانوو بۆ فرۆشتن لە عەنکاوا، هەولێر"
