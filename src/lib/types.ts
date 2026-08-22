@@ -154,17 +154,25 @@ export interface PropertyFilters {
   city?: CityKey | "all";
   minPrice?: number;
   maxPrice?: number;
-  bedrooms?: number; // minimum
   /*
-   * How many storeys, exactly — not a minimum.
+   * How many bedrooms, exactly — not a minimum.
    *
-   * Bedrooms reads as "at least this many": four bedrooms will do if you asked
-   * for three. Storeys does not. Somebody asking for a single-storey house is
-   * usually asking because of stairs, and a three-storey one is not a better
-   * version of what they wanted.
+   * It used to be a minimum, and every chip carried a plus to say so: asking
+   * for two returned every three- and four-bedroom house as well. Somebody
+   * choosing two bedrooms is choosing two, and a filter that quietly widens
+   * what you asked for is one you stop trusting.
    *
-   * FLOORS_MAX is the one exception — the top chip means that many or more,
-   * because past it the exact number stops being what anyone is choosing on.
+   * BEDROOMS_MAX is the exception, for the same reason FLOORS_MAX is: the top
+   * chip means that many or more, and without it a six-bedroom house could not
+   * be reached from the filter at all.
+   */
+  bedrooms?: number;
+  /*
+   * How many storeys, exactly — the same rule.
+   *
+   * Somebody asking for a single-storey house is usually asking because of
+   * stairs, and a three-storey one is not a better version of what they
+   * wanted. FLOORS_MAX is the "or more" rung.
    */
   floors?: number;
   sort?: "newest" | "price_asc" | "price_desc" | "area_desc";

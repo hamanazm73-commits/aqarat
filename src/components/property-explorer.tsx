@@ -10,7 +10,7 @@ import {
   purposeNames,
   typeNames,
 } from "@/lib/i18n/dictionaries";
-import { FLOORS_MAX, PROPERTY_TYPE_KEYS } from "@/lib/constants";
+import { BEDROOMS_MAX, FLOORS_MAX, PROPERTY_TYPE_KEYS } from "@/lib/constants";
 import { formatNumber } from "@/lib/format";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
@@ -230,9 +230,12 @@ export function PropertyExplorer({
           <Chip active={!f.bedrooms} onClick={() => set("bedrooms", undefined)}>
             {t.filters.any}
           </Chip>
-          {[1, 2, 3, 4].map((n) => (
+          {/* Exact, like the storeys row below — only the top chip means "or
+              more", and without it a six-bedroom house could not be found. */}
+          {Array.from({ length: BEDROOMS_MAX }, (_, i) => i + 1).map((n) => (
             <Chip key={n} active={f.bedrooms === n} onClick={() => set("bedrooms", n)}>
-              {formatNumber(n, locale)}+
+              {formatNumber(n, locale)}
+              {n === BEDROOMS_MAX ? "+" : ""}
             </Chip>
           ))}
         </div>

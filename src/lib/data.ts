@@ -1,6 +1,6 @@
 import type { Property, PropertyFilters } from "./types";
 import { looseMatch } from "./search-normalise";
-import { FLOORS_MAX } from "./constants";
+import { BEDROOMS_MAX, FLOORS_MAX } from "./constants";
 
 /**
  * Listings shown when Firestore has none.
@@ -28,7 +28,21 @@ export function filterProperties(
   if (f.city && f.city !== "all") out = out.filter((p) => p.city === f.city);
   if (typeof f.minPrice === "number") out = out.filter((p) => p.priceIQD >= f.minPrice!);
   if (typeof f.maxPrice === "number") out = out.filter((p) => p.priceIQD <= f.maxPrice!);
-  if (typeof f.bedrooms === "number") out = out.filter((p) => (p.bedrooms ?? 0) >= f.bedrooms!);
+  /*
+   * Bedrooms and storeys both mean exactly this many, with the top chip
+   * meaning that many or more.
+   *
+   * Bedrooms was a minimum: asking for two returned every three- and
+   * four-bedroom house too. A filter that quietly widens what you asked for
+   * is a filter you stop trusting — somebody choosing two bedrooms is
+   * choosing two.
+   */
+  if (typeof f.bedrooms === "number") {
+    const want = f.bedrooms;
+    out = out.filter((p) =>
+      want >= BEDROOMS_MAX ? (p.bedrooms ?? 0) >= want : p.bedrooms === want,
+    );
+  }
   if (typeof f.floors === "number") {
     const want = f.floors;
     out = out.filter((p) =>

@@ -43,6 +43,22 @@ export const PURPOSE_KEYS: Purpose[] = ["sale", "rent"];
  */
 export const FLOORS_MAX = 4;
 
+/**
+ * The same rung on the bedrooms filter.
+ *
+ * Bedrooms used to read as "at least this many" — every chip carried a plus,
+ * and asking for two returned every three- and four-bedroom house as well.
+ * That is a reasonable thing for a filter to mean and it is not what people
+ * were doing with it: somebody choosing two bedrooms is choosing two, the same
+ * way they choose one storey. So the chips are exact now, and match the
+ * storeys row beside them.
+ *
+ * The top one still means "or more", for the same reason storeys does: past
+ * four the exact count stops being what anyone is deciding on, and without it
+ * a six-bedroom house would be unreachable from the filter.
+ */
+export const BEDROOMS_MAX = 4;
+
 export const AMENITY_KEYS: AmenityKey[] = [
   "parking",
   "garden",
