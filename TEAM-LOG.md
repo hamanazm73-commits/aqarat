@@ -10,6 +10,53 @@ Newest entry at the top.
 
 ---
 
+## 2026-08-22 — hamakali2005 · OPEN, needs a decision
+
+**Seller links hand out a real password to anyone holding the URL.**
+
+`accessLinks/{token}` is `allow get: if true`, and each document holds the
+throwaway account's `email` and its `password` in plain text. Anyone who knows
+a token can read those credentials straight out of Firestore — no server, no
+rate limit, no expiry. `allow list: if false` stops enumeration, so the token
+itself is the whole defence.
+
+The comment in `db.ts` says this is "the same trade the hotels site makes". It
+is not, and I wrote that line. Hotels has `accessLinks { allow read, write: if
+false }` and redeems the token through `/api/access`, which is server-side,
+validates with zod and is rate-limited to ten a minute per address. Here the
+browser reads the document directly.
+
+Why it matters more than it looks: the token travels in a URL, and URLs get
+forwarded, screenshotted and pasted. One was in a screenshot sent to me this
+morning — a seller's real address and password, legible. A leaked token here
+is not "a link stops working", it is a working password until somebody deletes
+the document.
+
+Fixing it properly means the server reading that document, which means
+credentials the client does not have. `firebase-admin` is the obvious answer
+and this repo avoids it on purpose — its auth subpath crashed on Vercel's
+runtime, which is why every route here verifies tokens over the REST APIs
+instead. So this is a real piece of work and it invalidates every link already
+sent, which is why I have not just done it.
+
+Three ways out, cheapest first:
+
+1. **Rotate on use.** Keep the rule, but when a link is redeemed, change the
+   account's password and write the new one back. A leaked token is then worth
+   nothing once the seller has used it. Smallest change; does not help a token
+   that leaks before first use.
+2. **Give the token an expiry and a use count** in the document, checked by
+   the client. Weak on its own — the client is the attacker in this threat —
+   but it bounds the window.
+3. **Do what hotels does**: `allow get: if false`, an `/api/access` route with
+   a service account, rate-limited. Correct, and the most work. It would want
+   `firebase-admin` proven on this project's runtime first, or the Firestore
+   REST API called with a service-account JWT.
+
+Nothing else found in the audit is outstanding — the mail relay on hotels is
+deleted, the shops site has headers, and the three routes here that had no
+ceiling now have one.
+
 ## 2026-08-22 — hamakali2005 · done
 
 **A day on the seller's form and the buyer's filters.** All pushed and live on
