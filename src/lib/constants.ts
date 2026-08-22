@@ -134,6 +134,9 @@ const BUILDING_AMENITIES: AmenityKey[] = [
   "security",
   "pool",
   "balcony",
+  // A house has a deed the same as a plot does, and here it is the first thing
+  // a buyer asks about. The two lists overlap on this one on purpose.
+  "title_deed",
 ];
 
 const LAND_AMENITIES: AmenityKey[] = [
