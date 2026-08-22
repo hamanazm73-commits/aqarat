@@ -13,7 +13,7 @@ import {
   useReducedMotion,
   type Variants,
 } from "motion/react";
-import { MapPin, Building, Home } from "lucide-react";
+import { MapPin, Building, Home, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { cityNames, purposeNames } from "@/lib/i18n/dictionaries";
 import { districts, searchLabels } from "@/lib/districts";
@@ -169,10 +169,12 @@ export function Hero({
           initial="hidden"
           animate="show"
           custom={0}
-          // No icon, so the words sit centred in the pill instead of being
-          // pushed off to one side by a mark beside them.
-          className="inline-flex items-center rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white ring-1 ring-gold/30 backdrop-blur"
+          // One star, the same gold star the hotels badge wears. It had a
+          // sparkle before, and the hotels badge had a star *and* a sparkle in
+          // its text — two marks on one small pill. One each, and the same one.
+          className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white ring-1 ring-gold/30 backdrop-blur"
         >
+          <Star className="size-3.5 shrink-0 fill-gold text-gold" />
           {t.hero.badge}
         </motion.span>
 
