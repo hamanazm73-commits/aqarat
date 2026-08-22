@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowDown, Building, Headphones, Home, Landmark, ShieldCheck, Store, Trees, Warehouse } from "lucide-react";
+import { ArrowDown, Building, Home, Landmark, Store, Trees, Warehouse } from "lucide-react";
 import type { CityKey, Property, PropertyType } from "@/lib/types";
 import { useI18n } from "@/lib/i18n/context";
 import { typeNames } from "@/lib/i18n/dictionaries";
@@ -103,53 +103,7 @@ export function HomeContent({
         )}
       </section>
 
-      {/* Why us / trust */}
-      <section className="mx-auto mt-6 max-w-7xl px-4 sm:px-6">
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-muted/40 p-8 sm:p-12">
-          {/* the soft gold wash the sister site opens its sections with */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-0 -z-10 h-40 w-96 max-w-full -translate-x-1/2 rounded-full bg-gold/15 blur-3xl"
-          />
-          <div className="text-center">
-            <h2 className="text-2xl font-bold sm:text-3xl">{t.about.title}</h2>
-            <span
-              aria-hidden
-              className="mx-auto mt-4 block h-px w-20 bg-gradient-to-r from-transparent via-gold to-transparent"
-            />
-            <p className="mx-auto mt-4 max-w-xl leading-relaxed text-muted-foreground">
-              {t.about.subtitle}
-            </p>
-          </div>
-          <div className="mt-10 grid gap-8 sm:grid-cols-3">
-            <Feature icon={ShieldCheck} title={t.about.trustTitle} text={t.about.trustText} />
-            <Feature icon={Building} title={t.about.selectTitle} text={t.about.selectText} />
-            <Feature icon={Headphones} title={t.about.supportTitle} text={t.about.supportText} />
-          </div>
-        </div>
-      </section>
     </>
   );
 }
 
-function Feature({
-  icon: Icon,
-  title,
-  text,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="flex flex-col items-center text-center">
-      <span className="flex size-14 items-center justify-center rounded-2xl bg-gold/15 text-gold ring-1 ring-gold/25">
-        <Icon className="size-7" />
-      </span>
-      <h3 className="mt-4 font-semibold">{title}</h3>
-      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-        {text}
-      </p>
-    </div>
-  );
-}
