@@ -46,6 +46,12 @@ const THEME_COPY: Record<
     light: "Light",
     note: "You can change this later at the top of the site",
   },
+  tk: {
+    prompt: "Görünüm nasıl olsun?",
+    dark: "Koyu",
+    light: "Açık",
+    note: "Bunu sonra sitenin üstünden değiştirebilirsiniz",
+  },
 };
 
 const ORBS = [

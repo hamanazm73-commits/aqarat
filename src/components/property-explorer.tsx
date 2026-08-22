@@ -63,14 +63,15 @@ function priceLabel(v: number, locale: Locale): string {
   return `${formatNumber(n, locale)} ${unit} ${CURRENCY[locale]}`;
 }
 
-const THOUSAND: Record<Locale, string> = { ku: "هەزار", ar: "ألف", en: "thousand" };
-const MILLION: Record<Locale, string> = { ku: "ملیۆن", ar: "مليون", en: "million" };
-const BILLION: Record<Locale, string> = { ku: "ملیار", ar: "مليار", en: "billion" };
-const CURRENCY: Record<Locale, string> = { ku: "د.ع", ar: "د.ع", en: "IQD" };
+const THOUSAND: Record<Locale, string> = { ku: "هەزار", ar: "ألف", en: "thousand", tk: "bin" };
+const MILLION: Record<Locale, string> = { ku: "ملیۆن", ar: "مليون", en: "million", tk: "milyon" };
+const BILLION: Record<Locale, string> = { ku: "ملیار", ar: "مليار", en: "billion", tk: "milyar" };
+const CURRENCY: Record<Locale, string> = { ku: "د.ع", ar: "د.ع", en: "IQD", tk: "IQD" };
 const OVER_A_BILLION: Record<Locale, string> = {
   ku: "زیاتر لە ١ ملیار د.ع",
   ar: "أكثر من مليار د.ع",
   en: "over 1 billion IQD",
+  tk: "1 milyardan fazla IQD",
 };
 
 export function PropertyExplorer({

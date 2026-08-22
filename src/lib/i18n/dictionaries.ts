@@ -391,55 +391,200 @@ export const dict = {
       supportText: "فريقنا جاهز دائماً يساعدك بكل خطوة.",
     },
   },
+
+  /*
+   * Iraqi Turkmen, in the Latin alphabet.
+   *
+   * Kirkuk is one of the three cities this site covers and Turkmen is one of
+   * the languages spoken in it, so a Turkmen buyer reading the Kurdish page
+   * was reading somebody else's language about their own city.
+   *
+   * Latin rather than Arabic script: it is what Iraqi Turkmen institutions
+   * publish in today — Türkmeneli TV, the newspapers, and anyone under about
+   * fifty. Written the way Turkish is written, which is what those readers
+   * are used to, with the vocabulary that is actually used in Kirkuk where
+   * the two differ.
+   *
+   * Left to right, so the page turns round for this language the way it does
+   * for English.
+   */
+  tk: {
+    dir: "ltr",
+    label: "Türkmence",
+    brand: "Lay Hama Emlak",
+    nav: {
+      home: "Ana sayfa",
+      properties: "Emlaklar",
+      sale: "Satılık",
+      rent: "Kiralık",
+      about: "Hakkımızda",
+      contact: "İletişim",
+      admin: "Yönetim",
+      submit: "Emlak ekle",
+    },
+    hero: {
+      badge: "Kürdistan'ın en büyük emlak pazarı",
+      title: "Hayalindeki evi Lay Hama'da bul",
+      subtitle:
+        "Ev, daire, villa, arsa ve ticari mülk — Kürdistan Bölgesi'nin bütün şehirlerinde satılık ve kiralık.",
+      searchPlaceholder: "Adres, şehir veya tür ile ara...",
+      search: "Ara",
+      stats: {
+        listings: "Emlak",
+        cities: "Şehir",
+        clients: "Memnun müşteri",
+      },
+    },
+    soon: {
+      title: "Site hazırlanıyor.",
+      text: "Sürekli yeni emlak ekliyoruz — lütfen sonra tekrar uğrayın.",
+    },
+    filters: {
+      title: "Filtreler",
+      purpose: "Amaç",
+      type: "Tür",
+      city: "Şehir",
+      priceRange: "Fiyat aralığı (IQD)",
+      minPrice: "En az",
+      maxPrice: "En çok",
+      bedrooms: "Yatak odası",
+      floors: "Kat sayısı",
+      any: "Hepsi",
+      sort: "Sıralama",
+      reset: "Temizle",
+      apply: "Uygula",
+      results: "sonuç",
+      noResults: "Emlak bulunamadı. Filtreleri değiştirin.",
+    },
+    sort: {
+      newest: "En yeni",
+      price_asc: "Fiyat: ucuzdan pahalıya",
+      price_desc: "Fiyat: pahalıdan ucuza",
+      area_desc: "En geniş alan",
+    },
+    card: {
+      forSale: "Satılık",
+      forRent: "Kiralık",
+      perMonth: "/ay",
+      featured: "Öne çıkan",
+      recommended: "Tavsiye edilen",
+      off: "İndirim",
+      beds: "Oda",
+      baths: "Banyo",
+      floors: "Kat",
+      kitchens: "Mutfak",
+      views: "Görüntülenme",
+      area: "m²",
+      viewDetails: "Ayrıntıları gör",
+      whatsappMsg: "Merhaba, bu emlak hakkında bilgi istiyorum:",
+    },
+    detail: {
+      overview: "Özet",
+      description: "Açıklama",
+      videos: "Videolar",
+      amenities: "İmkânlar",
+      details: "Bilgiler",
+      location: "Konum",
+      contactAgent: "Emlak ofisine ulaş",
+      officeLabel: "Ofis",
+      call: "Ara",
+      whatsapp: "WhatsApp",
+      similar: "Benzer emlaklar",
+      type: "Tür",
+      purpose: "Amaç",
+      posted: "Yayınlandı",
+      // Not an identity document — the listing's own code, the thing somebody
+      // reads out on the phone to say which house they mean.
+      reference: "Emlak kodu",
+    },
+    footer: {
+      tagline: "Kürdistan emlak pazarında güvenilir ortağınız.",
+      quickLinks: "Hızlı bağlantılar",
+      contact: "İletişim",
+      rights: "Bütün hakları saklıdır",
+      sister: "Otel mi arıyorsunuz? Lay Hama Oteller",
+    },
+    theme: { light: "Açık", dark: "Koyu" },
+    submit: {
+      title: "Emlakını yayınla",
+      subtitle: "Formu doldurun. İncelemeden sonra sitede yayınlanır.",
+      propTitle: "Emlak başlığı",
+      desc: "Açıklama",
+      price: "Fiyat (IQD)",
+      area: "Alan (m²)",
+      beds: "Yatak odası",
+      baths: "Banyo",
+      district: "Mahalle / bölge",
+      imagesHint: "Resim bağlantısı ekle (URL)",
+      add: "Ekle",
+      yourName: "Adınız",
+      phone: "Telefon numarası",
+      whatsapp: "WhatsApp (isteğe bağlı)",
+      send: "Gönder",
+      sending: "Gönderiliyor...",
+      success: "Teşekkürler! Emlakınız bize ulaştı. İncelemeden sonra yayınlanacak.",
+      error: "Bir hata oluştu. Tekrar deneyin.",
+    },
+    about: {
+      title: "Neden Lay Hama Emlak?",
+      subtitle: "Uygun evi bulmakta güvenilir ortağınız.",
+      trustTitle: "Güven ve şeffaflık",
+      trustText: "Bütün emlaklar dikkatle incelenir, bilgileri doğrudur.",
+      selectTitle: "Geniş seçenek",
+      selectText: "En iyi bölgelerde ev, daire, villa ve arsa.",
+      supportTitle: "Hızlı destek",
+      supportText: "Ekibimiz her adımda size yardım etmeye hazır.",
+    },
+  },
 } as const;
 
 export type Dict = (typeof dict)[Locale];
 
 /** City display names. */
 export const cityNames: Record<CityKey, Record<Locale, string>> = {
-  baghdad: { ku: "بەغدا", en: "Baghdad", ar: "بغداد" },
-  erbil: { ku: "هەولێر", en: "Erbil", ar: "أربيل" },
-  sulaymaniyah: { ku: "سلێمانی", en: "Sulaymaniyah", ar: "السليمانية" },
-  duhok: { ku: "دهۆک", en: "Duhok", ar: "دهوك" },
-  kirkuk: { ku: "کەرکووک", en: "Kirkuk", ar: "كركوك" },
-  basra: { ku: "بەسرە", en: "Basra", ar: "البصرة" },
-  mosul: { ku: "مووسڵ", en: "Mosul", ar: "الموصل" },
-  najaf: { ku: "نەجەف", en: "Najaf", ar: "النجف" },
-  karbala: { ku: "کەربەلا", en: "Karbala", ar: "كربلاء" },
-  halabja: { ku: "هەڵەبجە", en: "Halabja", ar: "حلبجة" },
-  ramadi: { ku: "ڕەمادی", en: "Ramadi", ar: "الرمادي" },
-  fallujah: { ku: "فەلوجە", en: "Fallujah", ar: "الفلوجة" },
-  hilla: { ku: "حیلە", en: "Hilla", ar: "الحلة" },
-  baqubah: { ku: "بەعقووبە", en: "Baqubah", ar: "بعقوبة" },
-  nasiriyah: { ku: "ناسیریە", en: "Nasiriyah", ar: "الناصرية" },
-  amarah: { ku: "عەمارە", en: "Amarah", ar: "العمارة" },
-  samawah: { ku: "سەماوە", en: "Samawah", ar: "السماوة" },
-  diwaniyah: { ku: "دیوانیە", en: "Diwaniyah", ar: "الديوانية" },
-  tikrit: { ku: "تکریت", en: "Tikrit", ar: "تكريت" },
-  samarra: { ku: "سامەڕا", en: "Samarra", ar: "سامراء" },
-  kut: { ku: "کووت", en: "Kut", ar: "الكوت" },
-  zakho: { ku: "زاخۆ", en: "Zakho", ar: "زاخو" },
-  chamchamal: { ku: "چەمچەماڵ", en: "Chamchamal", ar: "جمجمال" },
-  ranya: { ku: "ڕانیە", en: "Ranya", ar: "رانية" },
-  kalar: { ku: "کەلار", en: "Kalar", ar: "كلار" },
-  koya: { ku: "کۆیە", en: "Koya", ar: "كويسنجق" },
-  soran: { ku: "سۆران", en: "Soran", ar: "سوران" },
-  shaqlawa: { ku: "شەقڵاوە", en: "Shaqlawa", ar: "شقلاوة" },
+  baghdad: { ku: "بەغدا", en: "Baghdad", ar: "بغداد", tk: "Bağdat" },
+  erbil: { ku: "هەولێر", en: "Erbil", ar: "أربيل", tk: "Erbil" },
+  sulaymaniyah: { ku: "سلێمانی", en: "Sulaymaniyah", ar: "السليمانية", tk: "Süleymaniye" },
+  duhok: { ku: "دهۆک", en: "Duhok", ar: "دهوك", tk: "Dohuk" },
+  kirkuk: { ku: "کەرکووک", en: "Kirkuk", ar: "كركوك", tk: "Kerkük" },
+  basra: { ku: "بەسرە", en: "Basra", ar: "البصرة", tk: "Basra" },
+  mosul: { ku: "مووسڵ", en: "Mosul", ar: "الموصل", tk: "Musul" },
+  najaf: { ku: "نەجەف", en: "Najaf", ar: "النجف", tk: "Necef" },
+  karbala: { ku: "کەربەلا", en: "Karbala", ar: "كربلاء", tk: "Kerbela" },
+  halabja: { ku: "هەڵەبجە", en: "Halabja", ar: "حلبجة", tk: "Halepçe" },
+  ramadi: { ku: "ڕەمادی", en: "Ramadi", ar: "الرمادي", tk: "Ramadi" },
+  fallujah: { ku: "فەلوجە", en: "Fallujah", ar: "الفلوجة", tk: "Felluce" },
+  hilla: { ku: "حیلە", en: "Hilla", ar: "الحلة", tk: "Hille" },
+  baqubah: { ku: "بەعقووبە", en: "Baqubah", ar: "بعقوبة", tk: "Bakuba" },
+  nasiriyah: { ku: "ناسیریە", en: "Nasiriyah", ar: "الناصرية", tk: "Nasiriye" },
+  amarah: { ku: "عەمارە", en: "Amarah", ar: "العمارة", tk: "Amare" },
+  samawah: { ku: "سەماوە", en: "Samawah", ar: "السماوة", tk: "Semave" },
+  diwaniyah: { ku: "دیوانیە", en: "Diwaniyah", ar: "الديوانية", tk: "Divaniye" },
+  tikrit: { ku: "تکریت", en: "Tikrit", ar: "تكريت", tk: "Tikrit" },
+  samarra: { ku: "سامەڕا", en: "Samarra", ar: "سامراء", tk: "Samarra" },
+  kut: { ku: "کووت", en: "Kut", ar: "الكوت", tk: "Kut" },
+  zakho: { ku: "زاخۆ", en: "Zakho", ar: "زاخو", tk: "Zaho" },
+  chamchamal: { ku: "چەمچەماڵ", en: "Chamchamal", ar: "جمجمال", tk: "Çemçemal" },
+  ranya: { ku: "ڕانیە", en: "Ranya", ar: "رانية", tk: "Raniye" },
+  kalar: { ku: "کەلار", en: "Kalar", ar: "كلار", tk: "Kelar" },
+  koya: { ku: "کۆیە", en: "Koya", ar: "كويسنجق", tk: "Köysancak" },
+  soran: { ku: "سۆران", en: "Soran", ar: "سوران", tk: "Soran" },
+  shaqlawa: { ku: "شەقڵاوە", en: "Shaqlawa", ar: "شقلاوة", tk: "Şaklava" },
 };
 
 /** Property type labels. */
 export const typeNames: Record<PropertyType, Record<Locale, string>> = {
-  house: { ku: "خانوو", en: "House", ar: "منزل" },
-  apartment: { ku: "شوقە", en: "Apartment", ar: "شقة" },
-  villa: { ku: "ڤێلا", en: "Villa", ar: "فيلا" },
-  land: { ku: "زەوی", en: "Land", ar: "أرض" },
-  shop: { ku: "دووکان", en: "Shop", ar: "محل" },
-  office: { ku: "ئۆفیس", en: "Office", ar: "مكتب" },
+  house: { ku: "خانوو", en: "House", ar: "منزل", tk: "Ev" },
+  apartment: { ku: "شوقە", en: "Apartment", ar: "شقة", tk: "Daire" },
+  villa: { ku: "ڤێلا", en: "Villa", ar: "فيلا", tk: "Villa" },
+  land: { ku: "زەوی", en: "Land", ar: "أرض", tk: "Arsa" },
+  shop: { ku: "دووکان", en: "Shop", ar: "محل", tk: "Dükkan" },
+  office: { ku: "ئۆفیس", en: "Office", ar: "مكتب", tk: "Ofis" },
 };
 
 export const purposeNames: Record<Purpose, Record<Locale, string>> = {
-  sale: { ku: "فرۆشتن", en: "Sale", ar: "بيع" },
-  rent: { ku: "کرێ", en: "Rent", ar: "إيجار" },
+  sale: { ku: "فرۆشتن", en: "Sale", ar: "بيع", tk: "Satılık" },
+  rent: { ku: "کرێ", en: "Rent", ar: "إيجار", tk: "Kiralık" },
 };
 
 /**
@@ -456,26 +601,26 @@ export const purposeNames: Record<Purpose, Record<Locale, string>> = {
  * repeating them here would be a second place to keep the same fact.
  */
 export const featureNames = {
-  newBuild:    { ku: "تازە دروستکراوە",        en: "Newly built",            ar: "بناء جديد" },
-  renovated:   { ku: "نۆژەنکراوەتەوە",         en: "Renovated",              ar: "مجدد" },
-  needsWork:   { ku: "پێویستی بە چاککردن هەیە", en: "Needs work",             ar: "يحتاج تصليح" },
-  mainStreet:  { ku: "لەسەر شەقامی سەرەکی",     en: "On a main street",       ar: "على شارع رئيسي" },
-  cornerPlot:  { ku: "دوو ڕووی هەیە",           en: "Corner plot",            ar: "على شارعين" },
-  wideStreet:  { ku: "کۆڵانی فراوان",           en: "Wide street",            ar: "شارع عريض" },
-  quietArea:   { ku: "ناوچەیەکی هێمن",          en: "Quiet area",             ar: "منطقة هادئة" },
-  nearSchool:  { ku: "نزیک قوتابخانە",          en: "Near a school",          ar: "قرب مدرسة" },
-  nearMarket:  { ku: "نزیک بازاڕ",              en: "Near a market",          ar: "قرب سوق" },
-  nearMosque:  { ku: "نزیک مزگەوت",             en: "Near a mosque",          ar: "قرب جامع" },
-  nearHospital:{ ku: "نزیک نەخۆشخانە",          en: "Near a hospital",        ar: "قرب مستشفى" },
-  nearPark:    { ku: "نزیک پارک",               en: "Near a park",            ar: "قرب حديقة عامة" },
-  cityCentre:  { ku: "لە ناوەندی شار",          en: "In the city centre",     ar: "في مركز المدينة" },
-  familyArea:  { ku: "بۆ خێزان گونجاوە",        en: "Suitable for a family",  ar: "مناسب للعوائل" },
-  investment:  { ku: "بۆ وەبەرهێنان باشە",      en: "Good for investment",    ar: "مناسب للاستثمار" },
-  papersReady: { ku: "بەڵگەنامەکانی تەواون",    en: "Papers in order",        ar: "الأوراق كاملة" },
-  installments:{ ku: "بە قیستیش دەکرێت",        en: "Instalments possible",   ar: "يمكن بالتقسيط" },
-  readyToMove: { ku: "ئامادەیە بۆ نیشتەجێبوون", en: "Ready to move into",     ar: "جاهز للسكن" },
-  ownerSelling:{ ku: "خاوەنەکەی خۆی دەیفرۆشێت", en: "Sold by the owner",      ar: "من المالك مباشرة" },
-  goodView:    { ku: "دیمەنێکی جوانی هەیە",     en: "Good view",              ar: "إطلالة جميلة" },
+  newBuild:    { ku: "تازە دروستکراوە",        en: "Newly built",            ar: "بناء جديد",           tk: "Yeni yapı" },
+  renovated:   { ku: "نۆژەنکراوەتەوە",         en: "Renovated",              ar: "مجدد",                 tk: "Yenilenmiş" },
+  needsWork:   { ku: "پێویستی بە چاککردن هەیە", en: "Needs work",             ar: "يحتاج تصليح",          tk: "Tamir ister" },
+  mainStreet:  { ku: "لەسەر شەقامی سەرەکی",     en: "On a main street",       ar: "على شارع رئيسي",       tk: "Ana cadde üzerinde" },
+  cornerPlot:  { ku: "دوو ڕووی هەیە",           en: "Corner plot",            ar: "على شارعين",           tk: "Köşe parsel" },
+  wideStreet:  { ku: "کۆڵانی فراوان",           en: "Wide street",            ar: "شارع عريض",            tk: "Geniş sokak" },
+  quietArea:   { ku: "ناوچەیەکی هێمن",          en: "Quiet area",             ar: "منطقة هادئة",          tk: "Sakin bölge" },
+  nearSchool:  { ku: "نزیک قوتابخانە",          en: "Near a school",          ar: "قرب مدرسة",            tk: "Okula yakın" },
+  nearMarket:  { ku: "نزیک بازاڕ",              en: "Near a market",          ar: "قرب سوق",              tk: "Çarşıya yakın" },
+  nearMosque:  { ku: "نزیک مزگەوت",             en: "Near a mosque",          ar: "قرب جامع",             tk: "Camiye yakın" },
+  nearHospital:{ ku: "نزیک نەخۆشخانە",          en: "Near a hospital",        ar: "قرب مستشفى",           tk: "Hastaneye yakın" },
+  nearPark:    { ku: "نزیک پارک",               en: "Near a park",            ar: "قرب حديقة عامة",       tk: "Parka yakın" },
+  cityCentre:  { ku: "لە ناوەندی شار",          en: "In the city centre",     ar: "في مركز المدينة",      tk: "Şehir merkezinde" },
+  familyArea:  { ku: "بۆ خێزان گونجاوە",        en: "Suitable for a family",  ar: "مناسب للعوائل",        tk: "Aileye uygun" },
+  investment:  { ku: "بۆ وەبەرهێنان باشە",      en: "Good for investment",    ar: "مناسب للاستثمار",      tk: "Yatırıma uygun" },
+  papersReady: { ku: "بەڵگەنامەکانی تەواون",    en: "Papers in order",        ar: "الأوراق كاملة",        tk: "Evrakları tam" },
+  installments:{ ku: "بە قیستیش دەکرێت",        en: "Instalments possible",   ar: "يمكن بالتقسيط",        tk: "Taksitle olur" },
+  readyToMove: { ku: "ئامادەیە بۆ نیشتەجێبوون", en: "Ready to move into",     ar: "جاهز للسكن",           tk: "Oturmaya hazır" },
+  ownerSelling:{ ku: "خاوەنەکەی خۆی دەیفرۆشێت", en: "Sold by the owner",      ar: "من المالك مباشرة",     tk: "Sahibinden" },
+  goodView:    { ku: "دیمەنێکی جوانی هەیە",     en: "Good view",              ar: "إطلالة جميلة",         tk: "Güzel manzara" },
 } as const;
 
 export type FeatureKey = keyof typeof featureNames;
@@ -485,19 +630,19 @@ export const FEATURE_KEYS = Object.keys(featureNames) as FeatureKey[];
 
 /** Amenity labels. */
 export const amenityNames: Record<AmenityKey, Record<Locale, string>> = {
-  parking: { ku: "پارکینگ", en: "Parking", ar: "موقف سيارات" },
-  garden: { ku: "باخچە", en: "Garden", ar: "حديقة" },
-  elevator: { ku: "ئاسانسۆر", en: "Elevator", ar: "مصعد" },
-  furnished: { ku: "بە ئەساسەوە", en: "Furnished", ar: "مفروش" },
-  ac: { ku: "ساردکەرەوە", en: "A/C", ar: "تكييف" },
-  heating: { ku: "گەرمکەرەوە", en: "Heating", ar: "تدفئة" },
-  security: { ku: "ئاسایش", en: "Security", ar: "أمن" },
-  pool: { ku: "مەلەوانگە", en: "Pool", ar: "مسبح" },
+  parking: { ku: "پارکینگ", en: "Parking", ar: "موقف سيارات", tk: "Otopark" },
+  garden: { ku: "باخچە", en: "Garden", ar: "حديقة", tk: "Bahçe" },
+  elevator: { ku: "ئاسانسۆر", en: "Elevator", ar: "مصعد", tk: "Asansör" },
+  furnished: { ku: "بە ئەساسەوە", en: "Furnished", ar: "مفروش", tk: "Eşyalı" },
+  ac: { ku: "ساردکەرەوە", en: "A/C", ar: "تكييف", tk: "Klima" },
+  heating: { ku: "گەرمکەرەوە", en: "Heating", ar: "تدفئة", tk: "Isıtma" },
+  security: { ku: "ئاسایش", en: "Security", ar: "أمن", tk: "Güvenlik" },
+  pool: { ku: "مەلەوانگە", en: "Pool", ar: "مسبح", tk: "Havuz" },
   /* Not offered when adding a listing any more — see AMENITIES in constants.
      The labels stay because listings entered before today may still carry
      one, and a key with no label renders as nothing at all. */
-  generator: { ku: "مۆلێد", en: "Generator", ar: "مولد" },
-  water_tank: { ku: "تانکی ئاو", en: "Water tank", ar: "خزان ماء" },
-  solar: { ku: "وزەی خۆر", en: "Solar power", ar: "طاقة شمسية" },
-  balcony: { ku: "بەلکۆن", en: "Balcony", ar: "شرفة" },
+  generator: { ku: "مۆلێد", en: "Generator", ar: "مولد", tk: "Jeneratör" },
+  water_tank: { ku: "تانکی ئاو", en: "Water tank", ar: "خزان ماء", tk: "Su deposu" },
+  solar: { ku: "وزەی خۆر", en: "Solar power", ar: "طاقة شمسية", tk: "Güneş enerjisi" },
+  balcony: { ku: "بەلکۆن", en: "Balcony", ar: "شرفة", tk: "Balkon" },
 };

@@ -7,9 +7,10 @@ const INTL_LOCALE: Record<Locale, string> = {
   ku: "en-US",
   en: "en-US",
   ar: "en-US",
+  tk: "en-US",
 };
 
-const currencySuffix = (locale: Locale) => (locale === "en" ? "IQD" : "د.ع");
+const currencySuffix = (locale: Locale) => (locale === "en" || locale === "tk" ? "IQD" : "د.ع");
 
 /** Format an IQD amount, e.g. 250000000 → "250,000,000 د.ع" / "250,000,000 IQD". */
 export function formatIQD(amount: number, locale: Locale): string {

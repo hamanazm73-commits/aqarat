@@ -15,9 +15,9 @@ import { LOCALES, RTL_LOCALES, type Locale, type Localized } from "@/lib/types";
 const STORAGE_KEY = "aqarat.locale";
 const DEFAULT_LOCALE: Locale = "ku";
 
-/** Kurdish lives at the root; the other two live behind a prefix. Keeping ku
+/** Kurdish lives at the root; the other three live behind a prefix. Keeping ku
  *  unprefixed means no URL that has been shared or indexed has to move. */
-export const PREFIXED_LOCALES: Locale[] = ["en", "ar"];
+export const PREFIXED_LOCALES: Locale[] = ["en", "ar", "tk"];
 
 /** The language a path is written in, or null when it carries no prefix. */
 export function localeFromPath(pathname: string): Locale | null {
@@ -41,7 +41,7 @@ interface I18nValue {
   dir: "rtl" | "ltr";
   t: (typeof dict)[Locale];
   setLocale: (l: Locale) => void;
-  /** Pull the right string out of a {ku,en,ar} object. */
+  /** Pull the right string out of a {ku,ar,en,tk} object. */
   tr: (value: Localized | undefined) => string;
 }
 

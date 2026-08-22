@@ -9,9 +9,21 @@ import { urlFor } from "./seo";
  */
 export function pickLocalized(v: Localized | undefined, locale: Locale) {
   if (!v) return "";
-  const order: Locale[] =
-    locale === "ku" ? ["ku", "en", "ar"] : locale === "en" ? ["en", "ku", "ar"] : ["ar", "en", "ku"];
-  for (const l of order) if (v[l]?.trim()) return v[l].trim();
+  /*
+   * The reader's own language first, then the rest.
+   *
+   * A chain of ternaries stopped being readable at three languages and would
+   * be worse at four, so the order is built rather than spelled out: what was
+   * asked for, then everything else. Kurdish and Arabic lead the fallback
+   * because a listing that only has one language almost always has one of
+   * those.
+   */
+  const rest: Locale[] = ["ku", "ar", "en", "tk"];
+  const order = [locale, ...rest.filter((l) => l !== locale)];
+  for (const l of order) {
+    const s = v[l]?.trim();
+    if (s) return s;
+  }
   return "";
 }
 

@@ -73,4 +73,10 @@ export const searchLabels: Record<
     allDistricts: "كل الأحياء",
     district: "الحي",
   },
+  tk: {
+    chooseCity: "Şehir seç",
+    chooseDistrict: "Mahalle seç",
+    allDistricts: "Bütün mahalleler",
+    district: "Mahalle",
+  },
 };

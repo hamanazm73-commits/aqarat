@@ -40,14 +40,14 @@ const OTHER_DISTRICT = "__other__";
  * tr(district) working, without teaching any of them a second shape.
  */
 function sameInAll(name: string) {
-  return { ku: name, ar: name, en: name };
+  return { ku: name, ar: name, en: name, tk: name };
 }
 
 type Draft = Omit<Property, "id" | "createdAt"> & { createdAt?: string };
 
 const empty: Draft = {
-  title: { ku: "", en: "", ar: "" },
-  description: { ku: "", en: "", ar: "" },
+  title: { ku: "", en: "", ar: "", tk: "" },
+  description: { ku: "", en: "", ar: "", tk: "" },
   purpose: "sale",
   type: "house",
   city: "erbil",
@@ -75,8 +75,11 @@ export function PropertyForm({ initial }: { initial?: Property }) {
      * picks the real one, and the listing is findable afterwards.
      */
     const known = districts[initial.city] ?? [];
+    // `?? ""` because a Localized is partial now that there are four languages
+    // and listings predate the fourth. An absent Kurdish name is not in the
+    // list either way, so it lands in the same branch as an unknown one.
     const district =
-      initial.district && known.includes(initial.district.ku)
+      initial.district && known.includes(initial.district.ku ?? "")
         ? initial.district
         : undefined;
     return { ...initial, district, videos: initial.videos ?? [] };

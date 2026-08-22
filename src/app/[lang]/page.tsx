@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/types";
 export const revalidate = 30;
 
 /** The homepage as it should read to someone searching in this language. */
-const COPY: Record<"en" | "ar", { title: string; description: string }> = {
+const COPY: Record<"en" | "ar" | "tk", { title: string; description: string }> = {
   en: {
     title: "Houses, apartments and land for sale and rent in Kurdistan",
     description:
@@ -17,6 +17,11 @@ const COPY: Record<"en" | "ar", { title: string; description: string }> = {
     description:
       "تصفح المنازل والشقق والفلل والمحلات والأراضي للبيع أو الإيجار في أربيل والسليمانية ودهوك وجميع مدن إقليم كردستان العراق.",
   },
+  tk: {
+    title: "Kürdistan'da satılık ve kiralık ev, daire ve arsa",
+    description:
+      "Erbil, Süleymaniye, Kerkük ve Irak Kürdistan Bölgesi'nin bütün şehirlerinde satılık ve kiralık ev, daire, villa, dükkan ve arsa.",
+  },
 };
 
 export async function generateMetadata({
@@ -25,7 +30,7 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const copy = COPY[lang as "en" | "ar"] ?? COPY.en;
+  const copy = COPY[lang as "en" | "ar" | "tk"] ?? COPY.en;
   return {
     title: copy.title,
     description: copy.description,

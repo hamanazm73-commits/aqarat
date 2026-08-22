@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
 
 
-/** Only these two are prefixed — Kurdish is served from the root. */
-const SUPPORTED = ["en", "ar"] as const;
+/** Only these three are prefixed — Kurdish is served from the root. */
+const SUPPORTED = ["en", "ar", "tk"] as const;
 
 export function generateStaticParams() {
   return SUPPORTED.map((lang) => ({ lang }));
 }
 
 /**
- * The English and Arabic wing of the site.
+ * The English, Arabic and Turkmen wing of the site.
  *
  * The pages below render the same components as the Kurdish ones; the
  * language comes from the URL, which `I18nProvider` reads. This segment's job

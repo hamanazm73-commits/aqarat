@@ -1,15 +1,29 @@
 /** Core domain types for the real-estate site. Shared by the seed data,
  *  the Firestore layer, and the UI. */
 
-export type Locale = "ku" | "en" | "ar";
+/**
+ * `tk` is Iraqi Turkmen, written in the Latin alphabet.
+ *
+ * Kirkuk is one of the three cities this site covers and Turkmen is one of
+ * the languages spoken there, so it belongs beside the other three rather
+ * than bolted on after them.
+ */
+export type Locale = "ku" | "en" | "ar" | "tk";
 
-export const LOCALES: Locale[] = ["ku", "en", "ar"];
+export const LOCALES: Locale[] = ["ku", "ar", "en", "tk"];
 
-/** Kurdish (Sorani) and Arabic are right-to-left. */
+/** Kurdish (Sorani) and Arabic are right-to-left; Turkmen here is Latin. */
 export const RTL_LOCALES: Locale[] = ["ku", "ar"];
 
-/** A string that exists in every supported language. */
-export type Localized = Record<Locale, string>;
+/**
+ * A string that exists in every supported language.
+ *
+ * Partial, because listings saved before a language was added do not have it
+ * — a district typed in when there were three languages has no Turkmen. The
+ * reader falls back rather than showing a blank, so the missing one costs a
+ * word in another language instead of an empty line.
+ */
+export type Localized = Partial<Record<Locale, string>>;
 
 export type Purpose = "sale" | "rent";
 

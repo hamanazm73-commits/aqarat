@@ -28,6 +28,27 @@ import {
  * listing.
  */
 
+/**
+ * "Kerkük" → "Kerkük'te", "Erbil" → "Erbil'de", "Bağdat" → "Bağdat'ta".
+ *
+ * Turkish vowel harmony picks the suffix from the last vowel in the word —
+ * back vowels take -da/-ta, front vowels -de/-te — and a word ending in a
+ * voiceless consonant hardens the d to a t. A place name takes an apostrophe
+ * before it.
+ *
+ * When the place is "district, city" the suffix belongs to the whole phrase,
+ * so it is the last vowel of the city that decides.
+ */
+function locativeTr(place: string): string {
+  const vowels = "aeıioöuüAEIİOÖUÜ";
+  let last = "";
+  for (const ch of place) if (vowels.includes(ch)) last = ch.toLocaleLowerCase("tr");
+  const back = "aıou".includes(last);
+  const voiceless = "pçtkfhsş".includes(place.slice(-1).toLocaleLowerCase("tr"));
+  const suffix = voiceless ? (back ? "ta" : "te") : back ? "da" : "de";
+  return `${place}'${suffix}`;
+}
+
 /** Word order differs, so each language gets its own sentence, not a template. */
 function titleIn(
   locale: Locale,
@@ -49,6 +70,17 @@ function titleIn(
     // "منزل للبيع في عنكاوا، أربيل" — the article rides on the purpose word.
     case "ar":
       return `${t} لل${p} في ${where}`;
+    /*
+     * "Ankawa, Erbil'de satılık ev" — Turkish runs the other way round: place
+     * first, then the purpose, and the noun last. The same three words in the
+     * English order would read as nonsense, so this is its own sentence rather
+     * than a translation of the template.
+     *
+     * The locative suffix is chosen by vowel harmony, which is why it comes
+     * from a function instead of being a fixed "'de".
+     */
+    case "tk":
+      return `${locativeTr(whereEn)} ${p.toLocaleLowerCase("tr")} ${t.toLocaleLowerCase("tr")}`;
     // "House for sale in Ankawa, Erbil"
     default:
       return `${t} for ${p.toLowerCase()} in ${whereEn}`;
