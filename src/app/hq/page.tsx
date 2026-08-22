@@ -115,21 +115,31 @@ export default function AdminListingsPage() {
 
   return (
     <div>
+      {/*
+        Above the listings, because it is not about them.
+
+        It sat under the "خانووبەرەکان" heading, which read as though it were
+        one more control over the list below it. It is not — it decides
+        whether the public site is open at all, and that outranks anything
+        underneath. First thing on the page, before the heading it does not
+        belong to.
+
+        Not for sellers either way: it is the whole site it switches, not
+        their listings, and a seller who found it would be turning a banner on
+        over somebody else's shop.
+      */}
+      {!isSeller && (
+        <div className="mb-6">
+          <ComingSoonCard />
+        </div>
+      )}
+
       <div className="mb-6 flex items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">خانووبەرەکان</h1>
         <Link href="/hq/new">
           <Button size="sm"><Plus className="h-4 w-4" /> نوێ</Button>
         </Link>
       </div>
-
-      {/* Not for sellers. It is the whole site it switches, not their
-          listings, and a seller who found it would be turning a banner on
-          over somebody else’s shop. */}
-      {!isSeller && (
-        <div className="mb-6">
-          <ComingSoonCard />
-        </div>
-      )}
 
       {!isSeller && items !== null && items.length > 0 && (
         <div className="mb-5 flex flex-wrap items-center gap-3">
