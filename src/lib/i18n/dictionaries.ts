@@ -649,4 +649,15 @@ export const amenityNames: Record<AmenityKey, Record<Locale, string>> = {
   level_ground: { ku: "زەوییەکە تەختە",        en: "Level ground",       ar: "أرض مستوية",       tk: "Düz arazi" },
   title_deed:   { ku: "تاپۆی هەیە",            en: "Title deed",         ar: "طابو",             tk: "Tapulu" },
   build_ready:  { ku: "ئامادەیە بۆ بیناسازی",  en: "Ready to build on",  ar: "جاهزة للبناء",     tk: "İnşaata hazır" },
+
+  /* Shops. A shopfront is judged on its frontage, its storage and its street. */
+  glass_front:  { ku: "ڕووی شووشەیی",          en: "Glass frontage",     ar: "واجهة زجاج",       tk: "Cam cephe" },
+  shutter:      { ku: "شەتەری هەیە",           en: "Roller shutter",     ar: "شتر",              tk: "Kepenk" },
+  storeroom:    { ku: "مەخزەنی هەیە",          en: "Storeroom",          ar: "مخزن",             tk: "Depo" },
+  basement:     { ku: "ژێرزەمینی هەیە",        en: "Basement",           ar: "سرداب",            tk: "Bodrum" },
+
+  /* Offices. What a tenant asks is whether they can start work on Monday. */
+  internet:     { ku: "ئینتەرنێتی هەیە",       en: "Internet",           ar: "إنترنت",           tk: "İnternet" },
+  meeting_room: { ku: "ژووری کۆبوونەوە",       en: "Meeting room",       ar: "غرفة اجتماعات",    tk: "Toplantı odası" },
+  reception:    { ku: "شوێنی پێشوازی",         en: "Reception",          ar: "استقبال",          tk: "Resepsiyon" },
 };

@@ -122,7 +122,8 @@ export const ROOM_FIELDS: Record<PropertyType, RoomFields> = {
  * power, drainage — what the road is like, whether it is walled and level, and
  * whether the papers are clean. None of that is worth asking about a flat.
  *
- * Shops and offices keep the building list: they are buildings.
+ * Shops and offices have their own lists below — a shopfront and an office
+ * are judged on different things again.
  */
 const BUILDING_AMENITIES: AmenityKey[] = [
   "parking",
@@ -150,11 +151,70 @@ const LAND_AMENITIES: AmenityKey[] = [
   "build_ready",
 ];
 
+/**
+ * A shopfront is judged on different things from a home.
+ *
+ * Nobody asks a shop about its garden or its swimming pool. They ask what the
+ * frontage is, whether there is somewhere to keep stock, and whether it locks
+ * up — and the street it stands on is already a feature above.
+ */
+const SHOP_AMENITIES: AmenityKey[] = [
+  "glass_front",
+  "shutter",
+  "storeroom",
+  "basement",
+  "ac",
+  "parking",
+  "security",
+  "title_deed",
+];
+
+/**
+ * An office is judged on whether somebody could start work in it on Monday.
+ *
+ * So: is it wired, is there somewhere to meet a client, is there a lift, is it
+ * furnished. Not whether it has a balcony.
+ */
+const OFFICE_AMENITIES: AmenityKey[] = [
+  "internet",
+  "meeting_room",
+  "reception",
+  "elevator",
+  "ac",
+  "furnished",
+  "parking",
+  "security",
+  "title_deed",
+];
+
 export const AMENITIES_FOR_TYPE: Record<PropertyType, AmenityKey[]> = {
   house: BUILDING_AMENITIES,
   apartment: BUILDING_AMENITIES,
   villa: BUILDING_AMENITIES,
-  shop: BUILDING_AMENITIES,
-  office: BUILDING_AMENITIES,
+  shop: SHOP_AMENITIES,
+  office: OFFICE_AMENITIES,
   land: LAND_AMENITIES,
 };
+
+/**
+ * Ticks the form no longer offers, but listings may still be carrying.
+ *
+ * These three were taken off the form before I got here. The listing page
+ * filters by the lists above now, which would have quietly stopped showing
+ * them on the listings that have them — the page would lose information
+ * nobody asked it to lose.
+ *
+ * So the page accepts these as well as the offered set; the form still does
+ * not offer them, and nothing new can acquire one. If they should come back,
+ * moving a line into BUILDING_AMENITIES is the whole change.
+ */
+export const LEGACY_AMENITIES: AmenityKey[] = [
+  "generator",
+  "water_tank",
+  "solar",
+];
+
+/** What a listing page may show: what its type is offered, plus the legacy. */
+export function amenitiesShownFor(type: PropertyType): AmenityKey[] {
+  return [...AMENITIES_FOR_TYPE[type], ...LEGACY_AMENITIES];
+}

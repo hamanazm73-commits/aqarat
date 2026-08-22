@@ -97,7 +97,16 @@ export type AmenityKey =
   | "walled"
   | "level_ground"
   | "title_deed"
-  | "build_ready";
+  | "build_ready"
+  // shops
+  | "glass_front"
+  | "shutter"
+  | "storeroom"
+  | "basement"
+  // offices
+  | "internet"
+  | "meeting_room"
+  | "reception";
 
 export interface Discount {
   active: boolean;

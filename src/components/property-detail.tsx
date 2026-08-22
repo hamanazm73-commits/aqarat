@@ -34,7 +34,7 @@ import {
   discountPercent,
 } from "@/lib/format";
 import { isRawSrc } from "@/lib/utils";
-import { AMENITIES_FOR_TYPE, ROOM_FIELDS } from "@/lib/constants";
+import { amenitiesShownFor, ROOM_FIELDS } from "@/lib/constants";
 import { titleFor, descriptionFor } from "@/lib/listing-text";
 import { districtFor } from "@/lib/district-latin";
 import { ListingImage } from "./listing-image";
@@ -115,7 +115,7 @@ export function PropertyDetail({
    * pool is worse than a shorter list.
    */
   const shownAmenities = p.amenities.filter((a) =>
-    AMENITIES_FOR_TYPE[p.type].includes(a),
+    amenitiesShownFor(p.type).includes(a),
   );
   const specs = [
     has.bedrooms && typeof p.bedrooms === "number" && {

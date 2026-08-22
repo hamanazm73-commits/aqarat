@@ -370,92 +370,6 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         {editing ? "دەستکاریکردنی خانووبەرە" : "خانووبەرەی نوێ"}
       </h1>
 
-      {/*
-        No title boxes, and no description boxes.
-        
-        There were six — a title and a description in each of three languages —
-        and six boxes is five more than anybody fills in. What happened in
-        practice is that one language got written and the other two stayed
-        empty, so a visitor reading Arabic saw Kurdish or saw nothing.
-        
-        The title is built from the record now: type, purpose, district, city,
-        every one of which is already a key with three translations beside it.
-        The description is built from the phrases ticked below. Both come out
-        right in all three languages, spelled the same way every time, and
-        neither costs anything to produce.
-      */}
-      <Card title="ئەم مووڵکە چۆنە؟">
-        <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
-          ئەوانە هەڵبژێرە کە ڕاستن. ناونیشان و وەسفی مووڵکەکە خۆیان دروست
-          دەبن — بە کوردی و عەربی و ئینگلیزی — بۆیە پێویست ناکات هیچ بنووسیت.
-        </p>
-
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {FEATURE_KEYS.map((k) => {
-            const on = (d.features ?? []).includes(k);
-            return (
-              <button
-                key={k}
-                type="button"
-                onClick={() =>
-                  up(
-                    "features",
-                    on
-                      ? (d.features ?? []).filter((x) => x !== k)
-                      : [...(d.features ?? []), k],
-                  )
-                }
-                className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2.5 text-start text-sm transition-colors cursor-pointer ${
-                  on
-                    ? "border-primary bg-primary/10 font-medium text-foreground"
-                    : "border-border text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                {featureNames[k].ku}
-                {on && <Check className="size-4 shrink-0 text-primary" />}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Shown as it will be saved, so nobody has to guess. */}
-        <div className="mt-4 rounded-xl border border-border bg-muted/40 p-3">
-          <p className="text-xs font-semibold text-muted-foreground">
-            بەم شێوەیە دەردەکەوێت:
-          </p>
-          <p className="mt-1.5 font-semibold">{preview.title.ku}</p>
-          {preview.description.ku && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              {preview.description.ku}
-            </p>
-          )}
-          {/*
-            The other three, all down the same edge as the Kurdish above them.
-
-            English and Turkmen keep dir="ltr" — the words have to run left to
-            right or the punctuation lands on the wrong end — but that also
-            flushed those lines to the left of a panel where everything else
-            sits on the right.
-
-            `text-right`, not `text-end`. The logical one resolves against the
-            element's own direction, so it means right for the two Latin lines
-            and *left* for the Arabic one — measured it doing exactly that,
-            which would have fixed two lines and broken the third. Physical
-            right is the same edge for all four whatever way the letters run.
-          */}
-          {(["ar", "en", "tk"] as const).map((l) => (
-            <p
-              key={l}
-              dir={l === "ar" ? "rtl" : "ltr"}
-              className="mt-1 text-right text-xs leading-relaxed text-muted-foreground"
-            >
-              {preview.title[l]}
-              {preview.description[l] ? ` — ${preview.description[l]}` : ""}
-            </p>
-          ))}
-        </div>
-      </Card>
-
       {/* Core */}
       <Card title="زانیاری سەرەکی">
         <div className="grid gap-3 sm:grid-cols-3">
@@ -551,6 +465,112 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         </div>
       </Card>
 
+      {/*
+        Amenities, asked for the kind of property this is.
+
+        A plot of land was being offered a lift, a fitted kitchen and air
+        conditioning. What a land buyer wants to know instead is whether the
+        water and the power reach it, what the road is, and whether the papers
+        are clean — so land gets its own list and everything else keeps the
+        building one.
+      */}
+      <Card title="خزمەتگوزارییەکان">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {AMENITIES_FOR_TYPE[d.type].map((a) => (
+            <label key={a} className="flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox" checked={d.amenities.includes(a)} onChange={() => toggleAmenity(a)} />
+              {amenityNames[a].ku}
+            </label>
+          ))}
+        </div>
+      </Card>
+
+      {/*
+        No title boxes, and no description boxes.
+        
+        There were six — a title and a description in each of three languages —
+        and six boxes is five more than anybody fills in. What happened in
+        practice is that one language got written and the other two stayed
+        empty, so a visitor reading Arabic saw Kurdish or saw nothing.
+        
+        The title is built from the record now: type, purpose, district, city,
+        every one of which is already a key with three translations beside it.
+        The description is built from the phrases ticked below. Both come out
+        right in all three languages, spelled the same way every time, and
+        neither costs anything to produce.
+      */}
+      <Card title="ئەم مووڵکە چۆنە؟">
+        <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+          ئەوانە هەڵبژێرە کە ڕاستن. ناونیشان و وەسفی مووڵکەکە خۆیان دروست
+          دەبن — بە کوردی و عەربی و ئینگلیزی — بۆیە پێویست ناکات هیچ بنووسیت.
+        </p>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {FEATURE_KEYS.map((k) => {
+            const on = (d.features ?? []).includes(k);
+            return (
+              <button
+                key={k}
+                type="button"
+                onClick={() =>
+                  up(
+                    "features",
+                    on
+                      ? (d.features ?? []).filter((x) => x !== k)
+                      : [...(d.features ?? []), k],
+                  )
+                }
+                className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2.5 text-start text-sm transition-colors cursor-pointer ${
+                  on
+                    ? "border-primary bg-primary/10 font-medium text-foreground"
+                    : "border-border text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {featureNames[k].ku}
+                {on && <Check className="size-4 shrink-0 text-primary" />}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Shown as it will be saved, so nobody has to guess. */}
+        <div className="mt-4 rounded-xl border border-border bg-muted/40 p-3">
+          <p className="text-xs font-semibold text-muted-foreground">
+            بەم شێوەیە دەردەکەوێت:
+          </p>
+          <p className="mt-1.5 font-semibold">{preview.title.ku}</p>
+          {preview.description.ku && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {preview.description.ku}
+            </p>
+          )}
+          {/*
+            The other three, all down the same edge as the Kurdish above them.
+
+            English and Turkmen keep dir="ltr" — the words have to run left to
+            right or the punctuation lands on the wrong end — but that also
+            flushed those lines to the left of a panel where everything else
+            sits on the right.
+
+            `text-right`, not `text-end`. The logical one resolves against the
+            element's own direction, so it means right for the two Latin lines
+            and *left* for the Arabic one — measured it doing exactly that,
+            which would have fixed two lines and broken the third. Physical
+            right is the same edge for all four whatever way the letters run.
+          */}
+          {(["ar", "en", "tk"] as const).map((l) => (
+            <p
+              key={l}
+              dir={l === "ar" ? "rtl" : "ltr"}
+              className="mt-1 text-right text-xs leading-relaxed text-muted-foreground"
+            >
+              {preview.title[l]}
+              {preview.description[l] ? ` — ${preview.description[l]}` : ""}
+            </p>
+          ))}
+        </div>
+      </Card>
+
       {/* Location */}
       <Card title="شوێن لەسەر نەخشە">
         <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
@@ -600,25 +620,6 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         )}
       </Card>
 
-      {/*
-        Amenities, asked for the kind of property this is.
-
-        A plot of land was being offered a lift, a fitted kitchen and air
-        conditioning. What a land buyer wants to know instead is whether the
-        water and the power reach it, what the road is, and whether the papers
-        are clean — so land gets its own list and everything else keeps the
-        building one.
-      */}
-      <Card title="خزمەتگوزارییەکان">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {AMENITIES_FOR_TYPE[d.type].map((a) => (
-            <label key={a} className="flex items-center gap-2 text-sm cursor-pointer">
-              <input type="checkbox" checked={d.amenities.includes(a)} onChange={() => toggleAmenity(a)} />
-              {amenityNames[a].ku}
-            </label>
-          ))}
-        </div>
-      </Card>
 
       {/* Images */}
       {/*
