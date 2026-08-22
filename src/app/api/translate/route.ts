@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
+import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -69,7 +70,18 @@ async function signedIn(idToken: string): Promise<boolean> {
   }
 }
 
-export async function POST(req: Request): Promise<NextResponse> {
+export async function POST(req: Request): Promise<Response> {
+  /*
+   * Before the key check, because the point is the bill.
+   *
+   * Signing in is the only thing standing between this route and the account
+   * at Anthropic, and one enabled seller with a stuck form can spend all
+   * night. A title and a description per listing is two calls; thirty a
+   * minute is a seller filing more listings than anyone files.
+   */
+  const gate = rateLimit(`translate:${clientIp(req)}`, { limit: 30, windowMs: 60_000 });
+  if (!gate.ok) return tooMany(gate.resetAt);
+
   const anthropic = getClient();
   // Not configured is not an error: the seller can still type all three by
   // hand, exactly as before this existed.

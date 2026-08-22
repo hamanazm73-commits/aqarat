@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -51,7 +52,13 @@ function googleHost(raw: string): URL | null {
   return null;
 }
 
-export async function POST(req: Request): Promise<NextResponse> {
+export async function POST(req: Request): Promise<Response> {
+  // Nothing signs in to paste a map link, so the ceiling is per address.
+  // Twenty is far more than a seller filing a listing and far less than a
+  // script using this as a free way to make somebody else fetch Google.
+  const gate = rateLimit(`resolve-map:${clientIp(req)}`, { limit: 20, windowMs: 60_000 });
+  if (!gate.ok) return tooMany(gate.resetAt);
+
   let url: unknown;
   try {
     ({ url } = (await req.json()) as { url?: unknown });

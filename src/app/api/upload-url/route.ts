@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { rateLimit, clientIp, tooMany } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -78,7 +79,12 @@ const EXT: Record<string, string> = {
 /** Generous, but not a film. A walk round a house is well inside this. */
 const MAX_BYTES = 200 * 1024 * 1024;
 
-export async function POST(request: Request): Promise<NextResponse> {
+export async function POST(request: Request): Promise<Response> {
+  // Each of these is a key that accepts 200MB into the bucket for fifteen
+  // minutes. A seller uploads a clip or two per listing.
+  const gate = rateLimit(`upload-url:${clientIp(request)}`, { limit: 20, windowMs: 60_000 });
+  if (!gate.ok) return tooMany(gate.resetAt);
+
   if (!(await allowed(request.headers.get("x-id-token") || ""))) {
     return NextResponse.json({ error: "not-allowed" }, { status: 403 });
   }
