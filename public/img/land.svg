@@ -12,6 +12,4 @@
     <rect x="380" y="360" width="440" height="280" stroke-dasharray="34 26"/>
     <path d="M600 470 L600 560 M600 470 C560 430 560 470 600 470 M600 490 C640 450 640 490 600 490"/>
   </g>
-  <text x="600" y="740" font-family="Segoe UI, Arial, sans-serif" font-size="60" font-weight="700" fill="#ffffff" text-anchor="middle" opacity="0.95">Land</text>
-  <text x="600" y="800" font-family="Segoe UI, Arial, sans-serif" font-size="30" fill="#ffffff" text-anchor="middle" opacity="0.7">LAY HAMA HOMES</text>
 </svg>

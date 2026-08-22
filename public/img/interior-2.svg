@@ -14,6 +14,4 @@
     <circle cx="600" cy="300" r="30"/>
     <line x1="600" y1="330" x2="600" y2="380"/>
   </g>
-  <text x="600" y="750" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700" fill="#ffffff" text-anchor="middle" opacity="0.92">Interior</text>
-  <text x="600" y="805" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#ffffff" text-anchor="middle" opacity="0.65">LAY HAMA HOMES</text>
 </svg>

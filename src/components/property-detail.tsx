@@ -37,6 +37,7 @@ import { isRawSrc } from "@/lib/utils";
 import { ROOM_FIELDS } from "@/lib/constants";
 import { titleFor, descriptionFor } from "@/lib/listing-text";
 import { districtFor } from "@/lib/district-latin";
+import { ListingImage } from "./listing-image";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
 import { fsCountView } from "@/lib/firebase/db";
@@ -182,12 +183,11 @@ export function PropertyDetail({
               unoptimized={isRawSrc(p.images[active])}
               className="scale-110 object-cover opacity-45 blur-2xl"
             />
-            <Image
+            <ListingImage
               src={p.images[active]}
               alt={titleFor(p, locale)}
-              fill
+              type={p.type}
               sizes={HERO_SIZES}
-              unoptimized={isRawSrc(p.images[active])}
               // The one picture the page exists for; it should not wait its turn.
               priority
               className="object-contain"

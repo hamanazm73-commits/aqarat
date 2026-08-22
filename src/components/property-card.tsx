@@ -19,6 +19,7 @@ import { cn, isRawSrc } from "@/lib/utils";
 import { ROOM_FIELDS } from "@/lib/constants";
 import { titleFor } from "@/lib/listing-text";
 import { districtFor } from "@/lib/district-latin";
+import { ListingImage } from "./listing-image";
 
 const WA_NUMBER = "9647502202191";
 const SITE_URL = "https://homes.layhama.com";
@@ -59,12 +60,11 @@ export function PropertyCard({ p }: { p: Property }) {
           unoptimized={isRawSrc(p.images[0])}
           className="scale-110 object-cover opacity-55 blur-xl"
         />
-        <Image
+        <ListingImage
           src={p.images[0]}
           alt={titleFor(p, locale)}
-          fill
+          type={p.type}
           sizes="(max-width: 768px) 100vw, 33vw"
-          unoptimized={isRawSrc(p.images[0])}
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
