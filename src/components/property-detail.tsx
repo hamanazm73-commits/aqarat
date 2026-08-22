@@ -34,6 +34,7 @@ import {
   discountPercent,
 } from "@/lib/format";
 import { isRawSrc } from "@/lib/utils";
+import { ROOM_FIELDS } from "@/lib/constants";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
 import { fsCountView } from "@/lib/firebase/db";
@@ -92,23 +93,32 @@ export function PropertyDetail({
     ? discountPercent(p.discount.oldPriceIQD, p.priceIQD)
     : 0;
 
+  /*
+   * What this kind of property actually has, then whether it was filled in.
+   *
+   * The form no longer asks for bedrooms on a plot of land and clears them
+   * when a listing changes type — but a record saved before that can still be
+   * carrying one, and a page listing bedrooms on an empty plot is worse than
+   * a row missing.
+   */
+  const has = ROOM_FIELDS[p.type];
   const specs = [
-    typeof p.bedrooms === "number" && {
+    has.bedrooms && typeof p.bedrooms === "number" && {
       icon: BedDouble,
       label: t.card.beds,
       value: formatNumber(p.bedrooms, locale),
     },
-    typeof p.bathrooms === "number" && {
+    has.bathrooms && typeof p.bathrooms === "number" && {
       icon: Bath,
       label: t.card.baths,
       value: formatNumber(p.bathrooms, locale),
     },
-    typeof p.floors === "number" && {
+    has.floors && typeof p.floors === "number" && {
       icon: Layers,
       label: t.card.floors,
       value: formatNumber(p.floors, locale),
     },
-    typeof p.kitchens === "number" && {
+    has.kitchens && typeof p.kitchens === "number" && {
       icon: CookingPot,
       label: t.card.kitchens,
       value: formatNumber(p.kitchens, locale),

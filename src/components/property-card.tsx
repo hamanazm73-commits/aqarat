@@ -16,6 +16,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { cityNames, typeNames } from "@/lib/i18n/dictionaries";
 import { formatIQDCompact, formatNumber, discountPercent } from "@/lib/format";
 import { cn, isRawSrc } from "@/lib/utils";
+import { ROOM_FIELDS } from "@/lib/constants";
 
 const WA_NUMBER = "9647502202191";
 const SITE_URL = "https://homes.layhama.com";
@@ -125,12 +126,20 @@ export function PropertyCard({ p }: { p: Property }) {
         </p>
 
         <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-          {typeof p.bedrooms === "number" && (
+          {/*
+            The type decides, not just whether a number is present.
+
+            The form stopped asking for bedrooms on a plot of land, and clears
+            them when a listing changes type — but a listing saved before that
+            can still be carrying one, and a card advertising a bedroom on an
+            empty plot is worse than one field missing.
+          */}
+          {ROOM_FIELDS[p.type].bedrooms && typeof p.bedrooms === "number" && (
             <span className="flex items-center gap-1">
               <BedDouble className="size-4" /> {formatNumber(p.bedrooms, locale)}
             </span>
           )}
-          {typeof p.bathrooms === "number" && (
+          {ROOM_FIELDS[p.type].bathrooms && typeof p.bathrooms === "number" && (
             <span className="flex items-center gap-1">
               <Bath className="size-4" /> {formatNumber(p.bathrooms, locale)}
             </span>

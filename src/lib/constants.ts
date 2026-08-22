@@ -54,3 +54,54 @@ export const AMENITY_KEYS: AmenityKey[] = [
   "pool",
   "balcony",
 ];
+
+/**
+ * Which room counts a type of property actually has.
+ *
+ * A plot of land has no bedrooms. Asking anyway is how a listing ends up
+ * claiming one — the field is there, somebody fills it, and a card advertises
+ * a bedroom on an empty plot.
+ *
+ * A shop or an office has no bedroom and no kitchen either. But it usually
+ * does have a toilet, and it is quite often on two floors, so those two are
+ * worth asking about and worth showing.
+ *
+ * Area is not here because every one of them has an area — it is the one
+ * measurement a plot of land is actually sold on.
+ */
+export interface RoomFields {
+  bedrooms: boolean;
+  bathrooms: boolean;
+  floors: boolean;
+  kitchens: boolean;
+}
+
+const LIVED_IN: RoomFields = {
+  bedrooms: true,
+  bathrooms: true,
+  floors: true,
+  kitchens: true,
+};
+
+const COMMERCIAL: RoomFields = {
+  bedrooms: false,
+  bathrooms: true,
+  floors: true,
+  kitchens: false,
+};
+
+const BARE_LAND: RoomFields = {
+  bedrooms: false,
+  bathrooms: false,
+  floors: false,
+  kitchens: false,
+};
+
+export const ROOM_FIELDS: Record<PropertyType, RoomFields> = {
+  house: LIVED_IN,
+  apartment: LIVED_IN,
+  villa: LIVED_IN,
+  shop: COMMERCIAL,
+  office: COMMERCIAL,
+  land: BARE_LAND,
+};

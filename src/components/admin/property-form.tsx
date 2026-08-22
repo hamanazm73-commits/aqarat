@@ -19,7 +19,12 @@ import {
   featureNames,
   FEATURE_KEYS,
 } from "@/lib/i18n/dictionaries";
-import { AMENITY_KEYS, CITY_KEYS, PROPERTY_TYPE_KEYS } from "@/lib/constants";
+import {
+  AMENITY_KEYS,
+  CITY_KEYS,
+  PROPERTY_TYPE_KEYS,
+  ROOM_FIELDS,
+} from "@/lib/constants";
 import { buildTitle, buildDescription } from "@/lib/listing-text";
 import { compressImage } from "@/lib/compress-image";
 import { useAuth } from "@/lib/firebase/auth";
@@ -465,7 +470,31 @@ export function PropertyForm({ initial }: { initial?: Property }) {
             </select>
           </Field>
           <Field label="جۆر">
-            <select className="input" value={d.type} onChange={(e) => up("type", e.target.value as PropertyType)}>
+            {/*
+              Changing the type drops the counts that type does not have.
+
+              Hiding a field is not the same as emptying it. A house with three
+              bedrooms edited into a plot of land would keep the three — out of
+              sight in the form, still in the record, and still printed on the
+              card. Clearing here means what a seller can see is what the
+              listing says.
+            */}
+            <select
+              className="input"
+              value={d.type}
+              onChange={(e) => {
+                const type = e.target.value as PropertyType;
+                const has = ROOM_FIELDS[type];
+                setD((p) => ({
+                  ...p,
+                  type,
+                  bedrooms: has.bedrooms ? p.bedrooms : undefined,
+                  bathrooms: has.bathrooms ? p.bathrooms : undefined,
+                  floors: has.floors ? p.floors : undefined,
+                  kitchens: has.kitchens ? p.kitchens : undefined,
+                }));
+              }}
+            >
               {PROPERTY_TYPE_KEYS.map((t) => <option key={t} value={t}>{typeNames[t].ku}</option>)}
             </select>
           </Field>
@@ -497,10 +526,28 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           </Field>
           <Field label="نرخ (IQD)"><input type="number" className="input" value={d.priceIQD || ""} onChange={(e) => up("priceIQD", Number(e.target.value))} required /></Field>
           <Field label="ڕووبەر (مەتر)"><input type="number" className="input" value={d.area || ""} onChange={(e) => up("area", Number(e.target.value))} required /></Field>
-          <Field label="ژووری نوستن"><input type="number" className="input" value={d.bedrooms ?? ""} onChange={(e) => up("bedrooms", e.target.value ? Number(e.target.value) : undefined)} /></Field>
-          <Field label="حەمام"><input type="number" className="input" value={d.bathrooms ?? ""} onChange={(e) => up("bathrooms", e.target.value ? Number(e.target.value) : undefined)} /></Field>
-          <Field label="نهۆم"><input type="number" className="input" value={d.floors ?? ""} onChange={(e) => up("floors", e.target.value ? Number(e.target.value) : undefined)} /></Field>
-          <Field label="چێشتخانە"><input type="number" className="input" value={d.kitchens ?? ""} onChange={(e) => up("kitchens", e.target.value ? Number(e.target.value) : undefined)} /></Field>
+          {/*
+            A plot of land has no bedrooms, and asking is how a listing ends up
+            claiming one. A shop or an office has no bedroom and no kitchen
+            either — but it often does have a toilet, and it is quite often on
+            two floors, so those two stay.
+
+            Hidden AND cleared, in the type handler: a house edited into a plot
+            of land would otherwise keep the three bedrooms nobody can see any
+            more, and the card would go on printing them.
+          */}
+          {ROOM_FIELDS[d.type].bedrooms && (
+            <Field label="ژووری نوستن"><input type="number" className="input" value={d.bedrooms ?? ""} onChange={(e) => up("bedrooms", e.target.value ? Number(e.target.value) : undefined)} /></Field>
+          )}
+          {ROOM_FIELDS[d.type].bathrooms && (
+            <Field label="حەمام"><input type="number" className="input" value={d.bathrooms ?? ""} onChange={(e) => up("bathrooms", e.target.value ? Number(e.target.value) : undefined)} /></Field>
+          )}
+          {ROOM_FIELDS[d.type].floors && (
+            <Field label="نهۆم"><input type="number" className="input" value={d.floors ?? ""} onChange={(e) => up("floors", e.target.value ? Number(e.target.value) : undefined)} /></Field>
+          )}
+          {ROOM_FIELDS[d.type].kitchens && (
+            <Field label="چێشتخانە"><input type="number" className="input" value={d.kitchens ?? ""} onChange={(e) => up("kitchens", e.target.value ? Number(e.target.value) : undefined)} /></Field>
+          )}
         </div>
       </Card>
 
