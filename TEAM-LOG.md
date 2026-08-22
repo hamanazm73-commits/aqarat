@@ -10,7 +10,27 @@ Newest entry at the top.
 
 ---
 
-## 2026-08-22 — hamakali2005 · built, one setting left
+## 2026-08-22 — hamakali2005 · done, closed and verified
+
+**The seller-link hole is shut.** The key is on the project, the rules are
+published, and all of it was re-tested from outside afterwards:
+
+    accessLinks/<any id>   403   (was 404 — anyone could read one)
+    /api/access            404   no-such-link, so the server reads fine
+    properties             200   still public
+    roles                  403   still shut
+    submissions            403   still gone
+    inquiries              403   still gone
+    a write with no auth   403   still refused
+
+Links already sent all work. The token never changed — only who reads the
+document behind it.
+
+The audit as a whole: four findings, all fixed the same day. The open mail
+relay on hotels, the shops site with no headers, three routes here with no
+ceiling, and this. Written up at the artifact Hama has the link to.
+
+## 2026-08-22 — hamakali2005 · superseded, kept for the order it records
 
 **The seller-link fix is written and deployed. It needs one value to switch
 on.**
