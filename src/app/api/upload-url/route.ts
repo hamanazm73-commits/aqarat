@@ -28,6 +28,18 @@ export const runtime = "nodejs";
  * no message, that is the first thing to check.
  */
 
+/**
+ * May this account put a video in the bucket?
+ *
+ * Signed in is not the test. This route only ever signs video, and video is
+ * the office's to add — a seller uploads photographs, which go through
+ * /api/upload and are shrunk to about 150KB first. One clip off a phone is
+ * the room of two hundred of those, out of a bucket all three sites share.
+ *
+ * So the answer is admin or owner, not merely enabled. The form already hides
+ * the option from a seller, but a hidden button is a hidden button: the rule
+ * has to hold where the signing happens or it does not hold at all.
+ */
 async function allowed(idToken: string): Promise<boolean> {
   const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
   const project = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
@@ -61,9 +73,16 @@ async function allowed(idToken: string): Promise<boolean> {
     );
     if (!res.ok) return false;
     const doc = (await res.json()) as {
-      fields?: { enabled?: { booleanValue?: boolean } };
+      fields?: {
+        enabled?: { booleanValue?: boolean };
+        role?: { stringValue?: string };
+      };
     };
-    return doc.fields?.enabled?.booleanValue === true;
+    if (doc.fields?.enabled?.booleanValue !== true) return false;
+    const role = doc.fields?.role?.stringValue;
+    // Same two roles the dashboard calls isAdmin. A "seller" is an office
+    // that lists houses, and lands here only by going round the form.
+    return role === "admin" || role === "owner";
   } catch {
     return false;
   }

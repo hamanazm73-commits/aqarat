@@ -162,7 +162,29 @@ export function PropertyForm({ initial }: { initial?: Property }) {
        * them in is the order they appear — which matters, because the first
        * one is the cover.
        */
-      const chosen = Array.from(files);
+      /*
+       * Video is the office's to add, not the seller's.
+       *
+       * The picker below asks for images only when a seller is looking at it,
+       * but "images only" is a hint the file dialog offers, not a rule it
+       * enforces — anyone who switches it to "all files" can still hand us a
+       * clip. Dropping them here is the difference between a filter and a
+       * wish.
+       *
+       * Why the office keeps it: a photograph is about 150KB once shrunk and a
+       * clip off a phone is a couple of hundred megabytes, so one video costs
+       * the room of two hundred photographs — out of a bucket all three sites
+       * share.
+       */
+      const chosen = Array.from(files).filter(
+        (f) => isAdmin || !f.type.startsWith("video/"),
+      );
+      if (!chosen.length) {
+        setError(
+          "تەنها وێنە دەتوانیت زیاد بکەیت. بۆ ڤیدیۆ پەیوەندی بە بەڕێوەبەرەوە بکە.",
+        );
+        return;
+      }
       const urls: string[] = new Array(chosen.length);
       let next = 0;
       setProgress({ done: 0, total: chosen.length });
@@ -215,11 +237,13 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       // about, so each says which it was rather than "upload failed".
       const m = err instanceof Error ? err.message : "";
       setError(
-        m.includes("too-large")
-          ? "فایلەکە زۆر گەورەیە."
-          : m.includes("cors")
-            ? "ڤیدیۆکە نەگەیشتە کۆگاکە — ڕێکخستنی CORS پێویستە."
-            : "ئەپلۆد سەرکەوتوو نەبوو / Upload failed.",
+        m.includes("not-allowed")
+          ? "ڤیدیۆ تەنها لەلایەن بەڕێوەبەرەوە زیاد دەکرێت."
+          : m.includes("too-large")
+            ? "فایلەکە زۆر گەورەیە."
+            : m.includes("cors")
+              ? "ڤیدیۆکە نەگەیشتە کۆگاکە — ڕێکخستنی CORS پێویستە."
+              : "ئەپلۆد سەرکەوتوو نەبوو / Upload failed.",
       );
     } finally {
       setUploading(false);
@@ -548,7 +572,7 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         thing already in their gallery. One picker takes both — on a phone it
         opens the gallery, which is where all of it already is.
       */}
-      <Card title="زیادکردنی وێنە و ڤیدیۆ">
+      <Card title={isAdmin ? "زیادکردنی وێنە و ڤیدیۆ" : "زیادکردنی وێنە"}>
         <div className="flex flex-wrap gap-3">
           {d.images.map((src, i) => (
             <div key={i} className="relative h-24 w-32 overflow-hidden rounded-lg border border-border">
@@ -569,11 +593,17 @@ export function PropertyForm({ initial }: { initial?: Property }) {
               : uploading && progress.total > 1
                 ? `${progress.done}/${progress.total}`
                 : "ئەپلۆد"}
-            <input type="file" accept="image/*,video/*" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            {/* A seller's picker opens on photographs only, so the option to
+                pick a clip is not there to be refused later. */}
+            <input type="file" accept={isAdmin ? "image/*,video/*" : "image/*"} multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
           </label>
         </div>
 
-        {(d.videos ?? []).length > 0 && (
+        {/* The list is also the remove button, so it belongs to whoever may
+            add. A seller editing a listing the office put a clip on keeps it:
+            `videos` stays in the form's state and is saved back untouched —
+            it is simply not theirs to take off. */}
+        {isAdmin && (d.videos ?? []).length > 0 && (
           <div className="mt-3 space-y-2">
             {(d.videos ?? []).map((v, i) => (
               <div key={i} className="flex items-center gap-2 rounded-lg border border-border p-2 text-sm">
@@ -592,7 +622,9 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           <Button type="button" variant="outline" onClick={addUrl}><Plus className="h-4 w-4" /></Button>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          ڤیدیۆ ڕاستەوخۆ بار دەکرێت و لە ژێر وێنەکاندا دەردەکەوێت.
+          {isAdmin
+            ? "ڤیدیۆ ڕاستەوخۆ بار دەکرێت و لە ژێر وێنەکاندا دەردەکەوێت."
+            : "ڤیدیۆ لەلایەن بەڕێوەبەرەوە زیاد دەکرێت. ئەگەر ڤیدیۆت بۆ موڵکەکە هەیە، پەیوەندیمان پێوە بکە."}
         </p>
       </Card>
 
