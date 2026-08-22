@@ -73,8 +73,26 @@ export async function getAllProperties(): Promise<Property[]> {
   return visible(await source());
 }
 
+/**
+ * One listing, out of the collection we already have.
+ *
+ * This used to read the document straight from Firestore, and the page above
+ * it revalidates every thirty seconds — so a listing being looked at steadily
+ * cost up to 2,880 reads a day on its own. Twenty busy listings would have
+ * reached the same 50,000 ceiling the collection read was just moved off,
+ * which would have made the fix above only half a fix.
+ *
+ * `source()` is the whole collection behind the hourly cache, untrimmed, so
+ * the document is already in memory. A detail page now costs nothing beyond
+ * the hourly read the listings page pays anyway.
+ *
+ * The direct read stays as a fallback for the one case the list cannot
+ * answer: a listing saved in the last moment before the cache was cleared.
+ */
 export async function getProperty(id: string): Promise<Property | null> {
   if (isFirebaseConfigured()) {
+    const cached = (await source()).find((p) => p.id === id);
+    if (cached) return cached.hidden ? null : cached;
     try {
       const p = await fsGetProperty(id);
       if (p) return p.hidden ? null : p;
