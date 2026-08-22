@@ -260,10 +260,17 @@ export async function fsUploadImage(file: File): Promise<string> {
  * listings.
  *
  * The token is the secret, so the document holding those credentials is
- * readable by its exact id and cannot be listed — see firestore.rules. That
- * is the same trade the hotels site makes: 32 random bytes are not guessed,
- * and a link nobody can enumerate is worth more here than a password
- * everybody writes on a receipt.
+ * readable by its exact id and cannot be listed — see firestore.rules.
+ *
+ * This is NOT the trade the hotels site makes, whatever an earlier version of
+ * this comment said. Hotels denies client reads of accessLinks outright and
+ * redeems the token through /api/access, server-side and rate-limited. Here
+ * the browser reads the document, so the password inside it is available to
+ * anyone who ever sees the URL — and URLs get forwarded and screenshotted.
+ * Being unguessable is not the same as being unseen.
+ *
+ * TEAM-LOG carries the finding and three ways out. Until one is chosen, treat
+ * a seller link as a password in the clear: send it once, to one person.
  */
 export interface SellerLink {
   /** The synthetic account. Never receives mail; it exists to be signed in as. */
