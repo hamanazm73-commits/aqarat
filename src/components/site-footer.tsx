@@ -14,27 +14,36 @@ export function SiteFooter() {
   const { t } = useI18n();
 
   return (
-    <footer className="mt-24 border-t bg-primary text-primary-foreground">
+    /*
+      Trimmed down, not stripped out.
+
+      Everything here still earns its place; what was taking the room was the
+      chrome around it — 96px of clearance above, 56px of padding inside, and
+      a 32px tinted tile behind every contact icon. The tiles in particular
+      made two phone numbers look like a control panel.
+    */
+    <footer className="mt-16 border-t bg-primary text-primary-foreground">
       {/* gold accent line — the seam the sister site uses too */}
       <div className="h-1 w-full bg-gradient-to-r from-transparent via-gold to-transparent" />
 
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-9 sm:grid-cols-2 lg:grid-cols-3">
         <div className="sm:col-span-2 lg:col-span-1">
-          <div className="flex items-center gap-2 text-lg font-bold">
-            <BrandMark className="size-9" />
+          <div className="flex items-center gap-2 font-bold">
+            <BrandMark className="size-7" />
             {t.brand}
           </div>
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-primary-foreground/70">
+          <p className="mt-2.5 max-w-xs text-sm leading-relaxed text-primary-foreground/70">
             {t.footer.tagline}
           </p>
         </div>
 
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gold">
+          <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-gold">
             {t.footer.quickLinks}
           </h3>
-          {/* 4px between stacked links is a mis-tap on a phone */}
-          <ul className="space-y-3.5 sm:space-y-2.5 text-sm text-primary-foreground/80">
+          {/* Still 14px apart on a phone: 4px between stacked links is a
+              mis-tap, and making the footer shorter is not worth a wrong tap. */}
+          <ul className="space-y-3.5 sm:space-y-2 text-sm text-primary-foreground/80">
             {[
               { href: "/", label: t.nav.home },
               { href: "/properties", label: t.nav.properties },
@@ -54,19 +63,20 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gold">
+          <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-gold">
             {t.footer.contact}
           </h3>
-          <ul className="space-y-3 text-sm text-primary-foreground/80">
+          {/* The icons sit next to the text rather than inside a tinted tile.
+              The tile was the single biggest thing in the footer and it was
+              decoration — a phone number does not need a button behind it. */}
+          <ul className="space-y-3.5 sm:space-y-2 text-sm text-primary-foreground/80">
             <li>
               <a
                 href={`tel:${PHONE.replace(/\s/g, "")}`}
                 dir="ltr"
-                className="inline-flex items-center gap-2.5 transition-colors hover:text-gold"
+                className="inline-flex items-center gap-2 transition-colors hover:text-gold"
               >
-                <span className="grid size-8 place-items-center rounded-lg bg-primary-foreground/10">
-                  <Phone className="size-4" />
-                </span>
+                <Phone className="size-4 shrink-0 text-gold/70" />
                 {PHONE}
               </a>
             </li>
@@ -74,11 +84,9 @@ export function SiteFooter() {
               <a
                 href={`mailto:${EMAIL}`}
                 dir="ltr"
-                className="inline-flex items-center gap-2.5 transition-colors hover:text-gold"
+                className="inline-flex items-center gap-2 transition-colors hover:text-gold"
               >
-                <span className="grid size-8 place-items-center rounded-lg bg-primary-foreground/10">
-                  <Mail className="size-4" />
-                </span>
+                <Mail className="size-4 shrink-0 text-gold/70" />
                 {EMAIL}
               </a>
             </li>
@@ -86,7 +94,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-3 sm:gap-3 border-t border-primary-foreground/10 py-5 text-center text-xs text-primary-foreground/60 sm:flex-row sm:gap-3">
+      <div className="flex flex-col items-center justify-center gap-2.5 border-t border-primary-foreground/10 py-3.5 text-center text-xs text-primary-foreground/60 sm:flex-row sm:gap-3">
         <span>
           © {new Date().getFullYear()} {t.brand}. {t.footer.rights}.
         </span>
