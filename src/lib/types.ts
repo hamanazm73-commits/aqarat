@@ -80,8 +80,18 @@ export interface Agent {
 
 export interface Property {
   id: string;
+  /*
+   * Both are built from the record now, not typed — see lib/listing-text.ts.
+   * They stay on the document because everything that reads a listing reads
+   * these: the card, the heading, the search index, the JSON-LD, the share
+   * card. Generating them on save rather than on render means all of that
+   * keeps working untouched, and a listing written before this still shows
+   * whatever it was given.
+   */
   title: Localized;
   description: Localized;
+  /** The ticked phrases the description is assembled from. */
+  features?: string[];
   purpose: Purpose;
   type: PropertyType;
   city: CityKey;

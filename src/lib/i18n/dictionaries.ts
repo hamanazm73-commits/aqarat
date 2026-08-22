@@ -439,6 +439,47 @@ export const purposeNames: Record<Purpose, Record<Locale, string>> = {
   rent: { ku: "کرێ", en: "Rent", ar: "إيجار" },
 };
 
+/**
+ * The things an office would otherwise have written in the description.
+ *
+ * Ticked rather than typed, for the same reason the title is built rather than
+ * written: a sentence typed per listing is a sentence spelled differently per
+ * listing, and it only ever exists in one language. Each of these is written
+ * once, here, in all three — so a listing describes itself in whichever
+ * language is being read, and it costs nothing to do.
+ *
+ * Kept to the things that are not already fields. Rooms, bathrooms, floors,
+ * area, parking and a garden are all recorded elsewhere and shown elsewhere;
+ * repeating them here would be a second place to keep the same fact.
+ */
+export const featureNames = {
+  newBuild:    { ku: "تازە دروستکراوە",        en: "Newly built",            ar: "بناء جديد" },
+  renovated:   { ku: "نۆژەنکراوەتەوە",         en: "Renovated",              ar: "مجدد" },
+  needsWork:   { ku: "پێویستی بە چاککردن هەیە", en: "Needs work",             ar: "يحتاج تصليح" },
+  mainStreet:  { ku: "لەسەر شەقامی سەرەکی",     en: "On a main street",       ar: "على شارع رئيسي" },
+  cornerPlot:  { ku: "دوو ڕووی هەیە",           en: "Corner plot",            ar: "على شارعين" },
+  wideStreet:  { ku: "کۆڵانی فراوان",           en: "Wide street",            ar: "شارع عريض" },
+  quietArea:   { ku: "ناوچەیەکی هێمن",          en: "Quiet area",             ar: "منطقة هادئة" },
+  nearSchool:  { ku: "نزیک قوتابخانە",          en: "Near a school",          ar: "قرب مدرسة" },
+  nearMarket:  { ku: "نزیک بازاڕ",              en: "Near a market",          ar: "قرب سوق" },
+  nearMosque:  { ku: "نزیک مزگەوت",             en: "Near a mosque",          ar: "قرب جامع" },
+  nearHospital:{ ku: "نزیک نەخۆشخانە",          en: "Near a hospital",        ar: "قرب مستشفى" },
+  nearPark:    { ku: "نزیک پارک",               en: "Near a park",            ar: "قرب حديقة عامة" },
+  cityCentre:  { ku: "لە ناوەندی شار",          en: "In the city centre",     ar: "في مركز المدينة" },
+  familyArea:  { ku: "بۆ خێزان گونجاوە",        en: "Suitable for a family",  ar: "مناسب للعوائل" },
+  investment:  { ku: "بۆ وەبەرهێنان باشە",      en: "Good for investment",    ar: "مناسب للاستثمار" },
+  papersReady: { ku: "بەڵگەنامەکانی تەواون",    en: "Papers in order",        ar: "الأوراق كاملة" },
+  installments:{ ku: "بە قیستیش دەکرێت",        en: "Instalments possible",   ar: "يمكن بالتقسيط" },
+  readyToMove: { ku: "ئامادەیە بۆ نیشتەجێبوون", en: "Ready to move into",     ar: "جاهز للسكن" },
+  ownerSelling:{ ku: "خاوەنەکەی خۆی دەیفرۆشێت", en: "Sold by the owner",      ar: "من المالك مباشرة" },
+  goodView:    { ku: "دیمەنێکی جوانی هەیە",     en: "Good view",              ar: "إطلالة جميلة" },
+} as const;
+
+export type FeatureKey = keyof typeof featureNames;
+
+/** The order they appear in the form. */
+export const FEATURE_KEYS = Object.keys(featureNames) as FeatureKey[];
+
 /** Amenity labels. */
 export const amenityNames: Record<AmenityKey, Record<Locale, string>> = {
   parking: { ku: "پارکینگ", en: "Parking", ar: "موقف سيارات" },

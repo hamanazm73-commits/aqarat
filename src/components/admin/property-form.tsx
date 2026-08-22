@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Loader2, Upload, X, Plus, Video, MapPin } from "lucide-react";
+import { Loader2, Upload, X, Plus, Video, MapPin, Check } from "lucide-react";
 import type { AmenityKey, Locale, Property, PropertyType, Purpose } from "@/lib/types";
 import {
   fsCreateProperty,
@@ -16,8 +16,11 @@ import {
   cityNames,
   purposeNames,
   typeNames,
+  featureNames,
+  FEATURE_KEYS,
 } from "@/lib/i18n/dictionaries";
 import { AMENITY_KEYS, CITY_KEYS, PROPERTY_TYPE_KEYS } from "@/lib/constants";
+import { buildTitle, buildDescription } from "@/lib/listing-text";
 import { compressImage } from "@/lib/compress-image";
 import { useAuth } from "@/lib/firebase/auth";
 import { getFirebase } from "@/lib/firebase/client";
@@ -55,34 +58,6 @@ const empty: Draft = {
   amenities: [],
   agent: { name: "", phone: "" },
 };
-
-/**
- * The one line the seller needs about this.
- *
- * Without it the other two boxes fill themselves a second after they look
- * away, which reads as the form doing something it was not asked to. Said out
- * loud once, it reads as help.
- */
-function TranslateNote({ busy, off }: { busy: boolean; off: boolean }) {
-  // A promise the form cannot keep is worse than no promise. When the
-  // translator is not switched on, say so — a seller who is told the boxes
-  // fill themselves will sit and wait for boxes that never do.
-  if (off) {
-    return (
-      <p className="mt-2 text-xs text-danger">
-        وەرگێڕانی خۆکار ناکار نەکراوە — ئێستا دەبێت بە دەست بنووسرێت.
-      </p>
-    );
-  }
-  return (
-    <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-      {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-      {busy
-        ? "وەرگێڕان…"
-        : "بە یەک زمان بینووسە — دوو زمانەکەی تر خۆیان پڕ دەبنەوە."}
-    </p>
-  );
-}
 
 export function PropertyForm({ initial }: { initial?: Property }) {
   const { isSeller, isAdmin, user } = useAuth();
@@ -139,55 +114,17 @@ export function PropertyForm({ initial }: { initial?: Property }) {
    * indistinguishable from stuck. Null when no video is moving.
    */
   const [vidPct, setVidPct] = useState<number | null>(null);
-  /** which field is being filled in, so the seller sees it happening */
-  const [translating, setTranslating] = useState<"title" | "description" | null>(null);
-  /** Set once the route says it has no key, so the note stops promising. */
-  const [translatorOff, setTranslatorOff] = useState(false);
 
-  /**
-   * The seller writes one language; the other two fill themselves.
+  /*
+   * What the listing will read as, recomputed as the form is filled in.
    *
-   * Only ever into empty boxes. Something already written was written on
-   * purpose — by them, or by this on an earlier pass and corrected since — and
-   * overwriting it would be the form arguing with the person using it.
-   *
-   * On blur rather than on every keystroke: mid-sentence is not a sentence.
+   * Shown rather than described: an office that can see the sentence it is
+   * about to save does not need to be told how it was assembled.
    */
-  async function translateFrom(field: "title" | "description", from: Locale) {
-    const source = (d[field] as Record<Locale, string>)[from]?.trim();
-    if (!source || source.length < 2) return;
-
-    const others = (["ku", "ar", "en"] as Locale[]).filter((l) => l !== from);
-    if (others.every((l) => (d[field] as Record<Locale, string>)[l]?.trim())) return;
-
-    try {
-      const token = await getFirebase()?.auth.currentUser?.getIdToken();
-      if (!token) return;
-      setTranslating(field);
-      const res = await fetch("/api/translate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-id-token": token },
-        body: JSON.stringify({ text: source, from }),
-      });
-      if (res.status === 501) {
-        setTranslatorOff(true);
-        return;
-      }
-      if (!res.ok) return;
-      const out = (await res.json()) as Record<Locale, string>;
-      setD((p) => {
-        const cur = p[field] as Record<Locale, string>;
-        const next = { ...cur };
-        for (const l of others) if (!cur[l]?.trim() && out[l]) next[l] = out[l];
-        return { ...p, [field]: next };
-      });
-    } catch {
-      // A translation that did not arrive leaves the boxes as they were. The
-      // seller can still type them, which is what they did before this.
-    } finally {
-      setTranslating(null);
-    }
-  }
+  const preview = {
+    title: buildTitle(d),
+    description: buildDescription(d.features),
+  };
 
   function up<K extends keyof Draft>(k: K, v: Draft[K]) {
     setD((p) => ({ ...p, [k]: v }));
@@ -376,6 +313,17 @@ export function PropertyForm({ initial }: { initial?: Property }) {
     try {
       const clean: Omit<Property, "id"> = {
         ...d,
+        /*
+         * Written here, on save, rather than on every render.
+         *
+         * Everything that reads a listing reads title and description — the
+         * card, the heading, the search index, the JSON-LD, the share card.
+         * Generating them once into the record leaves all of that untouched,
+         * and it means a listing keeps the words it was saved with even if
+         * these sentences are reworded later.
+         */
+        title: buildTitle(d),
+        description: buildDescription(d.features),
         priceIQD: Number(d.priceIQD) || 0,
         area: Number(d.area) || 0,
         images: d.images.length ? d.images : [`/img/${d.type}.svg`],
@@ -411,24 +359,74 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         {editing ? "دەستکاریکردنی خانووبەرە" : "خانووبەرەی نوێ"}
       </h1>
 
-      {/* Titles */}
-      <Card title="ناونیشان (Title)">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Field label="کوردی"><input className="input" value={d.title.ku} onChange={(e) => up("title", { ...d.title, ku: e.target.value })} onBlur={() => translateFrom("title", "ku")} required /></Field>
-          <Field label="English"><input className="input" value={d.title.en} onChange={(e) => up("title", { ...d.title, en: e.target.value })} onBlur={() => translateFrom("title", "en")} /></Field>
-          <Field label="عربي"><input className="input" value={d.title.ar} onChange={(e) => up("title", { ...d.title, ar: e.target.value })} onBlur={() => translateFrom("title", "ar")} /></Field>
-        </div>
-        <TranslateNote busy={translating === "title"} off={translatorOff} />
-      </Card>
+      {/*
+        No title boxes, and no description boxes.
+        
+        There were six — a title and a description in each of three languages —
+        and six boxes is five more than anybody fills in. What happened in
+        practice is that one language got written and the other two stayed
+        empty, so a visitor reading Arabic saw Kurdish or saw nothing.
+        
+        The title is built from the record now: type, purpose, district, city,
+        every one of which is already a key with three translations beside it.
+        The description is built from the phrases ticked below. Both come out
+        right in all three languages, spelled the same way every time, and
+        neither costs anything to produce.
+      */}
+      <Card title="ئەم مووڵکە چۆنە؟">
+        <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+          ئەوانە هەڵبژێرە کە ڕاستن. ناونیشان و وەسفی مووڵکەکە خۆیان دروست
+          دەبن — بە کوردی و عەربی و ئینگلیزی — بۆیە پێویست ناکات هیچ بنووسیت.
+        </p>
 
-      {/* Descriptions */}
-      <Card title="وەسف (Description)">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Field label="کوردی"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.ku} onChange={(e) => up("description", { ...d.description, ku: e.target.value })} onBlur={() => translateFrom("description", "ku")} /></Field>
-          <Field label="English"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.en} onChange={(e) => up("description", { ...d.description, en: e.target.value })} onBlur={() => translateFrom("description", "en")} /></Field>
-          <Field label="عربي"><textarea rows={3} className="input h-auto py-2 resize-none" value={d.description.ar} onChange={(e) => up("description", { ...d.description, ar: e.target.value })} onBlur={() => translateFrom("description", "ar")} /></Field>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {FEATURE_KEYS.map((k) => {
+            const on = (d.features ?? []).includes(k);
+            return (
+              <button
+                key={k}
+                type="button"
+                onClick={() =>
+                  up(
+                    "features",
+                    on
+                      ? (d.features ?? []).filter((x) => x !== k)
+                      : [...(d.features ?? []), k],
+                  )
+                }
+                className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2.5 text-start text-sm transition-colors cursor-pointer ${
+                  on
+                    ? "border-primary bg-primary/10 font-medium text-foreground"
+                    : "border-border text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {featureNames[k].ku}
+                {on && <Check className="size-4 shrink-0 text-primary" />}
+              </button>
+            );
+          })}
         </div>
-        <TranslateNote busy={translating === "description"} off={translatorOff} />
+
+        {/* Shown as it will be saved, so nobody has to guess. */}
+        <div className="mt-4 rounded-xl border border-border bg-muted/40 p-3">
+          <p className="text-xs font-semibold text-muted-foreground">
+            بەم شێوەیە دەردەکەوێت:
+          </p>
+          <p className="mt-1.5 font-semibold">{preview.title.ku}</p>
+          {preview.description.ku && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {preview.description.ku}
+            </p>
+          )}
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground" dir="ltr">
+            {preview.title.en}
+            {preview.description.en ? ` — ${preview.description.en}` : ""}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            {preview.title.ar}
+            {preview.description.ar ? ` — ${preview.description.ar}` : ""}
+          </p>
+        </div>
       </Card>
 
       {/* Core */}
