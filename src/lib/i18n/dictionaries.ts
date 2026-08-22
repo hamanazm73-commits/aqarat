@@ -23,7 +23,7 @@ export const dict = {
       submit: "زیادکردنی موڵک",
     },
     hero: {
-      badge: "گەورەترین بازاڕی خانووبەرەی کوردستان",
+      badge: "باشترین نووسینگەکان لە لای حەمە",
       title: "ماڵی خەونەکانت لە لای حەمە بدۆزەرەوە",
       subtitle:
         "خانوو، شوقە، ڤێلا، زەوی و پرۆژەی بازرگانی — بۆ فرۆشتن و کرێ لە هەموو شارەکانی هەرێمی کوردستان.",
@@ -149,7 +149,7 @@ export const dict = {
       submit: "List property",
     },
     hero: {
-      badge: "Kurdistan's largest real-estate marketplace",
+      badge: "The best agencies at Lay Hama",
       title: "Find your dream home at Lay Hama",
       subtitle:
         "Houses, apartments, villas, land and commercial projects — for sale and rent across the Kurdistan Region.",
@@ -275,7 +275,7 @@ export const dict = {
       submit: "ضيف عقارك",
     },
     hero: {
-      badge: "أكبر سوق عقاري بكردستان",
+      badge: "أحسن المكاتب يم حمة",
       title: "الكه بيت أحلامك يم حمة",
       subtitle:
         "بيوت، شقق، فلل، أراضي ومشاريع تجارية — للبيع والإيجار بكل مدن إقليم كردستان.",
@@ -417,7 +417,7 @@ export const dict = {
       submit: "Emlak ekle",
     },
     hero: {
-      badge: "Kürdistan'ın en büyük emlak pazarı",
+      badge: "Lay Hama'nın en iyi emlak ofisleri",
       title: "Hayalindeki evi Lay Hama'da bul",
       subtitle:
         "Ev, daire, villa, arsa ve ticari mülk — Kürdistan Bölgesi'nin bütün şehirlerinde satılık ve kiralık.",

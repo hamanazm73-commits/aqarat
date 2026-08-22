@@ -13,7 +13,7 @@ import {
   useReducedMotion,
   type Variants,
 } from "motion/react";
-import { Sparkles, MapPin, Building, Home } from "lucide-react";
+import { MapPin, Building, Home } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { cityNames, purposeNames } from "@/lib/i18n/dictionaries";
 import { districts, searchLabels } from "@/lib/districts";
@@ -169,9 +169,10 @@ export function Hero({
           initial="hidden"
           animate="show"
           custom={0}
-          className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white ring-1 ring-gold/30 backdrop-blur"
+          // No icon, so the words sit centred in the pill instead of being
+          // pushed off to one side by a mark beside them.
+          className="inline-flex items-center rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white ring-1 ring-gold/30 backdrop-blur"
         >
-          <Sparkles className="size-4 text-gold" />
           {t.hero.badge}
         </motion.span>
 
