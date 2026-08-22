@@ -93,10 +93,6 @@ export const dict = {
       type: "جۆر",
       purpose: "مەبەست",
       posted: "بڵاوکراوەتەوە",
-      // Not an identity card. It is this listing’s own code, which is what
-      // somebody reads out on the phone to say which house they mean — and
-      // "ناسنامە" had sellers asking whose ID number the site wanted.
-      reference: "کۆدی مووڵک",
     },
     footer: {
       tagline: "هاوکارە متمانەپێکراوەکەت لە بازاڕی خانووبەرەی کوردستان.",
@@ -223,7 +219,6 @@ export const dict = {
       type: "Type",
       purpose: "Purpose",
       posted: "Posted",
-      reference: "Reference",
     },
     footer: {
       tagline: "Your trusted partner in the Kurdistan real-estate market.",
@@ -350,7 +345,6 @@ export const dict = {
       type: "النوع",
       purpose: "الغرض",
       posted: "اننشر",
-      reference: "الرقم المرجعي",
     },
     footer: {
       tagline: "شريكك المضمون بسوق العقارات بكردستان.",
@@ -493,9 +487,6 @@ export const dict = {
       type: "Tür",
       purpose: "Amaç",
       posted: "Yayınlandı",
-      // Not an identity document — the listing's own code, the thing somebody
-      // reads out on the phone to say which house they mean.
-      reference: "Emlak kodu",
     },
     footer: {
       tagline: "Kürdistan emlak pazarında güvenilir ortağınız.",

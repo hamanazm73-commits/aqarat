@@ -402,7 +402,16 @@ export function PropertyDetail({
             <span className="flex items-center gap-1.5">
               <Tag className="h-4 w-4" /> {t.detail.purpose}: {tr(purposeNames[p.purpose])}
             </span>
-            <span>{t.detail.reference}: {p.id}</span>
+            {/*
+              The listing code used to print here. It was the database's own
+              document id — twenty random letters — which is not a code anybody
+              reads out on the phone; it is an internal name that happened to be
+              visible. Renaming it from "ID number" made it honest without
+              making it useful, so it is off the page.
+
+              It is still in the address bar, which is what a seller actually
+              sends when they mean "this one".
+            */}
           </div>
         </div>
 
