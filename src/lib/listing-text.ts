@@ -1,4 +1,12 @@
-import type { Locale, Localized, Property, PropertyType, Purpose } from "./types";
+import {
+  LOCALES,
+  RTL_LOCALES,
+  type Locale,
+  type Localized,
+  type Property,
+  type PropertyType,
+  type Purpose,
+} from "./types";
 import {
   cityNames,
   typeNames,
@@ -87,16 +95,24 @@ function titleIn(
   }
 }
 
-/** The heading a reader sees, in all three languages at once. */
+/**
+ * The heading a reader sees, in every language at once.
+ *
+ * Built from LOCALES rather than listed by hand. Written out one key per
+ * language, adding a language meant remembering to come back here — and
+ * `Localized` is partial, so forgetting compiles cleanly and shows up as a
+ * Kurdish headline on a Turkmen page instead of as an error. That is exactly
+ * what happened when Turkmen was added. A loop cannot forget.
+ */
 export function buildTitle(
   p: Pick<Property, "type" | "purpose" | "city" | "district">,
 ): Localized {
   const district = p.district?.ku?.trim() || undefined;
-  return {
-    ku: titleIn("ku", p.type, p.purpose, district, p.city),
-    ar: titleIn("ar", p.type, p.purpose, district, p.city),
-    en: titleIn("en", p.type, p.purpose, district, p.city),
-  };
+  const out: Localized = {};
+  for (const l of LOCALES) {
+    out[l] = titleIn(l, p.type, p.purpose, district, p.city);
+  }
+  return out;
 }
 
 /**
@@ -140,9 +156,55 @@ export function buildDescription(features: readonly string[] = []): Localized {
   const asSentence = (parts: string[]) =>
     parts.map((p, i) => (i === 0 ? p : p.charAt(0).toLowerCase() + p.slice(1)));
 
-  return {
-    ku: join(pick("ku"), "، "),
-    ar: join(pick("ar"), "، "),
-    en: join(asSentence(pick("en")), ", "),
-  };
+  /*
+   * Built from LOCALES for the same reason the title is: a hand-written list
+   * of keys is a list somebody forgets to extend, and a partial Localized
+   * makes forgetting compile.
+   *
+   * The separator follows the script, not the language: Kurdish and Arabic
+   * take the Arabic comma, the Latin ones take the Latin comma — and the
+   * Latin ones also want the run-on fixed, since each phrase is written as
+   * though it stood alone.
+   */
+  const out: Localized = {};
+  for (const l of LOCALES) {
+    const parts = pick(l);
+    out[l] = RTL_LOCALES.includes(l)
+      ? join(parts, "، ")
+      : join(asSentence(parts), ", ");
+  }
+  return out;
+}
+
+/**
+ * The listing's title, in the language being read — built, not looked up.
+ *
+ * The stored `title` is a copy of this, written when the listing was saved.
+ * That was fine while the set of languages never changed, and stopped being
+ * fine the moment Turkmen was added: every listing already in the database had
+ * ku, ar and en and no tk, so a visitor who switched to Turkmen got a page of
+ * Turkmen furniture with Kurdish headings on it. Backfilling would have fixed
+ * those listings and not the next language.
+ *
+ * Nothing is lost by building it here. There is no hand-written title to
+ * respect — the form has no title field, and has not had one since the six
+ * boxes were taken out; `buildTitle` is what the save writes. Every part of
+ * the sentence is a field on the record, so the sentence can be assembled
+ * whenever it is needed, in whatever language is being read.
+ *
+ * The stored copy stays for anything reading the documents from outside.
+ */
+export function titleFor(
+  p: Pick<Property, "type" | "purpose" | "city" | "district">,
+  locale: Locale,
+): string {
+  return buildTitle(p)[locale] ?? "";
+}
+
+/** The description, same reasoning: assembled from the ticks, not stored. */
+export function descriptionFor(
+  p: Pick<Property, "features">,
+  locale: Locale,
+): string {
+  return buildDescription(p.features)[locale] ?? "";
 }

@@ -17,6 +17,7 @@ import { cityNames, typeNames } from "@/lib/i18n/dictionaries";
 import { formatIQDCompact, formatNumber, discountPercent } from "@/lib/format";
 import { cn, isRawSrc } from "@/lib/utils";
 import { ROOM_FIELDS } from "@/lib/constants";
+import { titleFor } from "@/lib/listing-text";
 
 const WA_NUMBER = "9647502202191";
 const SITE_URL = "https://homes.layhama.com";
@@ -29,7 +30,7 @@ export function PropertyCard({ p }: { p: Property }) {
     : 0;
 
   // Pre-filled WhatsApp message so the owner knows exactly which property.
-  const waText = `${t.card.whatsappMsg}\n${tr(p.title)} — ${formatIQDCompact(
+  const waText = `${t.card.whatsappMsg}\n${titleFor(p, locale)} — ${formatIQDCompact(
     p.priceIQD,
     locale,
   )}\n${SITE_URL}/properties/${p.id}`;
@@ -59,7 +60,7 @@ export function PropertyCard({ p }: { p: Property }) {
         />
         <Image
           src={p.images[0]}
-          alt={tr(p.title)}
+          alt={titleFor(p, locale)}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
           unoptimized={isRawSrc(p.images[0])}
@@ -116,7 +117,7 @@ export function PropertyCard({ p }: { p: Property }) {
 
       <div className="flex flex-1 flex-col gap-2 p-5">
         <h3 className="line-clamp-1 text-lg font-bold transition-colors group-hover:text-primary">
-          {tr(p.title)}
+          {titleFor(p, locale)}
         </h3>
 
         <p className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -209,7 +210,7 @@ export function PropertyCard({ p }: { p: Property }) {
       {/* Whole-card link (stretched, sits below the WhatsApp button) */}
       <Link
         href={`/properties/${p.id}`}
-        aria-label={tr(p.title)}
+        aria-label={titleFor(p, locale)}
         className="absolute inset-0 z-10"
       />
     </div>

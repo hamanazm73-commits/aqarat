@@ -35,6 +35,7 @@ import {
 } from "@/lib/format";
 import { isRawSrc } from "@/lib/utils";
 import { ROOM_FIELDS } from "@/lib/constants";
+import { titleFor, descriptionFor } from "@/lib/listing-text";
 import { PropertyCard } from "./property-card";
 import { Button } from "./ui/button";
 import { fsCountView } from "@/lib/firebase/db";
@@ -139,7 +140,7 @@ export function PropertyDetail({
         <span>/</span>
         <Link href="/properties" className="hover:text-foreground">{t.nav.properties}</Link>
         <span>/</span>
-        <span className="text-foreground line-clamp-1">{tr(p.title)}</span>
+        <span className="text-foreground line-clamp-1">{titleFor(p, locale)}</span>
       </nav>
 
       {/*
@@ -182,7 +183,7 @@ export function PropertyDetail({
             />
             <Image
               src={p.images[active]}
-              alt={tr(p.title)}
+              alt={titleFor(p, locale)}
               fill
               sizes={HERO_SIZES}
               unoptimized={isRawSrc(p.images[active])}
@@ -298,7 +299,7 @@ export function PropertyDetail({
         <div>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold sm:text-3xl">{tr(p.title)}</h1>
+              <h1 className="text-2xl font-bold sm:text-3xl">{titleFor(p, locale)}</h1>
               <p className="mt-2 flex items-center gap-1.5 text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
                 {tr(cityNames[p.city])}
@@ -364,7 +365,7 @@ export function PropertyDetail({
           {/* Description */}
           <section className="mt-8">
             <h2 className="text-lg font-semibold">{t.detail.description}</h2>
-            <p className="mt-3 leading-relaxed text-muted-foreground">{tr(p.description)}</p>
+            <p className="mt-3 leading-relaxed text-muted-foreground">{descriptionFor(p, locale)}</p>
           </section>
 
           {/* Location */}
@@ -373,7 +374,7 @@ export function PropertyDetail({
               <h2 className="text-lg font-semibold">{t.detail.location}</h2>
               <div className="mt-3 overflow-hidden rounded-2xl border border-border">
                 <iframe
-                  title={`${tr(p.title)} — map`}
+                  title={`${titleFor(p, locale)} — map`}
                   src={`https://maps.google.com/maps?q=${p.lat},${p.lng}&z=14&output=embed`}
                   className="h-72 w-full"
                   loading="lazy"

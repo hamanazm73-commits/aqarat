@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { titleFor, descriptionFor } from "@/lib/listing-text";
 import { getProperty, getSimilar } from "@/lib/repo";
 import { SEED_PROPERTIES } from "@/lib/data";
 import { isFirebaseConfigured } from "@/lib/firebase/client";
@@ -25,8 +26,8 @@ export async function generateMetadata({
   const p = await getProperty(id);
   if (!p) return { title: "Not found" };
 
-  const title = pickLocalized(p.title, "ku");
-  const description = pickLocalized(p.description, "ku").slice(0, 200);
+  const title = titleFor(p, "ku");
+  const description = descriptionFor(p, "ku").slice(0, 200);
   const path = `/properties/${encodeURIComponent(p.id)}`;
 
   return {

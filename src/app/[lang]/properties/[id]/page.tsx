@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { titleFor, descriptionFor } from "@/lib/listing-text";
 import { getProperty, getSimilar } from "@/lib/repo";
 import { PropertyDetail } from "@/components/property-detail";
 import { listingJsonLd, pickLocalized } from "@/lib/listing-seo";
@@ -17,8 +18,8 @@ export async function generateMetadata({
   if (!p) return { title: "Not found" };
 
   const locale = lang as Locale;
-  const title = pickLocalized(p.title, locale);
-  const description = pickLocalized(p.description, locale).slice(0, 200);
+  const title = titleFor(p, locale);
+  const description = descriptionFor(p, locale).slice(0, 200);
   const path = `/properties/${encodeURIComponent(p.id)}`;
 
   return {

@@ -1,5 +1,6 @@
 import type { Locale, Localized, Property } from "./types";
 import { urlFor } from "./seo";
+import { titleFor, descriptionFor } from "./listing-text";
 
 /**
  * The listing's own words in the reader's language, falling back rather than
@@ -39,8 +40,8 @@ export function listingJsonLd(p: Property, locale: Locale) {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
     url,
-    name: pickLocalized(p.title, locale),
-    description: pickLocalized(p.description, locale),
+    name: titleFor(p, locale),
+    description: descriptionFor(p, locale),
     inLanguage: locale,
     datePosted: p.createdAt,
     ...(p.images?.length ? { image: p.images } : {}),
@@ -57,7 +58,7 @@ export function listingJsonLd(p: Property, locale: Locale) {
     },
     about: {
       "@type": "Accommodation",
-      name: pickLocalized(p.title, locale),
+      name: titleFor(p, locale),
       ...(p.bedrooms ? { numberOfBedroomsTotal: p.bedrooms } : {}),
       ...(p.bathrooms ? { numberOfBathroomsTotal: p.bathrooms } : {}),
       floorSize: {
