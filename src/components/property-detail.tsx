@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Layers,
   CookingPot,
+  Building2,
 } from "lucide-react";
 import type { Property } from "@/lib/types";
 import { useI18n } from "@/lib/i18n/context";
@@ -350,7 +351,13 @@ export function PropertyDetail({
         <aside className="space-y-4">
           <div className="rounded-2xl border border-border bg-card p-5">
             <h3 className="font-semibold">{t.detail.contactAgent}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{p.agent.name}</p>
+            {/* "the office of X", not a bare name — a name on its own beneath a
+                heading reads as the person you are calling, and it is a firm. */}
+            <p className="mt-1.5 flex items-center gap-1.5 text-sm">
+              <Building2 className="size-4 shrink-0 text-gold" aria-hidden />
+              <span className="text-muted-foreground">{t.detail.officeLabel}</span>
+              <span className="font-semibold text-foreground">{p.agent.name}</span>
+            </p>
             <div className="mt-4 grid gap-2">
               <a href={`tel:${p.agent.phone}`}>
                 <Button className="w-full">

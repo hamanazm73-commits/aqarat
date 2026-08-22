@@ -182,8 +182,14 @@ export function PropertyCard({ p }: { p: Property }) {
         {p.agent?.name && (
           <div className="mt-3 flex items-center gap-1.5 border-t border-foreground/10 pt-3">
             <Building2 className="size-3.5 shrink-0 text-gold" />
-            <span className="truncate text-xs font-semibold tracking-wide text-muted-foreground">
-              {p.agent.name}
+            {/* Said, not implied. A name alone under a price could be the
+                seller, the street or the building; "نووسینگەی" makes it the
+                firm carrying the listing. */}
+            <span className="truncate text-xs text-muted-foreground">
+              {t.detail.officeLabel}{" "}
+              <span className="font-semibold text-foreground/90">
+                {p.agent.name}
+              </span>
             </span>
           </div>
         )}

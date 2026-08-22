@@ -597,7 +597,7 @@ export function PropertyForm({ initial }: { initial?: Property }) {
       </Card>
 
       {/* Flags + discount + agent */}
-      <Card title="ئاڵا و بریکار">
+      <Card title="ئاڵا و نووسینگە">
         {/*
           Featured and recommended are the office’s to give, not the seller’s
           to take.
@@ -636,7 +636,7 @@ export function PropertyForm({ initial }: { initial?: Property }) {
           )}
         </div>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          <Field label="ناوی بریکار"><input className="input" value={d.agent.name} onChange={(e) => up("agent", { ...d.agent, name: e.target.value })} required /></Field>
+          <Field label="ناوی نووسینگە"><input className="input" value={d.agent.name} onChange={(e) => up("agent", { ...d.agent, name: e.target.value })} required /></Field>
           <Field label="مۆبایل"><input className="input" value={d.agent.phone} onChange={(e) => up("agent", { ...d.agent, phone: e.target.value })} required /></Field>
           <Field label="واتساپ"><input className="input" value={d.agent.whatsapp ?? ""} onChange={(e) => up("agent", { ...d.agent, whatsapp: e.target.value })} /></Field>
         </div>
