@@ -60,6 +60,7 @@ export async function fsCreateProperty(
   data: Omit<Property, "id">,
 ): Promise<string> {
   const r = await addDoc(collection(db(), "properties"), data);
+  await refreshPublicSite();
   return r.id;
 }
 
@@ -70,10 +71,12 @@ export async function fsUpdateProperty(
   const rest: Record<string, unknown> = { ...data };
   delete rest.id;
   await updateDoc(doc(db(), "properties", id), rest);
+  await refreshPublicSite();
 }
 
 export async function fsDeleteProperty(id: string): Promise<void> {
   await deleteDoc(doc(db(), "properties", id));
+  await refreshPublicSite();
 }
 
 /**
@@ -134,6 +137,29 @@ export async function fsSetRole(
 
 export async function fsDeleteRole(email: string): Promise<void> {
   await deleteDoc(doc(db(), "roles", email.toLowerCase()));
+}
+
+/**
+ * Tell the public site to forget its cached listings.
+ *
+ * Called after every write so a change shows immediately, which is what lets
+ * the cache interval be an hour instead of a minute — see lib/repo.ts for why
+ * that number matters. Failure is swallowed on purpose: the listing is already
+ * saved, and the worst case is that it appears within the hour instead of
+ * within the second. Telling somebody their save failed when it did not would
+ * be the bigger error.
+ */
+async function refreshPublicSite(): Promise<void> {
+  try {
+    const token = await getFirebase()?.auth.currentUser?.getIdToken();
+    if (!token) return;
+    await fetch("/api/revalidate", {
+      method: "POST",
+      headers: { "x-id-token": token },
+    });
+  } catch {
+    /* the hourly refresh will pick it up */
+  }
 }
 
 /* ------------------------------ Settings ----------------------------- */

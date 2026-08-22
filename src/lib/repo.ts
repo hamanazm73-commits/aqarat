@@ -39,9 +39,24 @@ const readLive = unstable_cache(
     if (!live.length) throw new Error("empty");
     return live;
   },
-  ["public-properties"],
-  { revalidate: 60, tags: ["properties"] },
-);
+    ["public-properties"],
+    /*
+     * An hour, not a minute — with the tag cleared the moment somebody saves.
+     *
+     * A minute sounded harmless and does not scale: the whole collection is
+     * re-read on every refresh, so the daily read count is 1440 × however many
+     * listings exist. Firestore's free tier allows 50,000 reads a day, which
+     * this crosses at about 35 listings — and the office intends to have far
+     * more than 35. At an hour the same limit is not reached until roughly
+     * 2,000.
+     *
+     * The minute was there so an office that had just added a house could see
+     * it. That is what the tag is for: the dashboard clears it on save, so the
+     * listing appears at once and the interval is only a floor for changes
+     * made outside the dashboard.
+     */
+    { revalidate: 3600, tags: ["properties"] },
+  );
 
 async function source(): Promise<Property[]> {
   if (isFirebaseConfigured()) {
