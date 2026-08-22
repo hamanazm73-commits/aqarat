@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import {
   Building2,
   Home,
-  Inbox,
   KeyRound,
   Loader2,
   LogOut,

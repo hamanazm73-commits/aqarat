@@ -44,16 +44,26 @@ export default function AdminListingsPage() {
   const [offices, setOffices] = useState<RoleDoc[]>([]);
   const [office, setOffice] = useState<string>(ALL);
 
+  /*
+   * Pulled out of the callback rather than reached for inside it.
+   *
+   * With `user?.email` used in the body, React Compiler infers the dependency
+   * as the whole `user` object while the list says `user?.email`, decides the
+   * two do not agree, and gives up optimizing this component entirely. Naming
+   * the value once makes the inferred dependency and the written one the same.
+   */
+  const email = user?.email;
+
   const load = useCallback(async () => {
     // A seller sees the rows carrying their own address and nothing else.
     // This is a convenience, not the boundary — the rules in firestore.rules
     // are what actually stop one seller touching another's listing.
     setItems(
-      isSeller && user?.email
-        ? await fsListPropertiesBySeller(user.email)
+      isSeller && email
+        ? await fsListPropertiesBySeller(email)
         : await fsListProperties(),
     );
-  }, [isSeller, user?.email]);
+  }, [isSeller, email]);
 
   useEffect(() => {
     load().catch(() => setItems([]));
