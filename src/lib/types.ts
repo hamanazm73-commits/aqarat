@@ -66,7 +66,17 @@ export type CityKey =
   | "soran"
   | "shaqlawa";
 
+/**
+ * What a listing has, ticked on the form.
+ *
+ * Two sets, because a plot of land and a house are not asked the same
+ * questions. A lift or a fitted kitchen means nothing on empty ground; what a
+ * buyer wants to know there is whether the water and the power reach it, what
+ * the road is like, and whether the papers are in order. AMENITIES_FOR_TYPE in
+ * constants decides which set a type is shown.
+ */
 export type AmenityKey =
+  // buildings
   | "parking"
   | "garden"
   | "elevator"
@@ -78,7 +88,16 @@ export type AmenityKey =
   | "generator"
   | "water_tank"
   | "solar"
-  | "balcony";
+  | "balcony"
+  // land
+  | "water_mains"
+  | "electricity"
+  | "sewage"
+  | "paved_road"
+  | "walled"
+  | "level_ground"
+  | "title_deed"
+  | "build_ready";
 
 export interface Discount {
   active: boolean;

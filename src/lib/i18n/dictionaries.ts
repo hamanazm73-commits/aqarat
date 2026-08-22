@@ -636,4 +636,17 @@ export const amenityNames: Record<AmenityKey, Record<Locale, string>> = {
   water_tank: { ku: "تانکی ئاو", en: "Water tank", ar: "خزان ماء", tk: "Su deposu" },
   solar: { ku: "وزەی خۆر", en: "Solar power", ar: "طاقة شمسية", tk: "Güneş enerjisi" },
   balcony: { ku: "بەلکۆن", en: "Balcony", ar: "شرفة", tk: "Balkon" },
+  /*
+   * Land. Nothing above applies to a bare plot — what a buyer asks about is
+   * whether the services reach it, what the road is, and whether the paperwork
+   * is clean.
+   */
+  water_mains:  { ku: "ئاوی سەرەکی هەیە",      en: "Mains water",        ar: "ماي إسالة",        tk: "Şebeke suyu" },
+  electricity:  { ku: "کارەبای نەتەوەیی هەیە", en: "Mains electricity",  ar: "كهرباء وطنية",     tk: "Şebeke elektriği" },
+  sewage:       { ku: "ئاوەڕۆی هەیە",          en: "Connected to sewage", ar: "مجاري",           tk: "Kanalizasyon" },
+  paved_road:   { ku: "ڕێگای قیرتاوکراو",      en: "Paved road",         ar: "شارع مبلط",        tk: "Asfalt yol" },
+  walled:       { ku: "دیوارکراوە",            en: "Walled",             ar: "مسوّر",            tk: "Duvarlı" },
+  level_ground: { ku: "زەوییەکە تەختە",        en: "Level ground",       ar: "أرض مستوية",       tk: "Düz arazi" },
+  title_deed:   { ku: "تاپۆی هەیە",            en: "Title deed",         ar: "طابو",             tk: "Tapulu" },
+  build_ready:  { ku: "ئامادەیە بۆ بیناسازی",  en: "Ready to build on",  ar: "جاهزة للبناء",     tk: "İnşaata hazır" },
 };

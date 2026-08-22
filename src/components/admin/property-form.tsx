@@ -20,7 +20,7 @@ import {
   FEATURE_KEYS,
 } from "@/lib/i18n/dictionaries";
 import {
-  AMENITY_KEYS,
+  AMENITIES_FOR_TYPE,
   CITY_KEYS,
   PROPERTY_TYPE_KEYS,
   ROOM_FIELDS,
@@ -486,6 +486,7 @@ export function PropertyForm({ initial }: { initial?: Property }) {
               onChange={(e) => {
                 const type = e.target.value as PropertyType;
                 const has = ROOM_FIELDS[type];
+                const offered = AMENITIES_FOR_TYPE[type];
                 setD((p) => ({
                   ...p,
                   type,
@@ -493,6 +494,10 @@ export function PropertyForm({ initial }: { initial?: Property }) {
                   bathrooms: has.bathrooms ? p.bathrooms : undefined,
                   floors: has.floors ? p.floors : undefined,
                   kitchens: has.kitchens ? p.kitchens : undefined,
+                  // Same reason as the counts above: a house turned into a
+                  // plot of land would keep "lift" and "furnished" ticked out
+                  // of sight, and the listing page would print them.
+                  amenities: p.amenities.filter((a) => offered.includes(a)),
                 }));
               }}
             >
@@ -601,10 +606,18 @@ export function PropertyForm({ initial }: { initial?: Property }) {
         )}
       </Card>
 
-      {/* Amenities */}
+      {/*
+        Amenities, asked for the kind of property this is.
+
+        A plot of land was being offered a lift, a fitted kitchen and air
+        conditioning. What a land buyer wants to know instead is whether the
+        water and the power reach it, what the road is, and whether the papers
+        are clean — so land gets its own list and everything else keeps the
+        building one.
+      */}
       <Card title="خزمەتگوزارییەکان">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {AMENITY_KEYS.map((a) => (
+          {AMENITIES_FOR_TYPE[d.type].map((a) => (
             <label key={a} className="flex items-center gap-2 text-sm cursor-pointer">
               <input type="checkbox" checked={d.amenities.includes(a)} onChange={() => toggleAmenity(a)} />
               {amenityNames[a].ku}

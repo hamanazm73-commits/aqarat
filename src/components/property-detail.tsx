@@ -34,7 +34,7 @@ import {
   discountPercent,
 } from "@/lib/format";
 import { isRawSrc } from "@/lib/utils";
-import { ROOM_FIELDS } from "@/lib/constants";
+import { AMENITIES_FOR_TYPE, ROOM_FIELDS } from "@/lib/constants";
 import { titleFor, descriptionFor } from "@/lib/listing-text";
 import { districtFor } from "@/lib/district-latin";
 import { ListingImage } from "./listing-image";
@@ -105,6 +105,18 @@ export function PropertyDetail({
    * a row missing.
    */
   const has = ROOM_FIELDS[p.type];
+
+  /*
+   * Only the ticks this kind of property is asked for.
+   *
+   * The form stopped offering a lift on a plot of land, and clears the ones
+   * that no longer apply when a listing changes type — but a record saved
+   * before that can still be carrying them, and a plot advertising a swimming
+   * pool is worse than a shorter list.
+   */
+  const shownAmenities = p.amenities.filter((a) =>
+    AMENITIES_FOR_TYPE[p.type].includes(a),
+  );
   const specs = [
     has.bedrooms && typeof p.bedrooms === "number" && {
       icon: BedDouble,
@@ -347,11 +359,11 @@ export function PropertyDetail({
             buyer is actually checking — parking, a garden, a lift. Underneath
             the paragraph it was being scrolled past.
           */}
-          {p.amenities.length > 0 && (
+          {shownAmenities.length > 0 && (
             <section className="mt-8">
               <h2 className="text-lg font-semibold">{t.detail.amenities}</h2>
               <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                {p.amenities.map((a) => (
+                {shownAmenities.map((a) => (
                   <div key={a} className="flex items-center gap-2 text-sm">
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
                       <Check className="h-3.5 w-3.5" />

@@ -59,18 +59,6 @@ export const FLOORS_MAX = 4;
  */
 export const BEDROOMS_MAX = 4;
 
-export const AMENITY_KEYS: AmenityKey[] = [
-  "parking",
-  "garden",
-  "elevator",
-  "furnished",
-  "ac",
-  "heating",
-  "security",
-  "pool",
-  "balcony",
-];
-
 /**
  * Which room counts a type of property actually has.
  *
@@ -120,4 +108,50 @@ export const ROOM_FIELDS: Record<PropertyType, RoomFields> = {
   shop: COMMERCIAL,
   office: COMMERCIAL,
   land: BARE_LAND,
+};
+
+/**
+ * Which ticks a type of property is offered.
+ *
+ * A plot of land was being asked whether it had a lift, a fitted kitchen and
+ * air conditioning. Those are questions about a building, and the office
+ * answering them on a bare plot leaves a listing describing something that is
+ * not there.
+ *
+ * What a land buyer actually asks is whether the services reach it — water,
+ * power, drainage — what the road is like, whether it is walled and level, and
+ * whether the papers are clean. None of that is worth asking about a flat.
+ *
+ * Shops and offices keep the building list: they are buildings.
+ */
+const BUILDING_AMENITIES: AmenityKey[] = [
+  "parking",
+  "garden",
+  "elevator",
+  "furnished",
+  "ac",
+  "heating",
+  "security",
+  "pool",
+  "balcony",
+];
+
+const LAND_AMENITIES: AmenityKey[] = [
+  "water_mains",
+  "electricity",
+  "sewage",
+  "paved_road",
+  "walled",
+  "level_ground",
+  "title_deed",
+  "build_ready",
+];
+
+export const AMENITIES_FOR_TYPE: Record<PropertyType, AmenityKey[]> = {
+  house: BUILDING_AMENITIES,
+  apartment: BUILDING_AMENITIES,
+  villa: BUILDING_AMENITIES,
+  shop: BUILDING_AMENITIES,
+  office: BUILDING_AMENITIES,
+  land: LAND_AMENITIES,
 };
